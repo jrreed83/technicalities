@@ -9,3 +9,8 @@
 
 // If you want to turn off dark background for syntax highlighting, comment or delete the below line.
 @import "minima/fastpages-dracula-highlight"; 
+
+// JRR: use same code font for markdown and code cells (07-09-2022)
+.input_area pre, .input_area div, .highlight pre {
+    font-family: "Ubuntu Mono";
+}
