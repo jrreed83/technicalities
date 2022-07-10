@@ -4,9 +4,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Linear Regression | Technicalities</title>
+<title>Linear Regression with JAX | Technicalities</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Linear Regression" />
+<meta property="og:title" content="Linear Regression with JAX" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="A repository of code and other technical stuff." />
 <meta property="og:description" content="A repository of code and other technical stuff." />
@@ -18,9 +18,9 @@
 <meta property="article:published_time" content="2022-07-09T00:00:00-05:00" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="twitter:image" content="https://jrreed83.github.io/technicalities/images/chart-preview.png" />
-<meta property="twitter:title" content="Linear Regression" />
+<meta property="twitter:title" content="Linear Regression with JAX" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-07-09T00:00:00-05:00","datePublished":"2022-07-09T00:00:00-05:00","description":"A repository of code and other technical stuff.","headline":"Linear Regression","image":"https://jrreed83.github.io/technicalities/images/chart-preview.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://jrreed83.github.io/technicalities/jupyter/2022/07/09/2022-JAX-LinearRegression.html"},"url":"https://jrreed83.github.io/technicalities/jupyter/2022/07/09/2022-JAX-LinearRegression.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-07-09T00:00:00-05:00","datePublished":"2022-07-09T00:00:00-05:00","description":"A repository of code and other technical stuff.","headline":"Linear Regression with JAX","image":"https://jrreed83.github.io/technicalities/images/chart-preview.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://jrreed83.github.io/technicalities/jupyter/2022/07/09/2022-JAX-LinearRegression.html"},"url":"https://jrreed83.github.io/technicalities/jupyter/2022/07/09/2022-JAX-LinearRegression.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/technicalities/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jrreed83.github.io/technicalities/feed.xml" title="Technicalities" /><link rel="shortcut icon" type="image/x-icon" href="/technicalities/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
@@ -91,13 +91,13 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Linear Regression</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-07-09T00:00:00-05:00" itemprop="datePublished">
+    <h1 class="post-title p-name" itemprop="name headline">Linear Regression with JAX</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-07-09T00:00:00-05:00" itemprop="datePublished">
         Jul 9, 2022
       </time>
        • <span class="read-time" title="Estimated read time">
     
     
-      2 min read
+      3 min read
     
 </span></p>
 
@@ -164,7 +164,7 @@ window.onload = wrap_img;
 that minimizes the loss function.</p>
 $$
     \ell (w, b) = \| X w + b - y \| ^ 2
-$$<p>In the process of solving this problem, I'll slowly build up a basic neural network library.</p>
+$$<p>In the process of solving this problem, I'll slowly build up a basic neural network library.  Let me say upfront that I'm new to JAX, but it looks like a very elegant library.</p>
 
 </div>
 </div>
@@ -178,7 +178,6 @@ $$<p>In the process of solving this problem, I'll slowly build up a basic neural
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">jax</span> 
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
-<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">grad</span><span class="p">,</span> <span class="n">random</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 </pre></div>
@@ -196,36 +195,11 @@ $$<p>In the process of solving this problem, I'll slowly build up a basic neural
 <h2 id="Generate-Data">
 <a class="anchor" href="#Generate-Data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Generate Data<a class="anchor-link" href="#Generate-Data"> </a>
 </h2>
-<p>The first thing I need to to is generate some mock data.  To do this, I define a fixed three-dimensional weight vector <code>w</code> and scalar bias <code>b</code>, that describe a hyperplane.</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">w</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
-<span class="n">b</span> <span class="o">=</span> <span class="mf">4.0</span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Next, I'm going to generate a bunch of random points satisfying the equation</p>
+<p>The first thing I need to to is generate some mock data satisfying a linear hyperplane</p>
 $$
     y = x \cdot w + b
-$$
+$$<p>Here's a little utility function we can use for this purpose.</p>
+
 </div>
 </div>
 </div>
@@ -236,11 +210,16 @@ $$
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">seed</span> <span class="o">=</span> <span class="mi">3551</span>
-<span class="n">key</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">generate_data</span><span class="p">(</span><span class="n">num_samples</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="mf">4.0</span> 
+    <span class="n">seed</span> <span class="o">=</span> <span class="mi">3551</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 
-<span class="n">y</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+
+    <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
 </pre></div>
 
     </div>
@@ -256,7 +235,9 @@ $$
 <h2 id="Model-Definition">
 <a class="anchor" href="#Model-Definition" aria-hidden="true"><span class="octicon octicon-link"></span></a>Model Definition<a class="anchor-link" href="#Model-Definition"> </a>
 </h2>
-<p>We use a simple linear model, with the parameters (weights and biases) stored in a simple python dictionary, named <code>params</code>.</p>
+<p>We use a simple linear model, with the parameters (weights and biases) stored in a simple python dictionary, named <code>params</code>.  Although it may not be clear in the
+function definition, the <code>x</code> argument should be interpreted as a single input sample, rather than a mini-batch of samples.  Applying the model to a batch of samples
+will be handled in the loss function below.</p>
 
 </div>
 </div>
@@ -268,10 +249,10 @@ $$
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">linear_model</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">linear_model</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
     <span class="n">w</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">'w'</span><span class="p">]</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">'b'</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
 </pre></div>
 
     </div>
@@ -300,9 +281,9 @@ predictions and the targets.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">mse_loss</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-    <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">data</span>
-    <span class="n">l</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">value_and_grad</span>
+<span class="k">def</span> <span class="nf">mse_loss</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">in_axes</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">))(</span><span class="n">params</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> 
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">l</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> 
 </pre></div>
 
@@ -316,7 +297,17 @@ predictions and the targets.</p>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>I don't like the fact that the <code>params</code> dictionary and the model are both passed as arguments to the loss function.  Eventually, I'd like to keep the <code>params</code> dictionary in some sort of model object, pass the model to the loss, and have the model implementation handle all the parameter specific stuff.</p>
+<p>By decorating the loss with <code>@jax.value_and_grad</code> annotation, we're telling the JAX system that
+the value and gradient should be returned.  Note also that the model passed into the loss is transformed into a vectorized model
+with <code>jax.vmap</code>.  The <code>in_axes</code> argument is a tuple whose length matches the number of arguments passed into <code>model</code> (in this case <code>2</code>).  Each tuple element indicates which dimension should be vectorized for the corresponding function argument.  In our case, <code>X</code> is an $m \times 3$ array ($m$ indicating the number of samples in the batch).  Therefore, <code>in_axes</code> is set to <code>(None, 0)</code> because we don't want to vectorize over <code>params</code>, but we do want to vectorize the zeroth dimension of <code>X</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As an aside, I don't like the fact that <code>params</code> and <code>model</code> are both passed as arguments to the loss function.  Eventually, I'd like to keep the <code>params</code> dictionary in some sort of model object, pass the model to the loss, and have the model implementation handle all the parameter specific stuff.  This is how all of the JAX-based neural libraries (Haiku, Flax, Equinox, etc seem to work.)</p>
 
 </div>
 </div>
@@ -339,19 +330,17 @@ predictions and the targets.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">linear_model</span><span class="p">,</span> <span class="n">num_epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">loss</span><span class="o">=</span><span class="n">mse_loss</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">linear_model</span><span class="p">,</span> <span class="n">num_epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="n">mse_loss</span><span class="p">):</span>
     
     <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">data</span>
     <span class="n">loss_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">)</span>
 
-    <span class="c1"># differentiate the loss with respect to the params, which is the zeroth argument number</span>
-    <span class="n">fn</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">value_and_grad</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">argnums</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> 
 
     <span class="c1"># initialize the model parameters</span>
     <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'w'</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="s1">'b'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
-        <span class="n">loss_i</span><span class="p">,</span> <span class="n">grad_params_i</span> <span class="o">=</span> <span class="n">fn</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="n">loss_i</span><span class="p">,</span> <span class="n">grad_params_i</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
             <span class="n">params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">-=</span> <span class="n">lr</span><span class="o">*</span><span class="n">grad_params_i</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
     
@@ -373,25 +362,12 @@ predictions and the targets.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">lr</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span> <span class="mf">1e-2</span>
-<span class="n">loss_values</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">num_epochs</span><span class="o">=</span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">linear_model</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">()</span>
+<span class="n">num_epochs</span><span class="p">,</span> <span class="n">lr</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span> <span class="mf">1e-2</span>
+<span class="n">loss_values</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">num_epochs</span><span class="o">=</span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">linear_model</span><span class="p">)</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>{'w': DeviceArray([1.0605003, 1.952814 , 2.9707012], dtype=float32), 'b': DeviceArray(4.0229278, dtype=float32, weak_type=True)}
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
