@@ -905,55 +905,6 @@ Number of test samples = 10000
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span>jnp.clip<span class="o">??</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre><span class="ansi-red-fg">Signature:</span>      jnp<span class="ansi-blue-fg">.</span>clip<span class="ansi-blue-fg">(</span>a<span class="ansi-blue-fg">,</span> a_min<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span> a_max<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span> out<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-red-fg">Call signature:</span> jnp<span class="ansi-blue-fg">.</span>clip<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
-<span class="ansi-red-fg">Type:</span>           CompiledFunction
-<span class="ansi-red-fg">String form:</span>    &lt;CompiledFunction of &lt;function clip at 0x7fcd7ed2af70&gt;&gt;
-<span class="ansi-red-fg">File:</span>           ~/anaconda3/lib/python3.8/site-packages/jax/_src/numpy/lax_numpy.py
-<span class="ansi-red-fg">Source:</span>        
-<span class="ansi-blue-fg">@</span>_wraps<span class="ansi-blue-fg">(</span>np<span class="ansi-blue-fg">.</span>clip<span class="ansi-blue-fg">,</span> skip_params<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">'out'</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-blue-fg">@</span>jit
-<span class="ansi-green-fg">def</span> clip<span class="ansi-blue-fg">(</span>a<span class="ansi-blue-fg">,</span> a_min<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span> a_max<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span> out<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-  _check_arraylike<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">"clip"</span><span class="ansi-blue-fg">,</span> a<span class="ansi-blue-fg">)</span>
-  <span class="ansi-green-fg">if</span> out <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">not</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
-    <span class="ansi-green-fg">raise</span> NotImplementedError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">"The 'out' argument to jnp.clip is not supported."</span><span class="ansi-blue-fg">)</span>
-  <span class="ansi-green-fg">if</span> a_min <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span> <span class="ansi-green-fg">and</span> a_max <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
-    <span class="ansi-green-fg">raise</span> ValueError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">"At most one of a_min and a_max may be None"</span><span class="ansi-blue-fg">)</span>
-  <span class="ansi-green-fg">if</span> a_min <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">not</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
-    a <span class="ansi-blue-fg">=</span> maximum<span class="ansi-blue-fg">(</span>a_min<span class="ansi-blue-fg">,</span> a<span class="ansi-blue-fg">)</span>
-  <span class="ansi-green-fg">if</span> a_max <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">not</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
-    a <span class="ansi-blue-fg">=</span> minimum<span class="ansi-blue-fg">(</span>a_max<span class="ansi-blue-fg">,</span> a<span class="ansi-blue-fg">)</span>
-  <span class="ansi-green-fg">return</span> a
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span> 
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> 
 </pre></div>
@@ -1014,70 +965,6 @@ Number of test samples = 10000
 </pre></div>
 
     </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">??</span>jax.nn.softmax
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre><span class="ansi-red-fg">Signature:</span>
-jax<span class="ansi-blue-fg">.</span>nn<span class="ansi-blue-fg">.</span>softmax<span class="ansi-blue-fg">(</span>
-    x<span class="ansi-blue-fg">:</span> Any<span class="ansi-blue-fg">,</span>
-    axis<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">,</span> Tuple<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">...</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> NoneType<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">-</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span>
-    where<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>Any<span class="ansi-blue-fg">,</span> NoneType<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-    initial<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>Any<span class="ansi-blue-fg">,</span> NoneType<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> Any
-<span class="ansi-red-fg">Source:</span>   
-<span class="ansi-green-fg">def</span> softmax<span class="ansi-blue-fg">(</span>x<span class="ansi-blue-fg">:</span> Array<span class="ansi-blue-fg">,</span>
-            axis<span class="ansi-blue-fg">:</span> Optional<span class="ansi-blue-fg">[</span>Union<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">,</span> Tuple<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">...</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">-</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span>
-            where<span class="ansi-blue-fg">:</span> Optional<span class="ansi-blue-fg">[</span>Array<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-            initial<span class="ansi-blue-fg">:</span> Optional<span class="ansi-blue-fg">[</span>Array<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> Array<span class="ansi-blue-fg">:</span>
-  <span class="ansi-blue-fg">r"""Softmax function.</span>
-
-<span class="ansi-blue-fg">  Computes the function which rescales elements to the range :math:`[0, 1]`</span>
-<span class="ansi-blue-fg">  such that the elements along :code:`axis` sum to :math:`1`.</span>
-
-<span class="ansi-blue-fg">  .. math ::</span>
-<span class="ansi-blue-fg">    \mathrm{softmax}(x) = \frac{\exp(x_i)}{\sum_j \exp(x_j)}</span>
-
-<span class="ansi-blue-fg">  Args:</span>
-<span class="ansi-blue-fg">    x : input array</span>
-<span class="ansi-blue-fg">    axis: the axis or axes along which the softmax should be computed. The</span>
-<span class="ansi-blue-fg">      softmax output summed across these dimensions should sum to :math:`1`.</span>
-<span class="ansi-blue-fg">      Either an integer or a tuple of integers.</span>
-<span class="ansi-blue-fg">    where: Elements to include in the :code:`softmax`.</span>
-<span class="ansi-blue-fg">    initial: The minimum value used to shift the input array. Must be present</span>
-<span class="ansi-blue-fg">      when :code:`where` is not None.</span>
-<span class="ansi-blue-fg">  """</span>
-  x_max <span class="ansi-blue-fg">=</span> jnp<span class="ansi-blue-fg">.</span>max<span class="ansi-blue-fg">(</span>x<span class="ansi-blue-fg">,</span> axis<span class="ansi-blue-fg">,</span> where<span class="ansi-blue-fg">=</span>where<span class="ansi-blue-fg">,</span> initial<span class="ansi-blue-fg">=</span>initial<span class="ansi-blue-fg">,</span> keepdims<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">)</span>
-  unnormalized <span class="ansi-blue-fg">=</span> jnp<span class="ansi-blue-fg">.</span>exp<span class="ansi-blue-fg">(</span>x <span class="ansi-blue-fg">-</span> lax<span class="ansi-blue-fg">.</span>stop_gradient<span class="ansi-blue-fg">(</span>x_max<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-  <span class="ansi-green-fg">return</span> unnormalized <span class="ansi-blue-fg">/</span> jnp<span class="ansi-blue-fg">.</span>sum<span class="ansi-blue-fg">(</span>unnormalized<span class="ansi-blue-fg">,</span> axis<span class="ansi-blue-fg">,</span> where<span class="ansi-blue-fg">=</span>where<span class="ansi-blue-fg">,</span> keepdims<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-red-fg">File:</span>      ~/anaconda3/lib/python3.8/site-packages/jax/_src/nn/functions.py
-<span class="ansi-red-fg">Type:</span>      function
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -1179,12 +1066,13 @@ jax<span class="ansi-blue-fg">.</span>nn<span class="ansi-blue-fg">.</span>softm
             <span class="k">if</span> <span class="n">spec</span> <span class="o">==</span> <span class="s1">'flatten'</span><span class="p">:</span>
                 <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flatten</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">spec</span> <span class="o">==</span> <span class="s1">'relu'</span><span class="p">:</span>
-                <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">)</span>
+                <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">relu</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">spec</span> <span class="o">==</span> <span class="s1">'softmax'</span><span class="p">:</span>
+                <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">softmax</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                 <span class="n">layer_name</span><span class="p">,</span> <span class="o">*</span><span class="n">dims</span> <span class="o">=</span> <span class="n">spec</span>
                 <span class="k">if</span> <span class="n">layer_name</span> <span class="o">==</span> <span class="s1">'Linear'</span><span class="p">:</span>
                     <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Linear</span><span class="o">.</span><span class="n">tree_unflatten</span><span class="p">(</span><span class="n">dims</span><span class="p">,</span> <span class="n">params</span><span class="p">))</span>   
-        <span class="nb">print</span><span class="p">(</span><span class="n">layers</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">)</span>
     
 </pre></div>
@@ -1226,7 +1114,7 @@ jax<span class="ansi-blue-fg">.</span>nn<span class="ansi-blue-fg">.</span>softm
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>['flatten', ['Linear', 784, 128], 'relu', ['Linear', 128, 10]]
+<pre>['flatten', ['Linear', 784, 128], 'relu', ['Linear', 128, 10], 'softmax']
 [None, [DeviceArray([[-0.00503162, -0.11710759,  0.05479915, ..., -0.07662067, -0.03762808,  0.037621  ],
              [-0.02311066,  0.00427538,  0.06703123, ...,  0.05820996, -0.03371886, -0.0653995 ],
              [-0.03936624,  0.08184296, -0.00103856, ..., -0.02543773,  0.00404367,  0.10533019],
@@ -1241,9 +1129,42 @@ jax<span class="ansi-blue-fg">.</span>nn<span class="ansi-blue-fg">.</span>softm
              ...,
              [-0.04422821,  0.02535993, -0.09997344, ..., -0.15334168, -0.07498863, -0.08412767],
              [-0.10158557,  0.035592  , -0.01597822, ..., -0.17800951,  0.01484985, -0.03984371],
-             [ 0.10285417, -0.07429263, -0.03157486, ..., -0.09978219,  0.09220438, -0.01050255]], dtype=float32), DeviceArray([0., 0., 0., 0., 0., 0., 0., 0., 0., 0.], dtype=float32)]]
+             [ 0.10285417, -0.07429263, -0.03157486, ..., -0.09978219,  0.09220438, -0.01050255]], dtype=float32), DeviceArray([0., 0., 0., 0., 0., 0., 0., 0., 0., 0.], dtype=float32)], None]
 </pre>
 </div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>DeviceArray([0.0252387 , 0.10090624, 0.0532396 , 0.0026684 , 0.00223432, 0.41786084, 0.01803021, 0.03740699, 0.23077425, 0.11164048], dtype=float32)</pre>
+</div>
+
 </div>
 
 </div>
@@ -1263,20 +1184,6 @@ jax<span class="ansi-blue-fg">.</span>nn<span class="ansi-blue-fg">.</span>softm
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[&lt;function flatten at 0x7fcd35aa19d0&gt;, Linear(num_inputs=784, num_outputs=128), &lt;jax._src.custom_derivatives.custom_jvp object at 0x7fcd7ec01c40&gt;, Linear(num_inputs=128, num_outputs=10)]
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -1324,8 +1231,9 @@ jax<span class="ansi-blue-fg">.</span>nn<span class="ansi-blue-fg">.</span>softm
                 [-0.04422821,  0.02535993, -0.09997344, ..., -0.15334168, -0.07498863, -0.08412767],
                 [-0.10158557,  0.035592  , -0.01597822, ..., -0.17800951,  0.01484985, -0.03984371],
                 [ 0.10285417, -0.07429263, -0.03157486, ..., -0.09978219,  0.09220438, -0.01050255]], dtype=float32),
-   DeviceArray([0., 0., 0., 0., 0., 0., 0., 0., 0., 0.], dtype=float32)]],
- ['flatten', ['Linear', 784, 128], 'relu', ['Linear', 128, 10]])</pre>
+   DeviceArray([0., 0., 0., 0., 0., 0., 0., 0., 0., 0.], dtype=float32)],
+  None],
+ ['flatten', ['Linear', 784, 128], 'relu', ['Linear', 128, 10], 'softmax'])</pre>
 </div>
 
 </div>
@@ -1345,9 +1253,33 @@ jax<span class="ansi-blue-fg">.</span>nn<span class="ansi-blue-fg">.</span>softm
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[[0.01053238 0.00963454 0.05534463 0.34221935 0.23709607 0.23062086 0.01875673 0.0044237  0.04154054 0.04983115]
+ [0.06965067 0.04020747 0.02587731 0.23163168 0.00721021 0.3630885  0.09152918 0.03692165 0.11684138 0.01704187]
+ [0.01452342 0.02505668 0.02927498 0.12370431 0.01905692 0.22147559 0.05353659 0.01731216 0.12909968 0.3669597 ]
+ [0.03890769 0.16253126 0.01158254 0.02049241 0.0172755  0.2736464  0.15613386 0.02130364 0.02790812 0.27021858]
+ [0.31682748 0.02381606 0.01900291 0.01551888 0.0026899  0.02567157 0.20667872 0.08158241 0.29994497 0.00826714]
+ [0.00868274 0.04027656 0.00088157 0.02027338 0.00456023 0.01173401 0.230274   0.00272175 0.33047083 0.35012496]
+ [0.28868464 0.01730093 0.00496715 0.00795868 0.01537232 0.01364754 0.2113708  0.0856154  0.33909133 0.01599129]
+ [0.1749531  0.03225916 0.13421631 0.01935234 0.00972845 0.14777684 0.20355672 0.12726115 0.10999801 0.04089792]
+ [0.02589889 0.07807656 0.00667491 0.05148351 0.06839202 0.6044786  0.05068096 0.01631259 0.03092231 0.06707968]
+ [0.01532981 0.10583541 0.04397355 0.02852675 0.12040931 0.05223656 0.17195237 0.04090672 0.23671249 0.18411696]]
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -1363,6 +1295,93 @@ jax<span class="ansi-blue-fg">.</span>nn<span class="ansi-blue-fg">.</span>softm
 </div>
 </div>
 </div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>DeviceArray(2.3025851, dtype=float32, weak_type=True)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">value_and_grad</span>
+<span class="k">def</span> <span class="nf">cross_entropy_loss</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">y_one_hot</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">log_softmax</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X</span><span class="p">))</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">log_softmax</span> <span class="o">*</span> <span class="n">y_one_hot</span><span class="p">)</span>
+    
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">value</span><span class="p">,</span> <span class="n">grads</span> <span class="o">=</span> <span class="n">cross_entropy_loss</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0.47787946
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
