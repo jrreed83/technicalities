@@ -97,7 +97,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      13 min read
+      11 min read
     
 </span></p>
 
@@ -196,6 +196,20 @@ window.onload = wrap_img;
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>2022-07-15 06:17:19.058702: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcudart.so.11.0'; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/lib:/usr/local/bin:/usr/local/lib:
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -366,24 +380,6 @@ Number of test samples = 10000
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span>        
-    
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Module</span><span class="p">:</span> <span class="k">pass</span>
 </pre></div>
 
@@ -406,28 +402,19 @@ Number of test samples = 10000
     <span class="n">b</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="n">ni</span><span class="p">:</span> <span class="nb">int</span> 
     <span class="n">no</span><span class="p">:</span> <span class="nb">int</span> 
-    <span class="n">activation</span><span class="p">:</span> <span class="n">Callable</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_inputs</span><span class="p">,</span> <span class="n">num_outputs</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_inputs</span><span class="p">,</span> <span class="n">num_outputs</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ni</span> <span class="o">=</span> <span class="n">num_inputs</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">no</span> <span class="o">=</span> <span class="n">num_outputs</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">activation</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">num_inputs</span><span class="p">,</span> <span class="n">num_outputs</span><span class="p">))</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">/</span> <span class="n">num_inputs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_outputs</span><span class="p">)</span>
         
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
-        <span class="k">return</span> <span class="n">y</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
+        
     <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s1">'b'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">}</span>
-
-    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="c1"># want some sort of check for whether the input params field conforms</span>
-        <span class="c1"># to self.params()</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="s1">'w'</span><span class="p">])</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="s1">'b'</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">y</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -447,75 +434,8 @@ Number of test samples = 10000
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">l</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-</pre></div>
 
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">test_fn</span><span class="p">(</span><span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">linear</span><span class="p">:</span> <span class="n">Linear</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">linear</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Transform the function into another function that returns the original function's output, and it's gradient.  Notice that the transformed function has the same input arguments as <code>test_fn</code>.</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_fn_tx</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">value_and_grad</span><span class="p">(</span><span class="n">test_fn</span><span class="p">,</span> <span class="n">argnums</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>The input arguments to the transformed function are the same as the arguments to the original function.</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">test_fn</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_varnames</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">test_fn_tx</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_varnames</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -527,9 +447,16 @@ Number of test samples = 10000
 
 <div class="output_area">
 
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>WARNING:absl:No GPU/TPU found, falling back to CPU. (Set TF_CPP_MIN_LOG_LEVEL=0 and rerun for more info.)
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>('params', 'linear', 'x')
-('args', 'kwargs', '__tracebackhide__', 'e', 'mode', 'filtered_tb', 'unfiltered', 'msg')
+<pre>[0.26876584]
 </pre>
 </div>
 </div>
@@ -547,9 +474,27 @@ Number of test samples = 10000
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pprint</span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">test_fn_tx</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">params</span><span class="p">(),</span> <span class="n">l</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-<span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">mse</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">preds</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">preds</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mse</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mse</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">)))</span>
 </pre></div>
 
     </div>
@@ -562,10 +507,8 @@ Number of test samples = 10000
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>(   DeviceArray(-0.31124684, dtype=float32),
-    {   'b': DeviceArray([1.], dtype=float32),
-        'w': DeviceArray([[-0.55423266],
-             [ 0.25455725]], dtype=float32)})
+<pre>4.7643332
+1.9111596
 </pre>
 </div>
 </div>
@@ -583,9 +526,97 @@ Number of test samples = 10000
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">test_fn</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">y</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">mse_grad</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">mse</span><span class="p">)</span>
+<span class="n">mse_grad</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">/tmp/ipykernel_105992/2465860446.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> mse_grad <span class="ansi-blue-fg">=</span> jax<span class="ansi-blue-fg">.</span>grad<span class="ansi-blue-fg">(</span>mse<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">----&gt; 2</span><span class="ansi-red-fg"> </span>mse_grad<span class="ansi-blue-fg">(</span>l<span class="ansi-blue-fg">,</span> x<span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">2.0</span><span class="ansi-blue-fg">)</span>
+
+    <span class="ansi-red-fg">[... skipping hidden 5 frame]</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/api.py</span> in <span class="ansi-cyan-fg">_check_arg</span><span class="ansi-blue-fg">(arg)</span>
+<span class="ansi-green-intense-fg ansi-bold">   2972</span> <span class="ansi-green-fg">def</span> _check_arg<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">   2973</span>   <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> <span class="ansi-blue-fg">(</span>isinstance<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">,</span> core<span class="ansi-blue-fg">.</span>Tracer<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">or</span> _valid_jaxtype<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">-&gt; 2974</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">raise</span> TypeError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">f"Argument '{arg}' of type {type(arg)} is not a valid JAX type."</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   2975</span> 
+<span class="ansi-green-intense-fg ansi-bold">   2976</span> <span class="ansi-red-fg"># TODO(mattjj,necula): this duplicates code in core.valid_jaxtype, but one</span>
+
+<span class="ansi-red-fg">TypeError</span>: Argument '&lt;__main__.Linear object at 0x7f467a542700&gt;' of type &lt;class '__main__.Linear'&gt; is not a valid JAX type.</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To get this to work, the <code>Linear</code> class must be registered as a pytree.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">register_pytree_node_class</span>
+<span class="k">class</span> <span class="nc">Linear</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+    <span class="n">w</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span> 
+    <span class="n">b</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">ni</span><span class="p">:</span> <span class="nb">int</span> 
+    <span class="n">no</span><span class="p">:</span> <span class="nb">int</span> 
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_inputs</span><span class="p">,</span> <span class="n">num_outputs</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ni</span> <span class="o">=</span> <span class="n">num_inputs</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">no</span> <span class="o">=</span> <span class="n">num_outputs</span> 
+        
+        <span class="k">if</span> <span class="n">build</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">num_inputs</span><span class="p">,</span> <span class="n">num_outputs</span><span class="p">))</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">/</span> <span class="n">num_inputs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_outputs</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">params</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Linear(num_inputs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ni</span><span class="si">}</span><span class="s1">, num_outputs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">no</span><span class="si">}</span><span class="s1">)'</span>
+        
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
+        
+    <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'b'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">tree_flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ni</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no</span><span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">tree_unflatten</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">aux_data</span><span class="p">,</span> <span class="n">children</span><span class="p">):</span>
+        <span class="n">lin</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">aux_data</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">lin</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">children</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lin</span>
 </pre></div>
 
     </div>
@@ -602,7 +633,59 @@ Number of test samples = 10000
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_fn</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lin</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">params</span><span class="p">,</span> <span class="n">extra_stuff</span> <span class="o">=</span> <span class="n">lin</span><span class="o">.</span><span class="n">tree_flatten</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lin2</span> <span class="o">=</span> <span class="n">Linear</span><span class="o">.</span><span class="n">tree_unflatten</span><span class="p">(</span><span class="n">extra_stuff</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">lin</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lin2</span><span class="o">.</span><span class="n">w</span><span class="p">)</span> 
 </pre></div>
 
     </div>
@@ -614,12 +697,13 @@ Number of test samples = 10000
 
 <div class="output_area">
 
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>DeviceArray(-1.0237937, dtype=float32)</pre>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[[ 0.43957582]
+ [-0.26563603]]
+[[ 0.43957582]
+ [-0.26563603]]
+</pre>
 </div>
-
 </div>
 
 </div>
@@ -636,9 +720,10 @@ Number of test samples = 10000
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">jit</span>
-<span class="k">def</span> <span class="nf">test_fn</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">y</span>
+<span class="nd">@jax</span><span class="o">.</span><span class="n">value_and_grad</span>
+<span class="k">def</span> <span class="nf">mse</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">preds</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">preds</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -655,186 +740,11 @@ Number of test samples = 10000
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_fn</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-</pre></div>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
-<span class="ansi-green-fg">/tmp/ipykernel_88494/4076522815.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>test_fn<span class="ansi-blue-fg">(</span>l<span class="ansi-blue-fg">,</span> x<span class="ansi-blue-fg">)</span>
-
-    <span class="ansi-red-fg">[... skipping hidden 2 frame]</span>
-
-<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/api.py</span> in <span class="ansi-cyan-fg">_check_arg</span><span class="ansi-blue-fg">(arg)</span>
-<span class="ansi-green-intense-fg ansi-bold">   2972</span> <span class="ansi-green-fg">def</span> _check_arg<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">   2973</span>   <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> <span class="ansi-blue-fg">(</span>isinstance<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">,</span> core<span class="ansi-blue-fg">.</span>Tracer<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">or</span> _valid_jaxtype<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">-&gt; 2974</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">raise</span> TypeError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">f"Argument '{arg}' of type {type(arg)} is not a valid JAX type."</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   2975</span> 
-<span class="ansi-green-intense-fg ansi-bold">   2976</span> <span class="ansi-red-fg"># TODO(mattjj,necula): this duplicates code in core.valid_jaxtype, but one</span>
-
-<span class="ansi-red-fg">TypeError</span>: Argument '&lt;__main__.Linear object at 0x7f236c7a4370&gt;' of type &lt;class '__main__.Linear'&gt; is not a valid JAX type.</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">value_and_grad</span>
-<span class="k">def</span> <span class="nf">test_fn</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">y</span>
-
-<span class="n">test_fn</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
-<span class="ansi-green-fg">/tmp/ipykernel_88494/919235928.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-intense-fg ansi-bold">      4</span>     <span class="ansi-green-fg">return</span> y
-<span class="ansi-green-intense-fg ansi-bold">      5</span> 
-<span class="ansi-green-fg">----&gt; 6</span><span class="ansi-red-fg"> </span>test_fn<span class="ansi-blue-fg">(</span>l<span class="ansi-blue-fg">,</span> x<span class="ansi-blue-fg">)</span>
-
-    <span class="ansi-red-fg">[... skipping hidden 3 frame]</span>
-
-<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/api.py</span> in <span class="ansi-cyan-fg">_check_arg</span><span class="ansi-blue-fg">(arg)</span>
-<span class="ansi-green-intense-fg ansi-bold">   2972</span> <span class="ansi-green-fg">def</span> _check_arg<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">   2973</span>   <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> <span class="ansi-blue-fg">(</span>isinstance<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">,</span> core<span class="ansi-blue-fg">.</span>Tracer<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">or</span> _valid_jaxtype<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">-&gt; 2974</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">raise</span> TypeError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">f"Argument '{arg}' of type {type(arg)} is not a valid JAX type."</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   2975</span> 
-<span class="ansi-green-intense-fg ansi-bold">   2976</span> <span class="ansi-red-fg"># TODO(mattjj,necula): this duplicates code in core.valid_jaxtype, but one</span>
-
-<span class="ansi-red-fg">TypeError</span>: Argument '&lt;__main__.Linear object at 0x7f236c7a4370&gt;' of type &lt;class '__main__.Linear'&gt; is not a valid JAX type.</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">flatten_Dense</span><span class="p">(</span><span class="n">layer</span><span class="p">:</span> <span class="n">Dense</span><span class="p">):</span>
-    <span class="n">extra_stuff</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">'output_shape'</span><span class="p">:</span> <span class="n">layer</span><span class="o">.</span><span class="n">output_shape</span><span class="p">,</span>
-        <span class="s1">'activation'</span><span class="p">:</span> <span class="n">layer</span><span class="o">.</span><span class="n">activation</span><span class="p">,</span>
-        <span class="s1">'input_shape'</span><span class="p">:</span> <span class="n">layer</span><span class="o">.</span><span class="n">input_shape</span>
-    <span class="p">}</span>
-
-    <span class="k">return</span> <span class="p">[</span><span class="n">layer</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">b</span><span class="p">],</span> <span class="n">extra_stuff</span>
-
-<span class="k">def</span> <span class="nf">unflatten_Dense</span><span class="p">(</span><span class="n">extra_stuff</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dense</span><span class="p">:</span>
-    <span class="n">output_shape</span><span class="p">,</span> <span class="n">activation</span><span class="p">,</span> <span class="n">input_shape</span> <span class="o">=</span> <span class="n">extra_stuff</span><span class="p">[</span><span class="s1">'output_shape'</span><span class="p">],</span> <span class="n">extra_stuff</span><span class="p">[</span><span class="s1">'activation'</span><span class="p">],</span> <span class="n">extra_stuff</span><span class="p">[</span><span class="s1">'input_shape'</span><span class="p">]</span>
-
-    <span class="n">layer</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">num_features</span><span class="o">=</span><span class="n">output_shape</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">)</span>
-    <span class="n">layer</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="n">input_shape</span>
-    <span class="n">layer</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">layer</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    
-    <span class="k">return</span> <span class="n">layer</span>
-    
-<span class="c1"># Is there some way to overwrite this ..</span>
-<span class="n">jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">register_pytree_node</span><span class="p">(</span>
-    <span class="n">Dense</span><span class="p">,</span> <span class="n">flatten_Dense</span><span class="p">,</span> <span class="n">unflatten_Dense</span>    
-<span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
-<span class="ansi-green-fg">/tmp/ipykernel_88494/3393967353.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-intense-fg ansi-bold">     19</span> 
-<span class="ansi-green-intense-fg ansi-bold">     20</span> <span class="ansi-red-fg"># Is there some way to overwrite this ..</span>
-<span class="ansi-green-fg">---&gt; 21</span><span class="ansi-red-fg"> jax.tree_util.register_pytree_node(
-</span><span class="ansi-green-intense-fg ansi-bold">     22</span>     Dense<span class="ansi-blue-fg">,</span> flatten_Dense<span class="ansi-blue-fg">,</span> unflatten_Dense
-<span class="ansi-green-intense-fg ansi-bold">     23</span> )
-
-<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/tree_util.py</span> in <span class="ansi-cyan-fg">register_pytree_node</span><span class="ansi-blue-fg">(nodetype, flatten_func, unflatten_func)</span>
-<span class="ansi-green-intense-fg ansi-bold">    135</span>       <span class="ansi-red-fg">`</span><span class="ansi-red-fg">`</span>nodetype<span class="ansi-red-fg">`</span><span class="ansi-red-fg">`</span><span class="ansi-blue-fg">.</span>
-<span class="ansi-green-intense-fg ansi-bold">    136</span>   """
-<span class="ansi-green-fg">--&gt; 137</span><span class="ansi-red-fg">   </span>pytree<span class="ansi-blue-fg">.</span>register_node<span class="ansi-blue-fg">(</span>nodetype<span class="ansi-blue-fg">,</span> flatten_func<span class="ansi-blue-fg">,</span> unflatten_func<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    138</span>   _registry<span class="ansi-blue-fg">[</span>nodetype<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> _RegistryEntry<span class="ansi-blue-fg">(</span>flatten_func<span class="ansi-blue-fg">,</span> unflatten_func<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    139</span> 
-
-<span class="ansi-red-fg">ValueError</span>: Duplicate custom PyTreeDef type registration for &lt;class '__main__.Dense'&gt;.</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">num_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-
-<span class="nd">@jax</span><span class="o">.</span><span class="n">jit</span>
-<span class="nd">@jax</span><span class="o">.</span><span class="n">value_and_grad</span> 
-<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span> 
-    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">m</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-<span class="c1">#a, b = jax.tree_util.tree_flatten(model)</span>
-<span class="c1">#print(a, b)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+<span class="n">loss</span><span class="p">,</span> <span class="n">g_loss</span> <span class="o">=</span> <span class="n">mse</span><span class="p">(</span><span class="n">lin</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">g_loss</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -847,9 +757,7 @@ Number of test samples = 10000
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[-0.64251105 -1.50393909]
-[[-0.64251107 -0.64251107]
- [-1.503939   -1.503939  ]]
+<pre>1.1332217 Linear(num_inputs=2, num_outputs=1)
 </pre>
 </div>
 </div>
@@ -867,130 +775,7 @@ Number of test samples = 10000
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Sequential</span><span class="p">(</span><span class="n">Network</span><span class="p">):</span>
-    <span class="n">layers</span><span class="p">:</span> <span class="n">List</span>
-    <span class="n">params</span><span class="p">:</span> <span class="n">Any</span> 
-    <span class="n">input_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">layers</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">layers</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="n">input_shape</span>
-        <span class="n">input_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span>
-        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">Network</span><span class="p">):</span>
-                <span class="n">layer</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
-                <span class="n">input_shape</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">num_features</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">Flatten</span><span class="p">):</span> 
-                <span class="n">input_shape</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">num_features</span>   
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="n">x</span>
-        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">output</span>
-    
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">tree_flatten</span><span class="p">([{</span><span class="s1">'a'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span> <span class="p">{</span><span class="s1">'c'</span><span class="p">:</span> <span class="mi">7</span><span class="p">}]))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>([1, 5, 7], PyTreeDef([{'a': *, 'b': *}, {'c': *}]))
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">flatten_Sequential</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">Sequential</span><span class="p">):</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">params</span>
-    <span class="n">extra_stuff</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'layers'</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">}</span>
-    <span class="k">return</span> <span class="n">params</span><span class="p">,</span> <span class="n">extra_stuff</span>
-
-<span class="k">def</span> <span class="nf">unflatten_Sequential</span><span class="p">(</span><span class="n">extra_stuff</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dense</span><span class="p">:</span>
-    <span class="n">layers</span> <span class="o">=</span> <span class="n">extra_stuff</span><span class="p">[</span><span class="s1">'layers'</span><span class="p">]</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">)</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="n">extra_stuff</span><span class="p">[</span><span class="s1">'input_shape'</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">model</span>
-    
-<span class="n">jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">register_pytree_node</span><span class="p">(</span>
-    <span class="n">Sequential</span><span class="p">,</span> <span class="n">flatten_Sequential</span><span class="p">,</span> <span class="n">unflatten_Sequential</span>    
-<span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span>
-    <span class="n">Flatten</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)),</span>
-    <span class="n">Dense</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">),</span>
-    <span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">activation</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">)</span>   
-<span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">params</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">tree_flatten</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">g_loss</span><span class="o">.</span><span class="vm">__dict__</span>
 </pre></div>
 
     </div>
@@ -1005,13 +790,273 @@ Number of test samples = 10000
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>DeviceArray([[-0.00503162, -0.11710759,  0.05479915, ..., -0.08478684, -0.01258498, -0.0106819 ],
-             [-0.02930931, -0.06342698, -0.07211312, ..., -0.06885359,  0.05326153, -0.00705581],
-             [-0.01227331, -0.08667105,  0.01609307, ..., -0.07811324,  0.01763334,  0.00712718],
+<pre>{'ni': 2,
+ 'no': 1,
+ 'w': DeviceArray([[ 0.08816963],
+              [-0.7920926 ]], dtype=float32),
+ 'b': DeviceArray([-0.6709714], dtype=float32)}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">tree_flatten</span><span class="p">(</span><span class="n">g_loss</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>([DeviceArray([[ 0.754777  ],
+               [-0.55019784]], dtype=float32),
+  DeviceArray([-0.24978009], dtype=float32)],
+ PyTreeDef(CustomNode(&lt;class '__main__.Linear'&gt;[[2, 1]], [*, *])))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">locals</span><span class="p">()[</span><span class="s1">'Linear'</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>__main__.Linear</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">register_pytree_node_class</span>
+<span class="k">class</span> <span class="nc">Sequential</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+    <span class="n">layers</span><span class="p">:</span> <span class="n">List</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">layers</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">layers</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span>
+    <span class="k">def</span> <span class="nf">tree_flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">aux_data</span><span class="p">,</span> <span class="n">children</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">Module</span><span class="p">):</span>
+                <span class="n">params</span><span class="p">,</span> <span class="n">extra_stuff</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">tree_flatten</span><span class="p">()</span>
+                <span class="n">aux_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">layer</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">+</span> <span class="n">extra_stuff</span><span class="p">)</span>
+                <span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> 
+            <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="n">layer</span><span class="p">):</span>
+                <span class="n">aux_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>    
+        <span class="k">return</span> <span class="n">children</span><span class="p">,</span> <span class="n">aux_data</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">tree_unflatten</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">aux_data</span><span class="p">,</span> <span class="n">children</span><span class="p">):</span>
+        <span class="n">layers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">params</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">children</span><span class="p">,</span> <span class="n">aux_data</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">spec</span> <span class="o">==</span> <span class="s1">'flatten'</span><span class="p">:</span>
+                <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flatten</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">spec</span> <span class="o">==</span> <span class="s1">'relu'</span><span class="p">:</span>
+                <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">layer_name</span><span class="p">,</span> <span class="o">*</span><span class="n">dims</span> <span class="o">=</span> <span class="n">spec</span>
+                <span class="c1">#layer = locals()[layer_name].tree_unflatten(dims, params)</span>
+                <span class="k">if</span> <span class="n">layer_name</span> <span class="o">==</span> <span class="s1">'Linear'</span><span class="p">:</span>
+                    <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Linear</span><span class="o">.</span><span class="n">tree_unflatten</span><span class="p">(</span><span class="n">dims</span><span class="p">,</span> <span class="n">params</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">layers</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">)</span>
+    
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span> <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span>
+    <span class="n">flatten</span><span class="p">,</span>
+    <span class="n">Linear</span><span class="p">(</span><span class="mi">784</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span>
+    <span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>   
+<span class="p">)</span>
+
+<span class="n">params</span><span class="p">,</span> <span class="n">extra_stuff</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">tree_flatten</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">extra_stuff</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>['flatten', ['Linear', 784, 128], 'relu', ['Linear', 128, 10]]
+[None, [DeviceArray([[-0.00503162, -0.11710759,  0.05479915, ..., -0.07662067, -0.03762808,  0.037621  ],
+             [-0.02311066,  0.00427538,  0.06703123, ...,  0.05820996, -0.03371886, -0.0653995 ],
+             [-0.03936624,  0.08184296, -0.00103856, ..., -0.02543773,  0.00404367,  0.10533019],
              ...,
-             [-0.00622975, -0.08475864, -0.0552172 , ...,  0.05935797,  0.0743569 , -0.00805993],
-             [ 0.10648176, -0.02254054, -0.03166944, ..., -0.01719078,  0.00110678,  0.0392415 ],
-             [-0.037219  , -0.02834321,  0.00695875, ..., -0.0069246 ,  0.04329436,  0.07048796]], dtype=float32)</pre>
+             [-0.05674443,  0.01220774, -0.04277196, ...,  0.00793091, -0.03246848,  0.05214054],
+             [-0.10229313, -0.04473471, -0.05902693, ..., -0.026743  ,  0.01399903, -0.02305236],
+             [ 0.02624378, -0.040582  ,  0.04346804, ..., -0.0069246 ,  0.04329436,  0.07048796]], dtype=float32), DeviceArray([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+             0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+             0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.], dtype=float32)], None, [DeviceArray([[-0.01355871,  0.03681665, -0.03254633, ...,  0.08429167, -0.23054102, -0.17765395],
+             [ 0.10870937, -0.09912576, -0.15005781, ..., -0.02846045, -0.17202236,  0.05921352],
+             [-0.04855632, -0.1232295 , -0.08703142, ..., -0.01804219, -0.05857573, -0.05169024],
+             ...,
+             [-0.04422821,  0.02535993, -0.09997344, ..., -0.15334168, -0.07498863, -0.08412767],
+             [-0.10158557,  0.035592  , -0.01597822, ..., -0.17800951,  0.01484985, -0.03984371],
+             [ 0.10285417, -0.07429263, -0.03157486, ..., -0.09978219,  0.09220438, -0.01050255]], dtype=float32), DeviceArray([0., 0., 0., 0., 0., 0., 0., 0., 0., 0.], dtype=float32)]]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model2</span> <span class="o">=</span> <span class="n">Sequential</span><span class="o">.</span><span class="n">tree_unflatten</span><span class="p">(</span><span class="n">extra_stuff</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&lt;function flatten at 0x7f467a4e5700&gt;, Linear(num_inputs=784, num_outputs=128), &lt;jax._src.custom_derivatives.custom_jvp object at 0x7f46c5c04eb0&gt;, Linear(num_inputs=128, num_outputs=10)]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model2</span><span class="o">.</span><span class="n">tree_flatten</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>([None,
+  [DeviceArray([[-0.00503162, -0.11710759,  0.05479915, ..., -0.07662067, -0.03762808,  0.037621  ],
+                [-0.02311066,  0.00427538,  0.06703123, ...,  0.05820996, -0.03371886, -0.0653995 ],
+                [-0.03936624,  0.08184296, -0.00103856, ..., -0.02543773,  0.00404367,  0.10533019],
+                ...,
+                [-0.05674443,  0.01220774, -0.04277196, ...,  0.00793091, -0.03246848,  0.05214054],
+                [-0.10229313, -0.04473471, -0.05902693, ..., -0.026743  ,  0.01399903, -0.02305236],
+                [ 0.02624378, -0.040582  ,  0.04346804, ..., -0.0069246 ,  0.04329436,  0.07048796]], dtype=float32),
+   DeviceArray([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+                0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+                0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.], dtype=float32)],
+  None,
+  [DeviceArray([[-0.01355871,  0.03681665, -0.03254633, ...,  0.08429167, -0.23054102, -0.17765395],
+                [ 0.10870937, -0.09912576, -0.15005781, ..., -0.02846045, -0.17202236,  0.05921352],
+                [-0.04855632, -0.1232295 , -0.08703142, ..., -0.01804219, -0.05857573, -0.05169024],
+                ...,
+                [-0.04422821,  0.02535993, -0.09997344, ..., -0.15334168, -0.07498863, -0.08412767],
+                [-0.10158557,  0.035592  , -0.01597822, ..., -0.17800951,  0.01484985, -0.03984371],
+                [ 0.10285417, -0.07429263, -0.03157486, ..., -0.09978219,  0.09220438, -0.01050255]], dtype=float32),
+   DeviceArray([0., 0., 0., 0., 0., 0., 0., 0., 0., 0.], dtype=float32)]],
+ ['flatten', ['Linear', 784, 128], 'relu', ['Linear', 128, 10]])</pre>
 </div>
 
 </div>
@@ -1031,321 +1076,6 @@ Number of test samples = 10000
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>In Equinox and Treex, loss functions in which the model is the first argument are jitted.  I can't get this to work now (I think), because I'm not 
-converting my module instantiation to a PyTree.  This seems to be the secret: Treex and Equinox found a way to convert their versions of modules to pytrees.</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">a</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{'weights': DeviceArray([[ 0.4955482 ,  0.31323454, -0.16431722, -0.1778598 , -0.37309384, -0.27601704,  0.6786144 , -0.83603036, -0.37456733, -0.38529804],
-              [-0.51664037,  0.23452531,  0.39358795, -0.81366616, -0.30139554,  0.12572241, -0.27614236,  0.04341735,  1.0657046 ,  1.0121646 ],
-              [-0.02414936,  0.7453478 , -0.28615332, -0.196245  ,  0.33748606,  0.9765807 , -0.12719607,  0.329515  , -0.4071786 ,  0.12246487],
-              [-0.68219537,  0.03157214,  0.57286984, -0.44964808,  0.3903244 ,  0.06237474, -0.3355008 ,  1.0056379 , -0.29798067, -0.05773307],
-              [-0.98469573, -0.32533288,  0.1938749 , -0.286879  , -0.3740165 , -1.1384696 , -1.29627   ,  0.1767095 , -0.39158744, -0.80702335],
-              [ 0.45510042,  0.4024033 , -0.0216945 ,  0.2830267 ,  0.0508937 , -0.0493672 ,  0.16445382,  0.7305577 ,  0.59985423, -0.28474948],
-              [ 0.06098274, -0.40136126,  0.16223292, -0.4865787 ,  0.04620648, -0.25004682, -0.24693362, -0.08435134,  0.13579482, -0.7653634 ],
-              [ 0.37850198, -0.21638699,  0.3038623 , -0.12869892,  0.7800084 ,  0.5768901 , -1.0877036 , -0.7946388 , -0.38121703, -0.38984403],
-              [ 0.374261  ,  0.24334376, -0.04227831, -0.25231916,  0.34803241,  0.9141584 ,  0.05031163, -0.29306245,  0.131548  , -0.05075309],
-              [-0.6140513 ,  0.05466658,  0.02913119,  0.10320958, -0.94363356,  0.60672456,  0.24040386,  0.237728  , -0.05438365, -0.28856188]], dtype=float32),
- 'bias': DeviceArray([0., 0., 0., 0., 0., 0., 0., 0., 0., 0.], dtype=float32)}</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">jit</span> <span class="c1">#- this fails because model is not a pytree</span>
-<span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="c1"># Need to one-bot encode input labels, recall that MNIST has 10 classes, 0-9</span>
-    <span class="n">y_one_hot</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-    <span class="n">logits</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X</span><span class="p">)</span> 
-    <span class="c1"># calculate loss for each sample in minibatch</span>
-    <span class="c1">#loss = optax.softmax_cross_entropy(logits, y_one_hot)</span>
-    <span class="c1"># average the losses for each sample in minibatch</span>
-    <span class="c1">#loss = loss.mean()</span>
-    <span class="n">loss</span> <span class="o">=</span> <span class="n">logits</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">loss</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">cross_entropy_loss</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">forward</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="c1"># Need to one-bot encode input labels, recall that MNIST has 10 classes, 0-9</span>
-    <span class="n">y_one_hot</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-    <span class="n">logits</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">forward</span><span class="p">,</span> <span class="n">in_axes</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">))(</span><span class="n">params</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> 
-    <span class="c1"># calculate loss for each sample in minibatch</span>
-    <span class="n">loss</span> <span class="o">=</span> <span class="n">optax</span><span class="o">.</span><span class="n">softmax_cross_entropy</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">y_one_hot</span><span class="p">)</span>
-    <span class="c1"># average the losses for each sample in minibatch</span>
-    <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> 
-    <span class="k">return</span> <span class="n">loss</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-
-<span class="n">model</span><span class="o">.</span><span class="n">w</span>
-<span class="n">loss</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>DeviceArray(0.70658493, dtype=float32)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span>
-    <span class="n">Flatten</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)),</span>
-    <span class="n">Dense</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">),</span>
-    <span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">activation</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">)</span>   
-<span class="p">)</span>
-
-
-<span class="n">init_params</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">))</span>
-
-<span class="n">loss</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
-<span class="ansi-green-fg">/tmp/ipykernel_83295/1912331193.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-intense-fg ansi-bold">      7</span> init_params <span class="ansi-blue-fg">=</span> model<span class="ansi-blue-fg">.</span>setup<span class="ansi-blue-fg">(</span>input_shape<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">28</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">28</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">      8</span> 
-<span class="ansi-green-fg">----&gt; 9</span><span class="ansi-red-fg"> </span>loss<span class="ansi-blue-fg">(</span>model<span class="ansi-blue-fg">,</span> np<span class="ansi-blue-fg">.</span>random<span class="ansi-blue-fg">.</span>randn<span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">5</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">28</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">28</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">3</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     10</span> 
-
-    <span class="ansi-red-fg">[... skipping hidden 2 frame]</span>
-
-<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/api.py</span> in <span class="ansi-cyan-fg">_check_arg</span><span class="ansi-blue-fg">(arg)</span>
-<span class="ansi-green-intense-fg ansi-bold">   2972</span> <span class="ansi-green-fg">def</span> _check_arg<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">   2973</span>   <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> <span class="ansi-blue-fg">(</span>isinstance<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">,</span> core<span class="ansi-blue-fg">.</span>Tracer<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">or</span> _valid_jaxtype<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">-&gt; 2974</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">raise</span> TypeError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">f"Argument '{arg}' of type {type(arg)} is not a valid JAX type."</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   2975</span> 
-<span class="ansi-green-intense-fg ansi-bold">   2976</span> <span class="ansi-red-fg"># TODO(mattjj,necula): this duplicates code in core.valid_jaxtype, but one</span>
-
-<span class="ansi-red-fg">TypeError</span>: Argument '&lt;__main__.Sequential object at 0x7f1eabc21eb0&gt;' of type &lt;class '__main__.Sequential'&gt; is not a valid JAX type.</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">init_params</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>DeviceArray([0.02157694, 0.09008522, 0.01330612, 0.14697005, 0.03000481, 0.31934047, 0.08668316, 0.07532562, 0.19995402, 0.01675361], dtype=float32)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cross_entropy_loss</span><span class="p">(</span><span class="n">init_params</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>DeviceArray(2.388558, dtype=float32)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">cross_entropy_loss</span><span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optax</span><span class="o">.</span><span class="n">adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span> <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'accuracy'</span><span class="p">],</span> <span class="n">params</span><span class="o">=</span><span class="n">init_params</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>step 0, loss: 2.3042030334472656
-step 100, loss: 1.7702372074127197
-step 200, loss: 1.8559722900390625
-step 300, loss: 1.8455866575241089
-step 400, loss: 1.6030317544937134
-step 500, loss: 1.7808022499084473
-step 600, loss: 1.7045600414276123
-step 700, loss: 1.6650400161743164
-step 800, loss: 1.6782312393188477
-step 900, loss: 1.759960651397705
-step 1000, loss: 1.7251852750778198
-step 1100, loss: 1.7144274711608887
-step 1200, loss: 1.5780982971191406
-step 1300, loss: 1.5931434631347656
-step 1400, loss: 1.7018799781799316
-step 1500, loss: 1.7146620750427246
-step 1600, loss: 1.6924097537994385
-step 1700, loss: 1.626793622970581
-step 1800, loss: 1.6654064655303955
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
