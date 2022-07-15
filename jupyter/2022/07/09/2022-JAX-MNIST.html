@@ -925,6 +925,8 @@ Number of test samples = 10000
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">relu</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span> 
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+   
 </pre></div>
 
     </div>
@@ -978,26 +980,11 @@ Number of test samples = 10000
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">softmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">jnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span> <span class="s1">'test failed'</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>DeviceArray([0.01925636, 0.17779362, 0.02365647, 0.10626522, 0.06586086, 0.09147768, 0.04822098, 0.0875859 , 0.05065817, 0.32922465], dtype=float32)</pre>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -1011,8 +998,11 @@ Number of test samples = 10000
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">jnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span> <span class="s1">'test failed'</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">_registry</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">flatten</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">flatten</span><span class="p">,</span>
+    <span class="n">softmax</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">softmax</span><span class="p">,</span>
+    <span class="n">relu</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">relu</span>
+<span class="p">}</span>
 </pre></div>
 
     </div>
@@ -1063,16 +1053,12 @@ Number of test samples = 10000
         <span class="n">layers</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># Need a bettern way to unflatten a sequential structure, more flexible at least...</span>
         <span class="k">for</span> <span class="n">params</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">children</span><span class="p">,</span> <span class="n">aux_data</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">spec</span> <span class="o">==</span> <span class="s1">'flatten'</span><span class="p">:</span>
-                <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flatten</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">spec</span> <span class="o">==</span> <span class="s1">'relu'</span><span class="p">:</span>
-                <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">relu</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">spec</span> <span class="o">==</span> <span class="s1">'softmax'</span><span class="p">:</span>
-                <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">softmax</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="n">layer_name</span><span class="p">,</span> <span class="o">*</span><span class="n">dims</span> <span class="o">=</span> <span class="n">spec</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">layer_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span> <span class="o">=</span> <span class="n">spec</span>
                 <span class="k">if</span> <span class="n">layer_name</span> <span class="o">==</span> <span class="s1">'Linear'</span><span class="p">:</span>
-                    <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Linear</span><span class="o">.</span><span class="n">tree_unflatten</span><span class="p">(</span><span class="n">dims</span><span class="p">,</span> <span class="n">params</span><span class="p">))</span>   
+                    <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Linear</span><span class="o">.</span><span class="n">tree_unflatten</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">params</span><span class="p">))</span>   
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">_registry</span><span class="p">:</span>
+                <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_registry</span><span class="p">[</span><span class="n">spec</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">)</span>
     
 </pre></div>
@@ -1162,7 +1148,7 @@ Number of test samples = 10000
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>DeviceArray([0.0252387 , 0.10090624, 0.0532396 , 0.0026684 , 0.00223432, 0.41786084, 0.01803021, 0.03740699, 0.23077425, 0.11164048], dtype=float32)</pre>
+<pre>DeviceArray([0.14889514, 0.01421295, 0.01874719, 0.02007225, 0.0114122 , 0.20546633, 0.05456736, 0.02481872, 0.46937987, 0.03242803], dtype=float32)</pre>
 </div>
 
 </div>
@@ -1184,6 +1170,21 @@ Number of test samples = 10000
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[784, 128]
+[128, 10]
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -1266,16 +1267,16 @@ Number of test samples = 10000
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[[0.01053238 0.00963454 0.05534463 0.34221935 0.23709607 0.23062086 0.01875673 0.0044237  0.04154054 0.04983115]
- [0.06965067 0.04020747 0.02587731 0.23163168 0.00721021 0.3630885  0.09152918 0.03692165 0.11684138 0.01704187]
- [0.01452342 0.02505668 0.02927498 0.12370431 0.01905692 0.22147559 0.05353659 0.01731216 0.12909968 0.3669597 ]
- [0.03890769 0.16253126 0.01158254 0.02049241 0.0172755  0.2736464  0.15613386 0.02130364 0.02790812 0.27021858]
- [0.31682748 0.02381606 0.01900291 0.01551888 0.0026899  0.02567157 0.20667872 0.08158241 0.29994497 0.00826714]
- [0.00868274 0.04027656 0.00088157 0.02027338 0.00456023 0.01173401 0.230274   0.00272175 0.33047083 0.35012496]
- [0.28868464 0.01730093 0.00496715 0.00795868 0.01537232 0.01364754 0.2113708  0.0856154  0.33909133 0.01599129]
- [0.1749531  0.03225916 0.13421631 0.01935234 0.00972845 0.14777684 0.20355672 0.12726115 0.10999801 0.04089792]
- [0.02589889 0.07807656 0.00667491 0.05148351 0.06839202 0.6044786  0.05068096 0.01631259 0.03092231 0.06707968]
- [0.01532981 0.10583541 0.04397355 0.02852675 0.12040931 0.05223656 0.17195237 0.04090672 0.23671249 0.18411696]]
+<pre>[[0.30642563 0.06852321 0.01382588 0.04456307 0.19540003 0.1262225  0.1206013  0.03649835 0.04551946 0.04242058]
+ [0.04557865 0.02461748 0.00112088 0.05712241 0.02430723 0.09497115 0.14840554 0.00978658 0.24429356 0.34979653]
+ [0.10919429 0.0364046  0.05233027 0.1362792  0.03409844 0.09159252 0.35578114 0.00284809 0.12351377 0.05795773]
+ [0.18764256 0.03278085 0.00566682 0.08923203 0.00582936 0.16747414 0.02575605 0.01455623 0.03993697 0.431125  ]
+ [0.03966064 0.0189909  0.04581957 0.02357866 0.00892301 0.01286883 0.38936347 0.02252842 0.27315056 0.1651159 ]
+ [0.01710477 0.00120931 0.00660053 0.00656715 0.00650341 0.04018362 0.0522454  0.01581913 0.07741896 0.7763477 ]
+ [0.02462117 0.15329106 0.03579183 0.24294148 0.00338985 0.12530422 0.04032468 0.00982568 0.0816436  0.28286648]
+ [0.0741462  0.06528968 0.02959587 0.02509318 0.0290505  0.0346982  0.1782756  0.03572662 0.4739645  0.0541596 ]
+ [0.09671047 0.01535423 0.00856252 0.00809333 0.00871737 0.08039293 0.208681   0.00733759 0.34957805 0.21657248]
+ [0.07419889 0.02071405 0.04218319 0.02478138 0.02259833 0.05070879 0.07078283 0.03585098 0.51945263 0.13872887]]
 </pre>
 </div>
 </div>
@@ -1371,7 +1372,11 @@ Number of test samples = 10000
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>0.47787946
+<pre>[784, 128]
+[128, 10]
+[784, 128]
+[128, 10]
+0.32762527
 </pre>
 </div>
 </div>
