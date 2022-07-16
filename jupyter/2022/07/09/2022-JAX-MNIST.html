@@ -1805,11 +1805,13 @@ Number of test samples = 10000
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">1e-3</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">learning_rate</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">1e-3</span>
+<span class="n">num_training_examples</span> <span class="o">=</span> <span class="mi">60_000</span>
+
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
-    <span class="n">accuracy</span> <span class="o">=</span> <span class="mf">0.0</span>
-    <span class="k">for</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">mini_batch</span><span class="p">:</span>
+    <span class="n">epoch_correct_prediction_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">epoch_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">training_set</span><span class="p">:</span>
         <span class="n">loss</span><span class="p">,</span> <span class="n">grad</span> <span class="o">=</span> <span class="n">cross_entropy</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
         
         <span class="c1"># stochastic gradient descent</span>
@@ -1817,7 +1819,14 @@ Number of test samples = 10000
 
         <span class="c1"># accumulate accuracy, or some other metric</span>
         <span class="n">y_preds</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">accuracy</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_preds</span> <span class="o">==</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">correct</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_preds</span> <span class="o">==</span> <span class="n">y</span><span class="p">)</span>
+        
+        <span class="n">epoch_correct_prediction_count</span> <span class="o">+=</span> <span class="n">correct</span>
+        <span class="n">epoch_loss</span> <span class="o">+=</span> <span class="n">loss</span> 
+    
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">epoch_correct_prediction_count</span> <span class="o">/</span> <span class="n">num_training_examples</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'Epoch </span><span class="si">{i}</span><span class="s1">: </span><span class="si">{accuracy}</span><span class="s1">'</span><span class="p">)</span>
 </pre></div>
 
     </div>
