@@ -3495,8 +3495,11 @@ Epoch 9: 91.78
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">AccuracyTracker</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">correct_prediction_count</span> <span class="o">=</span> <span class="mi">0</span> 
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  
+        <span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">on_epoch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'on_epoch_start'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correct_count</span> <span class="o">=</span> <span class="mi">0</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">num_examples</span> <span class="o">=</span> <span class="mi">0</span> 
     <span class="k">def</span> <span class="nf">on_minibatch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="n">y_preds</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -3504,7 +3507,39 @@ Epoch 9: 91.78
         <span class="bp">self</span><span class="o">.</span><span class="n">correct_count</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_preds</span> <span class="o">==</span> <span class="n">y</span><span class="p">)</span>  
     <span class="k">def</span> <span class="nf">on_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">accuracy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">correct_count</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_examples</span>
-        <span class="k">return</span> <span class="n">accuracy</span> 
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Epoch </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">accuracy</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">num_epochs</span><span class="p">):</span>
+    <span class="n">cb</span> <span class="o">=</span> <span class="n">AccuracyTracker</span><span class="p">()</span>
+    <span class="n">history</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+        <span class="n">cb</span><span class="o">.</span><span class="n">on_epoch_start</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasource</span><span class="p">:</span>
+            <span class="c1"># evaluate the model</span>
+            <span class="n">loss</span><span class="p">,</span> <span class="n">grad</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        
+            <span class="c1"># update the model using gradient descent</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">grad</span><span class="p">)</span>
+            
+            <span class="n">cb</span><span class="o">.</span><span class="n">on_minibatch_end</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="n">cb</span><span class="o">.</span><span class="n">on_epoch_end</span><span class="p">()</span>
 </pre></div>
 
     </div>
@@ -3523,41 +3558,34 @@ Epoch 9: 91.78
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 <span class="n">dataloader</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">fashion_mnist_mlp</span><span class="p">()</span>
-<span class="n">num_epochs</span><span class="p">,</span> <span class="n">lr</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">1e-3</span>
-<span class="n">opt</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
-    <span class="n">epoch_correct_prediction_count</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">epoch_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
-    <span class="n">num_training_examples</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
-        <span class="c1"># evaluate the model</span>
-        <span class="n">loss</span><span class="p">,</span> <span class="n">grad</span> <span class="o">=</span> <span class="n">cross_entropy</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-        
-        <span class="c1"># update the model using gradient descent</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">grad</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">cb</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
-            <span class="n">cb</span><span class="o">.</span><span class="n">on_minibatch_end</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-            
-        <span class="c1"># metrics</span>
-        <span class="n">y_preds</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">correct</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_preds</span> <span class="o">==</span> <span class="n">y</span><span class="p">)</span>
-        
-        <span class="n">epoch_correct_prediction_count</span> <span class="o">+=</span> <span class="n">correct</span>
-        <span class="n">epoch_loss</span> <span class="o">+=</span> <span class="n">loss</span> 
-    
-        <span class="n">minibatch_size</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">X</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">num_training_examples</span> <span class="o">+=</span> <span class="n">minibatch_size</span>
-
-    <span class="n">epoch_accuracy</span> <span class="o">=</span> <span class="n">epoch_correct_prediction_count</span> <span class="o">/</span> <span class="n">num_training_examples</span>
-    <span class="n">epoch_loss</span> <span class="o">=</span> <span class="n">epoch_loss</span> <span class="o">/</span> <span class="n">num_training_examples</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Epoch </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">epoch_accuracy</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<span class="n">train</span><span class="p">(</span><span class="n">dataloader</span><span class="p">,</span> <span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span> <span class="n">cross_entropy</span><span class="p">,</span> <span class="n">fashion_mnist_mlp</span><span class="p">(),</span> <span class="n">num_epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>on_epoch_start
+Epoch 9: 82.50
+on_epoch_start
+Epoch 9: 86.81
+on_epoch_start
+Epoch 9: 88.04
+on_epoch_start
+Epoch 9: 88.97
+on_epoch_start
+Epoch 9: 89.62
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
