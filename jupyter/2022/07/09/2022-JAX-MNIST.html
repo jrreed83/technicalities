@@ -97,7 +97,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      52 min read
+      57 min read
     
 </span></p>
 
@@ -2410,7 +2410,7 @@ window.onload = wrap_img;
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">l</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
@@ -2425,16 +2425,12 @@ window.onload = wrap_img;
 
 <div class="output_area">
 
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>WARNING:absl:No GPU/TPU found, falling back to CPU. (Set TF_CPP_MIN_LOG_LEVEL=0 and rerun for more info.)
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[1.2276616]
+<pre>[[ 0.85352814]
+ [ 0.40316543]
+ [ 0.03643124]
+ [-0.6663225 ]
+ [ 0.21682066]]
 </pre>
 </div>
 </div>
@@ -3050,7 +3046,7 @@ window.onload = wrap_img;
         <span class="n">softmax</span>   
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">model</span> 
+    <span class="k">return</span> <span class="n">model</span>
 
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">fashion_mnist_mlp</span><span class="p">()</span>
@@ -3317,12 +3313,12 @@ window.onload = wrap_img;
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span> 
 
-<span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">train_datasource</span><span class="p">,</span> <span class="n">valid_datasource</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">net</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">train_datasource</span><span class="p">,</span> <span class="n">valid_datasource</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">grad_fn</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
     <span class="n">history</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'loss'</span><span class="p">:[],</span> <span class="s1">'accuracy'</span><span class="p">:[]}</span>
     
     <span class="k">if</span> <span class="n">valid_datasource</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">history</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">history</span><span class="p">,</span> <span class="s1">'valid_loss'</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">'valid_accuracy'</span><span class="p">:</span> <span class="p">[]}</span>
-    
+
     <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
 
         <span class="c1"># TRAINING PHASE</span>
@@ -3331,15 +3327,22 @@ window.onload = wrap_img;
         <span class="k">for</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="ow">in</span> <span class="n">train_datasource</span><span class="p">:</span>
 
             <span class="c1"># training loss and gradients for this particular batch</span>
-            <span class="n">train_loss</span><span class="p">,</span> <span class="n">grad</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+            <span class="n">probs</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X_train</span><span class="p">)</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+            
+            <span class="n">grads</span> <span class="o">=</span> <span class="n">grad_fn</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">grads</span><span class="p">)</span>
+            
+            <span class="c1">#loss, grad = loss_fn(net, X_train, y_train)</span>
 
             <span class="c1"># update the model using gradient descent</span>
-            <span class="n">net</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">grad</span><span class="p">)</span>
+            <span class="c1">#net = optimizer.step(net, grad)</span>
                 
             <span class="c1"># update for metrics</span>
-            <span class="n">loss_accum</span> <span class="o">+=</span> <span class="n">train_loss</span>
+            <span class="n">loss_accum</span> <span class="o">+=</span> <span class="n">loss</span>
             <span class="n">sample_cnt</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
-            <span class="n">accuracy_accum</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">net</span><span class="p">)(</span><span class="n">X_train</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_train</span><span class="p">)</span>
+            <span class="n">accuracy_accum</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_train</span><span class="p">)</span>
+            <span class="c1">#accuracy_accum += jnp.sum(jnp.argmax(jax.vmap(net)(X_train), axis=-1) == y_train)</span>
 
 
         <span class="n">epoch_train_loss</span> <span class="o">=</span> <span class="n">loss_accum</span> <span class="o">/</span> <span class="n">sample_cnt</span> 
@@ -3349,17 +3352,23 @@ window.onload = wrap_img;
         <span class="n">history</span><span class="p">[</span><span class="s1">'accuracy'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch_train_accuracy</span><span class="p">)</span>      
 
         <span class="c1"># VALIDATION PHASE</span>
-
         <span class="k">if</span> <span class="n">valid_datasource</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">loss_accum</span><span class="p">,</span> <span class="n">accuracy_accum</span><span class="p">,</span> <span class="n">sample_cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> 
 
             <span class="c1"># Run validation step ...</span>
             <span class="k">for</span> <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="ow">in</span> <span class="n">valid_datasource</span><span class="p">:</span>
-                <span class="n">valid_loss</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">)</span>
+                <span class="n">probs</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X_valid</span><span class="p">)</span>
+                <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">)</span>
+                
+                <span class="n">accuracy_accum</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_valid</span><span class="p">)</span>
+                <span class="c1">#loss, _ = loss_fn(net, X_valid, y_valid)</span>
 
-                <span class="n">loss_accum</span> <span class="o">+=</span> <span class="n">valid_loss</span>
+                <span class="c1">#y_pred = predict(X_train)</span>
+                
+                <span class="c1">#valid_loss = loss_fn(predict(X_valid), y_valid)</span>
+                <span class="n">loss_accum</span> <span class="o">+=</span> <span class="n">loss</span>
                 <span class="n">sample_cnt</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_valid</span><span class="p">)</span>
-                <span class="n">accuracy_accum</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">net</span><span class="p">)(</span><span class="n">X_valid</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_valid</span><span class="p">)</span>
+                <span class="c1">#accuracy_accum += jnp.sum(jnp.argmax(jax.vmap(net)(X_valid), axis=-1) == y_valid)</span>
 
             <span class="n">epoch_valid_loss</span> <span class="o">=</span> <span class="n">loss_accum</span> <span class="o">/</span> <span class="n">sample_cnt</span> 
             <span class="n">epoch_valid_accuracy</span> <span class="o">=</span> <span class="n">accuracy_accum</span> <span class="o">/</span> <span class="n">sample_cnt</span>
@@ -3369,7 +3378,9 @@ window.onload = wrap_img;
   
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">num_epochs</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'train_loss: </span><span class="si">{</span><span class="n">epoch_train_loss</span><span class="si">:</span><span class="s1">.6f</span><span class="si">}</span><span class="s1"> , train_accuracy: </span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">epoch_train_accuracy</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">' , valid_loss: </span><span class="si">{</span><span class="n">epoch_valid_loss</span><span class="si">:</span><span class="s1">.6f</span><span class="si">}</span><span class="s1"> , valid_accuracy: </span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">epoch_valid_accuracy</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">valid_datasource</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">' , '</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'valid_loss: </span><span class="si">{</span><span class="n">epoch_valid_loss</span><span class="si">:</span><span class="s1">.6f</span><span class="si">}</span><span class="s1"> , valid_accuracy: </span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">epoch_valid_accuracy</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">history</span>
         
 </pre></div>
@@ -3388,11 +3399,29 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">value_and_grad</span>
-<span class="k">def</span> <span class="nf">fashion_mnist_loss</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="n">y_one_hot</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-    <span class="n">log_softmax</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X</span><span class="p">))</span>
-    <span class="k">return</span> <span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">log_softmax</span> <span class="o">*</span> <span class="n">y_one_hot</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">fashion_mnist_loss</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
+    <span class="n">y_one_hot</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_one_hot</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#def fashion_mnist_loss(model, X, y):</span>
+<span class="c1">#    y_one_hot = jax.nn.one_hot(y, 10)</span>
+<span class="c1">#    log_softmax = jnp.log(jax.vmap(model)(X))</span>
+<span class="c1">#    return -jnp.mean(log_softmax * y_one_hot)</span>
 </pre></div>
 
     </div>
@@ -3417,8 +3446,25 @@ window.onload = wrap_img;
 
 <span class="n">train_datasource</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">valid_datasource</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">valid_dataset</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
-<span class="n">net</span> <span class="o">=</span> <span class="n">fashion_mnist_mlp</span><span class="p">()</span>
-<span class="n">history</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">num_epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">train_datasource</span><span class="o">=</span><span class="n">train_datasource</span><span class="p">,</span> <span class="n">valid_datasource</span><span class="o">=</span><span class="n">valid_datasource</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span> <span class="n">loss_fn</span><span class="o">=</span><span class="n">fashion_mnist_loss</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">fashion_mnist_mlp</span><span class="p">()</span>
+
+<span class="nd">@jax</span><span class="o">.</span><span class="n">grad</span>
+<span class="k">def</span> <span class="nf">grad_fn</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">y_one_hot</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">log_softmax</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X</span><span class="p">))</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">log_softmax</span> <span class="o">*</span> <span class="n">y_one_hot</span><span class="p">)</span>
+
+<span class="c1">#grad_fn = jax.grad(lambda model, X, y: fashion_mnist_loss(jax.vmap(model)(X), y))</span>
+
+<span class="n">history</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span>
+    <span class="n">num_epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
+    <span class="n">train_datasource</span><span class="o">=</span><span class="n">train_datasource</span><span class="p">,</span> 
+    <span class="n">valid_datasource</span><span class="o">=</span><span class="n">valid_datasource</span><span class="p">,</span> 
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span> 
+    <span class="n">loss_fn</span><span class="o">=</span><span class="n">fashion_mnist_loss</span><span class="p">,</span> 
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">grad_fn</span><span class="o">=</span><span class="n">grad_fn</span>
+<span class="p">)</span>
 </pre></div>
 
     </div>
@@ -3431,9 +3477,217 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Epoch 1/1
-train_loss: 0.000881 , train_accuracy: 81.18 , valid_loss: 0.000705 , valid_accuracy: 84.17
+<pre>Epoch 1/5
+train_loss: 0.000881 , train_accuracy: 80.31 , valid_loss: 0.000705 , valid_accuracy: 84.17
+Epoch 2/5
+train_loss: 0.000644 , train_accuracy: 85.45 , valid_loss: 0.000629 , valid_accuracy: 85.96
 </pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">KeyboardInterrupt</span>                         Traceback (most recent call last)
+<span class="ansi-green-fg">/tmp/ipykernel_129011/551726116.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">     17</span> <span class="ansi-red-fg">#grad_fn = jax.grad(lambda model, X, y: fashion_mnist_loss(jax.vmap(model)(X), y))</span>
+<span class="ansi-green-intense-fg ansi-bold">     18</span> 
+<span class="ansi-green-fg">---&gt; 19</span><span class="ansi-red-fg"> history = train(
+</span><span class="ansi-green-intense-fg ansi-bold">     20</span>     num_epochs<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">5</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">     21</span>     train_datasource<span class="ansi-blue-fg">=</span>train_datasource<span class="ansi-blue-fg">,</span>
+
+<span class="ansi-green-fg">/tmp/ipykernel_129011/3061952382.py</span> in <span class="ansi-cyan-fg">train</span><span class="ansi-blue-fg">(num_epochs, train_datasource, valid_datasource, optimizer, loss_fn, grad_fn, model)</span>
+<span class="ansi-green-intense-fg ansi-bold">     18</span>             loss <span class="ansi-blue-fg">=</span> loss_fn<span class="ansi-blue-fg">(</span>probs<span class="ansi-blue-fg">,</span> y_train<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     19</span> 
+<span class="ansi-green-fg">---&gt; 20</span><span class="ansi-red-fg">             </span>grads <span class="ansi-blue-fg">=</span> grad_fn<span class="ansi-blue-fg">(</span>model<span class="ansi-blue-fg">,</span> X_train<span class="ansi-blue-fg">,</span> y_train<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     21</span>             model <span class="ansi-blue-fg">=</span> optimizer<span class="ansi-blue-fg">.</span>step<span class="ansi-blue-fg">(</span>model<span class="ansi-blue-fg">,</span> grads<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     22</span> 
+
+    <span class="ansi-red-fg">[... skipping hidden 1 frame]</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/api.py</span> in <span class="ansi-cyan-fg">grad_f</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    985</span>   <span class="ansi-blue-fg">@</span>api_boundary
+<span class="ansi-green-intense-fg ansi-bold">    986</span>   <span class="ansi-green-fg">def</span> grad_f<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 987</span><span class="ansi-red-fg">     </span>_<span class="ansi-blue-fg">,</span> g <span class="ansi-blue-fg">=</span> value_and_grad_f<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    988</span>     <span class="ansi-green-fg">return</span> g
+<span class="ansi-green-intense-fg ansi-bold">    989</span> 
+
+    <span class="ansi-red-fg">[... skipping hidden 1 frame]</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/api.py</span> in <span class="ansi-cyan-fg">value_and_grad_f</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1061</span>       _check_input_dtype_grad<span class="ansi-blue-fg">(</span>holomorphic<span class="ansi-blue-fg">,</span> allow_int<span class="ansi-blue-fg">,</span> leaf<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1062</span>     <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> has_aux<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">-&gt; 1063</span><span class="ansi-red-fg">       </span>ans<span class="ansi-blue-fg">,</span> vjp_py <span class="ansi-blue-fg">=</span> _vjp<span class="ansi-blue-fg">(</span>f_partial<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>dyn_args<span class="ansi-blue-fg">,</span> reduce_axes<span class="ansi-blue-fg">=</span>reduce_axes<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1064</span>     <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">   1065</span>       ans, vjp_py, aux = _vjp(
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/api.py</span> in <span class="ansi-cyan-fg">_vjp</span><span class="ansi-blue-fg">(fun, has_aux, reduce_axes, *primals)</span>
+<span class="ansi-green-intense-fg ansi-bold">   2556</span>   <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> has_aux<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">   2557</span>     flat_fun<span class="ansi-blue-fg">,</span> out_tree <span class="ansi-blue-fg">=</span> flatten_fun_nokwargs<span class="ansi-blue-fg">(</span>fun<span class="ansi-blue-fg">,</span> in_tree<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">-&gt; 2558</span><span class="ansi-red-fg">     out_primal, out_vjp = ad.vjp(
+</span><span class="ansi-green-intense-fg ansi-bold">   2559</span>         flat_fun, primals_flat, reduce_axes=reduce_axes)
+<span class="ansi-green-intense-fg ansi-bold">   2560</span>     out_tree <span class="ansi-blue-fg">=</span> out_tree<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/interpreters/ad.py</span> in <span class="ansi-cyan-fg">vjp</span><span class="ansi-blue-fg">(traceable, primals, has_aux, reduce_axes)</span>
+<span class="ansi-green-intense-fg ansi-bold">    131</span> <span class="ansi-green-fg">def</span> vjp<span class="ansi-blue-fg">(</span>traceable<span class="ansi-blue-fg">,</span> primals<span class="ansi-blue-fg">,</span> has_aux<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span> reduce_axes<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    132</span>   <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> has_aux<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 133</span><span class="ansi-red-fg">     </span>out_primals<span class="ansi-blue-fg">,</span> pvals<span class="ansi-blue-fg">,</span> jaxpr<span class="ansi-blue-fg">,</span> consts <span class="ansi-blue-fg">=</span> linearize<span class="ansi-blue-fg">(</span>traceable<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>primals<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    134</span>   <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    135</span>     out_primals<span class="ansi-blue-fg">,</span> pvals<span class="ansi-blue-fg">,</span> jaxpr<span class="ansi-blue-fg">,</span> consts<span class="ansi-blue-fg">,</span> aux <span class="ansi-blue-fg">=</span> linearize<span class="ansi-blue-fg">(</span>traceable<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>primals<span class="ansi-blue-fg">,</span> has_aux<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/interpreters/ad.py</span> in <span class="ansi-cyan-fg">linearize</span><span class="ansi-blue-fg">(traceable, *primals, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    120</span>   _<span class="ansi-blue-fg">,</span> in_tree <span class="ansi-blue-fg">=</span> tree_flatten<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">(</span>primals<span class="ansi-blue-fg">,</span> primals<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">{</span><span class="ansi-blue-fg">}</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    121</span>   jvpfun_flat<span class="ansi-blue-fg">,</span> out_tree <span class="ansi-blue-fg">=</span> flatten_fun<span class="ansi-blue-fg">(</span>jvpfun<span class="ansi-blue-fg">,</span> in_tree<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 122</span><span class="ansi-red-fg">   </span>jaxpr<span class="ansi-blue-fg">,</span> out_pvals<span class="ansi-blue-fg">,</span> consts <span class="ansi-blue-fg">=</span> pe<span class="ansi-blue-fg">.</span>trace_to_jaxpr_nounits<span class="ansi-blue-fg">(</span>jvpfun_flat<span class="ansi-blue-fg">,</span> in_pvals<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    123</span>   out_primals_pvals<span class="ansi-blue-fg">,</span> out_tangents_pvals <span class="ansi-blue-fg">=</span> tree_unflatten<span class="ansi-blue-fg">(</span>out_tree<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> out_pvals<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    124</span>   <span class="ansi-green-fg">assert</span> all<span class="ansi-blue-fg">(</span>out_primal_pval<span class="ansi-blue-fg">.</span>is_known<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">for</span> out_primal_pval <span class="ansi-green-fg">in</span> out_primals_pvals<span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/profiler.py</span> in <span class="ansi-cyan-fg">wrapper</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    310</span>   <span class="ansi-green-fg">def</span> wrapper<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    311</span>     <span class="ansi-green-fg">with</span> TraceAnnotation<span class="ansi-blue-fg">(</span>name<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>decorator_kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 312</span><span class="ansi-red-fg">       </span><span class="ansi-green-fg">return</span> func<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    313</span>     <span class="ansi-green-fg">return</span> wrapper
+<span class="ansi-green-intense-fg ansi-bold">    314</span>   <span class="ansi-green-fg">return</span> wrapper
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/interpreters/partial_eval.py</span> in <span class="ansi-cyan-fg">trace_to_jaxpr_nounits</span><span class="ansi-blue-fg">(fun, pvals, instantiate)</span>
+<span class="ansi-green-intense-fg ansi-bold">    619</span>   <span class="ansi-green-fg">with</span> core<span class="ansi-blue-fg">.</span>new_main<span class="ansi-blue-fg">(</span>JaxprTrace<span class="ansi-blue-fg">,</span> name_stack<span class="ansi-blue-fg">=</span>current_name_stack<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">as</span> main<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    620</span>     fun <span class="ansi-blue-fg">=</span> trace_to_subjaxpr_nounits<span class="ansi-blue-fg">(</span>fun<span class="ansi-blue-fg">,</span> main<span class="ansi-blue-fg">,</span> instantiate<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 621</span><span class="ansi-red-fg">     </span>jaxpr<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">(</span>out_pvals<span class="ansi-blue-fg">,</span> consts<span class="ansi-blue-fg">,</span> env<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">=</span> fun<span class="ansi-blue-fg">.</span>call_wrapped<span class="ansi-blue-fg">(</span>pvals<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    622</span>     <span class="ansi-green-fg">assert</span> <span class="ansi-green-fg">not</span> env
+<span class="ansi-green-intense-fg ansi-bold">    623</span>     <span class="ansi-green-fg">del</span> main<span class="ansi-blue-fg">,</span> fun<span class="ansi-blue-fg">,</span> env
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/linear_util.py</span> in <span class="ansi-cyan-fg">call_wrapped</span><span class="ansi-blue-fg">(self, *args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    166</span> 
+<span class="ansi-green-intense-fg ansi-bold">    167</span>     <span class="ansi-green-fg">try</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 168</span><span class="ansi-red-fg">       </span>ans <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>f<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>dict<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>params<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    169</span>     <span class="ansi-green-fg">except</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    170</span>       <span class="ansi-red-fg"># Some transformations yield from inside context managers, so we have to</span>
+
+<span class="ansi-green-fg">/tmp/ipykernel_129011/551726116.py</span> in <span class="ansi-cyan-fg">grad_fn</span><span class="ansi-blue-fg">(model, X, y)</span>
+<span class="ansi-green-intense-fg ansi-bold">     12</span> <span class="ansi-green-fg">def</span> grad_fn<span class="ansi-blue-fg">(</span>model<span class="ansi-blue-fg">,</span> X<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">     13</span>     y_one_hot <span class="ansi-blue-fg">=</span> jax<span class="ansi-blue-fg">.</span>nn<span class="ansi-blue-fg">.</span>one_hot<span class="ansi-blue-fg">(</span>y<span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">10</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">---&gt; 14</span><span class="ansi-red-fg">     </span>log_softmax <span class="ansi-blue-fg">=</span> jnp<span class="ansi-blue-fg">.</span>log<span class="ansi-blue-fg">(</span>jax<span class="ansi-blue-fg">.</span>vmap<span class="ansi-blue-fg">(</span>model<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">(</span>X<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     15</span>     <span class="ansi-green-fg">return</span> <span class="ansi-blue-fg">-</span>jnp<span class="ansi-blue-fg">.</span>mean<span class="ansi-blue-fg">(</span>log_softmax <span class="ansi-blue-fg">*</span> y_one_hot<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     16</span> 
+
+    <span class="ansi-red-fg">[... skipping hidden 1 frame]</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/api.py</span> in <span class="ansi-cyan-fg">vmap_f</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1555</span>                   _mapped_axis_size(in_tree, args_flat, in_axes_flat, "vmap",
+<span class="ansi-green-intense-fg ansi-bold">   1556</span>                                     kws=True))
+<span class="ansi-green-fg">-&gt; 1557</span><span class="ansi-red-fg">     out_flat = batching.batch(
+</span><span class="ansi-green-intense-fg ansi-bold">   1558</span>         flat_fun<span class="ansi-blue-fg">,</span> axis_name<span class="ansi-blue-fg">,</span> axis_size_<span class="ansi-blue-fg">,</span> in_axes_flat<span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   1559</span>         <span class="ansi-green-fg">lambda</span><span class="ansi-blue-fg">:</span> flatten_axes<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">"vmap out_axes"</span><span class="ansi-blue-fg">,</span> out_tree<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> out_axes<span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/linear_util.py</span> in <span class="ansi-cyan-fg">call_wrapped</span><span class="ansi-blue-fg">(self, *args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    166</span> 
+<span class="ansi-green-intense-fg ansi-bold">    167</span>     <span class="ansi-green-fg">try</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 168</span><span class="ansi-red-fg">       </span>ans <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>f<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>dict<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>params<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    169</span>     <span class="ansi-green-fg">except</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    170</span>       <span class="ansi-red-fg"># Some transformations yield from inside context managers, so we have to</span>
+
+<span class="ansi-green-fg">/tmp/ipykernel_129011/306837443.py</span> in <span class="ansi-cyan-fg">__call__</span><span class="ansi-blue-fg">(self, x)</span>
+<span class="ansi-green-intense-fg ansi-bold">      6</span>     <span class="ansi-green-fg">def</span> __call__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> x<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">      7</span>         <span class="ansi-green-fg">for</span> layer <span class="ansi-green-fg">in</span> self<span class="ansi-blue-fg">.</span>layers<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">----&gt; 8</span><span class="ansi-red-fg">             </span>x <span class="ansi-blue-fg">=</span> layer<span class="ansi-blue-fg">(</span>x<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">      9</span>         <span class="ansi-green-fg">return</span> x
+<span class="ansi-green-intense-fg ansi-bold">     10</span>     <span class="ansi-green-fg">def</span> tree_flatten<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">/tmp/ipykernel_129011/796191766.py</span> in <span class="ansi-cyan-fg">relu</span><span class="ansi-blue-fg">(x)</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-green-fg">def</span> relu<span class="ansi-blue-fg">(</span>x<span class="ansi-blue-fg">:</span> jnp<span class="ansi-blue-fg">.</span>ndarray<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">----&gt; 2</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">return</span> jnp<span class="ansi-blue-fg">.</span>clip<span class="ansi-blue-fg">(</span>x<span class="ansi-blue-fg">,</span> a_min<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">      3</span> 
+<span class="ansi-green-intense-fg ansi-bold">      4</span> 
+
+    <span class="ansi-red-fg">[... skipping hidden 1 frame]</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/api.py</span> in <span class="ansi-cyan-fg">cache_miss</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    520</span>       in_type <span class="ansi-blue-fg">=</span> pe<span class="ansi-blue-fg">.</span>infer_lambda_input_type<span class="ansi-blue-fg">(</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span> args_flat<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    521</span>       flat_fun <span class="ansi-blue-fg">=</span> lu<span class="ansi-blue-fg">.</span>annotate<span class="ansi-blue-fg">(</span>flat_fun<span class="ansi-blue-fg">,</span> in_type<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 522</span><span class="ansi-red-fg">     out_flat = xla.xla_call(
+</span><span class="ansi-green-intense-fg ansi-bold">    523</span>         flat_fun<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args_flat<span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    524</span>         device<span class="ansi-blue-fg">=</span>device<span class="ansi-blue-fg">,</span> backend<span class="ansi-blue-fg">=</span>backend<span class="ansi-blue-fg">,</span> name<span class="ansi-blue-fg">=</span>flat_fun<span class="ansi-blue-fg">.</span>__name__<span class="ansi-blue-fg">,</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/core.py</span> in <span class="ansi-cyan-fg">bind</span><span class="ansi-blue-fg">(self, fun, *args, **params)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1834</span> 
+<span class="ansi-green-intense-fg ansi-bold">   1835</span>   <span class="ansi-green-fg">def</span> bind<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> fun<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>params<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">-&gt; 1836</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">return</span> call_bind<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> fun<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>params<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1837</span> 
+<span class="ansi-green-intense-fg ansi-bold">   1838</span>   <span class="ansi-green-fg">def</span> get_bind_params<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> params<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/core.py</span> in <span class="ansi-cyan-fg">call_bind</span><span class="ansi-blue-fg">(primitive, fun, *args, **params)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1850</span>   tracers <span class="ansi-blue-fg">=</span> map<span class="ansi-blue-fg">(</span>top_trace<span class="ansi-blue-fg">.</span>full_raise<span class="ansi-blue-fg">,</span> args<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1851</span>   fun_ <span class="ansi-blue-fg">=</span> lu<span class="ansi-blue-fg">.</span>annotate<span class="ansi-blue-fg">(</span>fun_<span class="ansi-blue-fg">,</span> fun<span class="ansi-blue-fg">.</span>in_type<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">-&gt; 1852</span><span class="ansi-red-fg">   </span>outs <span class="ansi-blue-fg">=</span> top_trace<span class="ansi-blue-fg">.</span>process_call<span class="ansi-blue-fg">(</span>primitive<span class="ansi-blue-fg">,</span> fun_<span class="ansi-blue-fg">,</span> tracers<span class="ansi-blue-fg">,</span> params<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1853</span>   <span class="ansi-green-fg">return</span> map<span class="ansi-blue-fg">(</span>full_lower<span class="ansi-blue-fg">,</span> apply_todos<span class="ansi-blue-fg">(</span>env_trace_todo<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> outs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1854</span> 
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/interpreters/batching.py</span> in <span class="ansi-cyan-fg">process_call</span><span class="ansi-blue-fg">(self, call_primitive, f, tracers, params)</span>
+<span class="ansi-green-intense-fg ansi-bold">    226</span>       ax_size<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">{</span>x<span class="ansi-blue-fg">.</span>shape<span class="ansi-blue-fg">[</span>d<span class="ansi-blue-fg">]</span> <span class="ansi-green-fg">for</span> x<span class="ansi-blue-fg">,</span> d <span class="ansi-green-fg">in</span> zip<span class="ansi-blue-fg">(</span>vals<span class="ansi-blue-fg">,</span> dims<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">if</span> d <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">not</span> not_mapped<span class="ansi-blue-fg">}</span>
+<span class="ansi-green-intense-fg ansi-bold">    227</span>       f_ <span class="ansi-blue-fg">=</span> _update_annotation<span class="ansi-blue-fg">(</span>f_<span class="ansi-blue-fg">,</span> f<span class="ansi-blue-fg">.</span>in_type<span class="ansi-blue-fg">,</span> ax_size<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>axis_name<span class="ansi-blue-fg">,</span> dims<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 228</span><span class="ansi-red-fg">       </span>vals_out <span class="ansi-blue-fg">=</span> call_primitive<span class="ansi-blue-fg">.</span>bind<span class="ansi-blue-fg">(</span>f_<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>vals<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>params<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    229</span>       src <span class="ansi-blue-fg">=</span> source_info_util<span class="ansi-blue-fg">.</span>current<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    230</span>       <span class="ansi-green-fg">return</span> <span class="ansi-blue-fg">[</span>BatchTracer<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> v<span class="ansi-blue-fg">,</span> d<span class="ansi-blue-fg">,</span> src<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">for</span> v<span class="ansi-blue-fg">,</span> d <span class="ansi-green-fg">in</span> zip<span class="ansi-blue-fg">(</span>vals_out<span class="ansi-blue-fg">,</span> dims_out<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">]</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/core.py</span> in <span class="ansi-cyan-fg">bind</span><span class="ansi-blue-fg">(self, fun, *args, **params)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1834</span> 
+<span class="ansi-green-intense-fg ansi-bold">   1835</span>   <span class="ansi-green-fg">def</span> bind<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> fun<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>params<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">-&gt; 1836</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">return</span> call_bind<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> fun<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>params<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1837</span> 
+<span class="ansi-green-intense-fg ansi-bold">   1838</span>   <span class="ansi-green-fg">def</span> get_bind_params<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> params<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/core.py</span> in <span class="ansi-cyan-fg">call_bind</span><span class="ansi-blue-fg">(primitive, fun, *args, **params)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1850</span>   tracers <span class="ansi-blue-fg">=</span> map<span class="ansi-blue-fg">(</span>top_trace<span class="ansi-blue-fg">.</span>full_raise<span class="ansi-blue-fg">,</span> args<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1851</span>   fun_ <span class="ansi-blue-fg">=</span> lu<span class="ansi-blue-fg">.</span>annotate<span class="ansi-blue-fg">(</span>fun_<span class="ansi-blue-fg">,</span> fun<span class="ansi-blue-fg">.</span>in_type<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">-&gt; 1852</span><span class="ansi-red-fg">   </span>outs <span class="ansi-blue-fg">=</span> top_trace<span class="ansi-blue-fg">.</span>process_call<span class="ansi-blue-fg">(</span>primitive<span class="ansi-blue-fg">,</span> fun_<span class="ansi-blue-fg">,</span> tracers<span class="ansi-blue-fg">,</span> params<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1853</span>   <span class="ansi-green-fg">return</span> map<span class="ansi-blue-fg">(</span>full_lower<span class="ansi-blue-fg">,</span> apply_todos<span class="ansi-blue-fg">(</span>env_trace_todo<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> outs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1854</span> 
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/interpreters/ad.py</span> in <span class="ansi-cyan-fg">process_call</span><span class="ansi-blue-fg">(self, call_primitive, f, tracers, params)</span>
+<span class="ansi-green-intense-fg ansi-bold">    336</span>     new_params <span class="ansi-blue-fg">=</span> update_params<span class="ansi-blue-fg">(</span>params<span class="ansi-blue-fg">,</span> nz_tangents<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">if</span> update_params <span class="ansi-green-fg">else</span> params
+<span class="ansi-green-intense-fg ansi-bold">    337</span>     f_jvp <span class="ansi-blue-fg">=</span> _update_annotation<span class="ansi-blue-fg">(</span>f_jvp<span class="ansi-blue-fg">,</span> f<span class="ansi-blue-fg">.</span>in_type<span class="ansi-blue-fg">,</span> nz_tangents<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 338</span><span class="ansi-red-fg">     </span>result <span class="ansi-blue-fg">=</span> call_primitive<span class="ansi-blue-fg">.</span>bind<span class="ansi-blue-fg">(</span>f_jvp<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>primals<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>nonzero_tangents<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>new_params<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    339</span>     primal_out<span class="ansi-blue-fg">,</span> tangent_out <span class="ansi-blue-fg">=</span> tree_unflatten<span class="ansi-blue-fg">(</span>out_tree_def<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> result<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    340</span>     <span class="ansi-green-fg">return</span> <span class="ansi-blue-fg">[</span>JVPTracer<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> p<span class="ansi-blue-fg">,</span> t<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">for</span> p<span class="ansi-blue-fg">,</span> t <span class="ansi-green-fg">in</span> zip<span class="ansi-blue-fg">(</span>primal_out<span class="ansi-blue-fg">,</span> tangent_out<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">]</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/core.py</span> in <span class="ansi-cyan-fg">bind</span><span class="ansi-blue-fg">(self, fun, *args, **params)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1834</span> 
+<span class="ansi-green-intense-fg ansi-bold">   1835</span>   <span class="ansi-green-fg">def</span> bind<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> fun<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>params<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">-&gt; 1836</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">return</span> call_bind<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> fun<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>params<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1837</span> 
+<span class="ansi-green-intense-fg ansi-bold">   1838</span>   <span class="ansi-green-fg">def</span> get_bind_params<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> params<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/core.py</span> in <span class="ansi-cyan-fg">call_bind</span><span class="ansi-blue-fg">(primitive, fun, *args, **params)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1845</span> 
+<span class="ansi-green-intense-fg ansi-bold">   1846</span> <span class="ansi-green-fg">def</span> call_bind<span class="ansi-blue-fg">(</span>primitive<span class="ansi-blue-fg">:</span> CallPrimitive<span class="ansi-blue-fg">,</span> fun<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>params<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">-&gt; 1847</span><span class="ansi-red-fg">   </span>top_trace <span class="ansi-blue-fg">=</span> find_top_trace<span class="ansi-blue-fg">(</span>args<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1848</span>   fun_, env_trace_todo = process_env_traces_call(
+<span class="ansi-green-intense-fg ansi-bold">   1849</span>       fun, primitive, top_trace and top_trace.level, tuple(params.items()))
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/core.py</span> in <span class="ansi-cyan-fg">find_top_trace</span><span class="ansi-blue-fg">(xs)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1032</span>   top_main = (dynamic if top_main is None or dynamic.level &gt; top_main.level
+<span class="ansi-green-intense-fg ansi-bold">   1033</span>               else top_main)
+<span class="ansi-green-fg">-&gt; 1034</span><span class="ansi-red-fg">   </span><span class="ansi-green-fg">return</span> top_main <span class="ansi-green-fg">and</span> top_main<span class="ansi-blue-fg">.</span>with_cur_sublevel<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>  <span class="ansi-red-fg"># type: ignore</span>
+<span class="ansi-green-intense-fg ansi-bold">   1035</span> 
+<span class="ansi-green-intense-fg ansi-bold">   1036</span> 
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/core.py</span> in <span class="ansi-cyan-fg">with_cur_sublevel</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-intense-fg ansi-bold">    723</span> 
+<span class="ansi-green-intense-fg ansi-bold">    724</span>   <span class="ansi-green-fg">def</span> with_cur_sublevel<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 725</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">return</span> self<span class="ansi-blue-fg">.</span>trace_type<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> cur_sublevel<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>self<span class="ansi-blue-fg">.</span>payload<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    726</span> 
+<span class="ansi-green-intense-fg ansi-bold">    727</span> <span class="ansi-green-fg">class</span> TraceStack<span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/interpreters/partial_eval.py</span> in <span class="ansi-cyan-fg">__init__</span><span class="ansi-blue-fg">(self, name_stack, *args)</span>
+<span class="ansi-green-intense-fg ansi-bold">    106</span>   <span class="ansi-green-fg">def</span> __init__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> name_stack<span class="ansi-blue-fg">:</span> source_info_util<span class="ansi-blue-fg">.</span>NameStack<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    107</span>     super<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>__init__<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 108</span><span class="ansi-red-fg">     </span>self<span class="ansi-blue-fg">.</span>name_stack <span class="ansi-blue-fg">=</span> name_stack
+<span class="ansi-green-intense-fg ansi-bold">    109</span> 
+<span class="ansi-green-intense-fg ansi-bold">    110</span>   <span class="ansi-green-fg">def</span> pure<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> val<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> JaxprTracer<span class="ansi-blue-fg">:</span>
+
+<span class="ansi-red-fg">KeyboardInterrupt</span>: </pre>
 </div>
 </div>
 
@@ -3454,46 +3708,6 @@ train_loss: 0.000881 , train_accuracy: 81.18 , valid_loss: 0.000705 , valid_accu
 </div>
 </div>
 </div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="ow">in</span> <span class="n">train_datasource</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_train</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">net</span><span class="p">)(</span><span class="n">X_train</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
-    <span class="k">break</span>
-    <span class="c1">#accuracy_accum += jnp.sum(jnp.argmax(jax.vmap(net)(X_train), axis=-1) != y_train)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>64
-[8 6 5 6 6 3 8 8 6 9 5 8 8 6 8 8 5 5 8 8 5 5 5 8 8 5 6 9 8 8 8 6 8 5 5 0 5
- 6 6 8 8 8 5 6 5 5 8 8 5 5 5 5 6 3 5 6 3 6 6 6 0 3 6 8]
-[9 0 0 3 0 2 7 2 5 5 0 9 5 5 7 9 1 0 6 4 3 1 4 8 4 3 0 2 4 4 5 3 6 6 0 8 5
- 2 1 6 6 7 9 5 9 2 7 3 0 3 3 3 7 2 2 6 6 8 3 3 5 0 5 5]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -3567,6 +3781,174 @@ flush: whether to forcibly flush the stream.
 <span class="ansi-red-fg">Type:</span>      builtin_function_or_method
 </pre>
 </div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;__main__.Sequential at 0x7f9b240d6340&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">/tmp/ipykernel_129011/4194783498.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>model<span class="ansi-blue-fg">(</span>np<span class="ansi-blue-fg">.</span>random<span class="ansi-blue-fg">.</span>randn<span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">28</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">28</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">/tmp/ipykernel_129011/306837443.py</span> in <span class="ansi-cyan-fg">__call__</span><span class="ansi-blue-fg">(self, x)</span>
+<span class="ansi-green-intense-fg ansi-bold">      6</span>     <span class="ansi-green-fg">def</span> __call__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> x<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">      7</span>         <span class="ansi-green-fg">for</span> layer <span class="ansi-green-fg">in</span> self<span class="ansi-blue-fg">.</span>layers<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">----&gt; 8</span><span class="ansi-red-fg">             </span>x <span class="ansi-blue-fg">=</span> layer<span class="ansi-blue-fg">(</span>x<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">      9</span>         <span class="ansi-green-fg">return</span> x
+<span class="ansi-green-intense-fg ansi-bold">     10</span>     <span class="ansi-green-fg">def</span> tree_flatten<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">/tmp/ipykernel_129011/3007004617.py</span> in <span class="ansi-cyan-fg">__call__</span><span class="ansi-blue-fg">(self, x)</span>
+<span class="ansi-green-intense-fg ansi-bold">     22</span> 
+<span class="ansi-green-intense-fg ansi-bold">     23</span>     <span class="ansi-green-fg">def</span> __call__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> x<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">---&gt; 24</span><span class="ansi-red-fg">         </span><span class="ansi-green-fg">return</span> jnp<span class="ansi-blue-fg">.</span>dot<span class="ansi-blue-fg">(</span>x<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>w<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">+</span> self<span class="ansi-blue-fg">.</span>b
+<span class="ansi-green-intense-fg ansi-bold">     25</span> 
+<span class="ansi-green-intense-fg ansi-bold">     26</span>     <span class="ansi-green-fg">def</span> params<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+    <span class="ansi-red-fg">[... skipping hidden 14 frame]</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/numpy/lax_numpy.py</span> in <span class="ansi-cyan-fg">dot</span><span class="ansi-blue-fg">(a, b, precision)</span>
+<span class="ansi-green-intense-fg ansi-bold">   2724</span>     <span class="ansi-green-fg">return</span> lax<span class="ansi-blue-fg">.</span>mul<span class="ansi-blue-fg">(</span>a<span class="ansi-blue-fg">,</span> b<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   2725</span>   <span class="ansi-green-fg">if</span> _max<span class="ansi-blue-fg">(</span>a_ndim<span class="ansi-blue-fg">,</span> b_ndim<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">&lt;=</span> <span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">-&gt; 2726</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">return</span> lax<span class="ansi-blue-fg">.</span>dot<span class="ansi-blue-fg">(</span>a<span class="ansi-blue-fg">,</span> b<span class="ansi-blue-fg">,</span> precision<span class="ansi-blue-fg">=</span>precision<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   2727</span> 
+<span class="ansi-green-intense-fg ansi-bold">   2728</span>   <span class="ansi-green-fg">if</span> b_ndim <span class="ansi-blue-fg">==</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/lax/lax.py</span> in <span class="ansi-cyan-fg">dot</span><span class="ansi-blue-fg">(lhs, rhs, precision, preferred_element_type)</span>
+<span class="ansi-green-intense-fg ansi-bold">    654</span>                        preferred_element_type=preferred_element_type)
+<span class="ansi-green-intense-fg ansi-bold">    655</span>   <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 656</span><span class="ansi-red-fg">     raise TypeError("Incompatible shapes for dot: got {} and {}.".format(
+</span><span class="ansi-green-intense-fg ansi-bold">    657</span>         lhs.shape, rhs.shape))
+<span class="ansi-green-intense-fg ansi-bold">    658</span> 
+
+<span class="ansi-red-fg">TypeError</span>: Incompatible shapes for dot: got (1568,) and (784, 128).</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array([[-1.36403014, -0.35703367,  0.45756755, ...,  0.53845649,
+        -0.44979458, -0.77233799],
+       [-0.98455966, -0.17481828,  1.16870836, ...,  0.91413078,
+         0.46064645, -1.13064741]])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(10,)</pre>
+</div>
+
 </div>
 
 </div>
