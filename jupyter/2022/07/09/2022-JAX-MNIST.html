@@ -3315,92 +3315,63 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Callback</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">begin_train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span> 
-    <span class="k">def</span> <span class="nf">begin_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span> 
-    <span class="k">def</span> <span class="nf">before_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span> 
-    <span class="k">def</span> <span class="nf">after_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span> 
-    <span class="k">def</span> <span class="nf">before_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span> 
-    <span class="k">def</span> <span class="nf">after_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span> 
-    <span class="k">def</span> <span class="nf">begin_training_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>     
-    <span class="k">def</span> <span class="nf">end_training_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span> 
-    <span class="k">def</span> <span class="nf">end_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>  
-    <span class="k">def</span> <span class="nf">end_validation_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
-</pre></div>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span> 
 
-    </div>
-</div>
-</div>
-
-</div>
+<span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">train_datasource</span><span class="p">,</span> <span class="n">valid_datasource</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">net</span><span class="p">):</span>
+    <span class="n">history</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'loss'</span><span class="p">:[],</span> <span class="s1">'accuracy'</span><span class="p">:[]}</span>
     
-
+    <span class="k">if</span> <span class="n">valid_datasource</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">history</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">history</span><span class="p">,</span> <span class="s1">'valid_loss'</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">'valid_accuracy'</span><span class="p">:</span> <span class="p">[]}</span>
     
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
 
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">AccuracyTracker</span><span class="p">(</span><span class="n">Callback</span><span class="p">):</span>
-    <span class="n">train_correct_count</span><span class="p">:</span> <span class="nb">int</span>
-    <span class="n">valid_correct_count</span><span class="p">:</span> <span class="nb">int</span>  
-    <span class="n">train_num_examples</span><span class="p">:</span> <span class="nb">int</span> 
-    <span class="n">valid_num_examples</span><span class="p">:</span> <span class="nb">int</span> 
-    <span class="n">train_loss_sum</span><span class="p">:</span> <span class="nb">float</span>
-    <span class="n">valid_loss_sum</span><span class="p">:</span> <span class="nb">float</span> 
-
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machine</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">machine</span> <span class="o">=</span> <span class="n">machine</span>
-   
+        <span class="c1"># TRAINING PHASE</span>
+        <span class="n">loss_accum</span><span class="p">,</span> <span class="n">accuracy_accum</span><span class="p">,</span> <span class="n">sample_cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
         
-    <span class="k">def</span> <span class="nf">begin_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">train_correct_count</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">valid_correct_count</span> <span class="o">=</span> <span class="mi">0</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">train_num_examples</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">valid_num_examples</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">train_loss_sum</span> <span class="o">=</span> <span class="mi">0</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">valid_loss_sum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="ow">in</span> <span class="n">train_datasource</span><span class="p">:</span>
 
-    <span class="k">def</span> <span class="nf">end_training_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">y_preds</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">train_num_examples</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># training loss and gradients for this particular batch</span>
+            <span class="n">train_loss</span><span class="p">,</span> <span class="n">grad</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">train_correct_count</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_preds</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_train</span><span class="p">)</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">train_loss_sum</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_loss</span> 
+            <span class="c1"># update the model using gradient descent</span>
+            <span class="n">net</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">grad</span><span class="p">)</span>
+                
+            <span class="c1"># update for metrics</span>
+            <span class="n">loss_accum</span> <span class="o">+=</span> <span class="n">train_loss</span>
+            <span class="n">sample_cnt</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
+            <span class="n">accuracy_accum</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">net</span><span class="p">)(</span><span class="n">X_train</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_train</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">end_validation_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">y_preds</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_valid</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">valid_num_examples</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_valid</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">valid_correct_count</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_preds</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_valid</span><span class="p">)</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">valid_loss_sum</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_loss</span> 
+        <span class="n">epoch_train_loss</span> <span class="o">=</span> <span class="n">loss_accum</span> <span class="o">/</span> <span class="n">sample_cnt</span> 
+        <span class="n">epoch_train_accuracy</span> <span class="o">=</span> <span class="n">accuracy_accum</span> <span class="o">/</span> <span class="n">sample_cnt</span>
 
-    <span class="k">def</span> <span class="nf">end_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">train_accuracy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_correct_count</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_num_examples</span>
-        <span class="n">train_avg_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_loss_sum</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_num_examples</span> 
+        <span class="n">history</span><span class="p">[</span><span class="s1">'loss'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch_train_loss</span><span class="p">)</span>
+        <span class="n">history</span><span class="p">[</span><span class="s1">'accuracy'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch_train_accuracy</span><span class="p">)</span>      
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">includes_validation</span><span class="p">:</span>
-            <span class="n">valid_accuracy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_correct_count</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_num_examples</span>
-            <span class="n">valid_avg_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_loss_sum</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_num_examples</span> 
+        <span class="c1"># VALIDATION PHASE</span>
 
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Epoch </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">train_accuracy</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">valid_accuracy</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Epoch </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">train_accuracy</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-    
-    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="c1"># if the attribute can't be found in the callback, recurse down to the machine attribute</span>
-        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">machine</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">valid_datasource</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">loss_accum</span><span class="p">,</span> <span class="n">accuracy_accum</span><span class="p">,</span> <span class="n">sample_cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> 
+
+            <span class="c1"># Run validation step ...</span>
+            <span class="k">for</span> <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="ow">in</span> <span class="n">valid_datasource</span><span class="p">:</span>
+                <span class="n">valid_loss</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">)</span>
+
+                <span class="n">loss_accum</span> <span class="o">+=</span> <span class="n">valid_loss</span>
+                <span class="n">sample_cnt</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_valid</span><span class="p">)</span>
+                <span class="n">accuracy_accum</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">net</span><span class="p">)(</span><span class="n">X_valid</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_valid</span><span class="p">)</span>
+
+            <span class="n">epoch_valid_loss</span> <span class="o">=</span> <span class="n">loss_accum</span> <span class="o">/</span> <span class="n">sample_cnt</span> 
+            <span class="n">epoch_valid_accuracy</span> <span class="o">=</span> <span class="n">accuracy_accum</span> <span class="o">/</span> <span class="n">sample_cnt</span>
+
+            <span class="n">history</span><span class="p">[</span><span class="s1">'loss'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch_valid_loss</span><span class="p">)</span>
+            <span class="n">history</span><span class="p">[</span><span class="s1">'accuracy'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch_valid_accuracy</span><span class="p">)</span>
+  
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">num_epochs</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'train_loss: </span><span class="si">{</span><span class="n">epoch_train_loss</span><span class="si">:</span><span class="s1">.6f</span><span class="si">}</span><span class="s1"> , train_accuracy: </span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">epoch_train_accuracy</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">' , valid_loss: </span><span class="si">{</span><span class="n">epoch_valid_loss</span><span class="si">:</span><span class="s1">.6f</span><span class="si">}</span><span class="s1"> , valid_accuracy: </span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">epoch_valid_accuracy</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">history</span>
+        
 </pre></div>
 
     </div>
@@ -3417,48 +3388,11 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Machine</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_datasource</span><span class="p">,</span> <span class="n">valid_datasource</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">callbacks</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">train_datasource</span> <span class="o">=</span> <span class="n">train_datasource</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">valid_datasource</span> <span class="o">=</span> <span class="n">valid_datasource</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">loss_fn</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">net</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="n">callbacks</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">includes_validation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_datasource</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="c1"># initialize all the callbacks </span>
-        <span class="k">for</span> <span class="n">cb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span> <span class="n">cb</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_epochs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">run_callbacks</span><span class="p">(</span><span class="s1">'begin_train'</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">run_callbacks</span><span class="p">(</span><span class="s1">'begin_epoch'</span><span class="p">)</span>
-
-            <span class="k">for</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_train</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_datasource</span><span class="p">:</span>
-                <span class="c1"># evaluate the model</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">run_callbacks</span><span class="p">(</span><span class="s1">'begin_training_batch'</span><span class="p">)</span>
-
-                <span class="c1"># training loss and gradients for this particular batch</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">train_loss</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_train</span><span class="p">)</span>
-
-                <span class="c1"># update the model using gradient descent</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
-                
-                <span class="bp">self</span><span class="o">.</span><span class="n">run_callbacks</span><span class="p">(</span><span class="s1">'end_training_batch'</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">includes_validation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1"># Run validation step ...</span>
-                <span class="k">for</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_valid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_valid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_datasource</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">valid_loss</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_valid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_valid</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">run_callbacks</span><span class="p">(</span><span class="s1">'end_validation_batch'</span><span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">run_callbacks</span><span class="p">(</span><span class="s1">'end_epoch'</span><span class="p">)</span>
-    
-    <span class="k">def</span> <span class="nf">run_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="c1"># Run all the callbacks in the provided callback list</span>
-        <span class="k">for</span> <span class="n">cb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cb</span><span class="p">,</span> <span class="n">name</span><span class="p">)()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">value_and_grad</span>
+<span class="k">def</span> <span class="nf">fashion_mnist_loss</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">y_one_hot</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">log_softmax</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X</span><span class="p">))</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">log_softmax</span> <span class="o">*</span> <span class="n">y_one_hot</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -3484,8 +3418,7 @@ window.onload = wrap_img;
 <span class="n">train_datasource</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">valid_datasource</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">valid_dataset</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">fashion_mnist_mlp</span><span class="p">()</span>
-<span class="n">machine</span> <span class="o">=</span> <span class="n">Machine</span><span class="p">(</span><span class="n">train_datasource</span><span class="p">,</span> <span class="n">valid_datasource</span><span class="p">,</span> <span class="n">Adam</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span> <span class="n">cross_entropy</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">AccuracyTracker</span><span class="p">()])</span>
-<span class="n">results</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">num_epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">train_datasource</span><span class="o">=</span><span class="n">train_datasource</span><span class="p">,</span> <span class="n">valid_datasource</span><span class="o">=</span><span class="n">valid_datasource</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span> <span class="n">loss_fn</span><span class="o">=</span><span class="n">fashion_mnist_loss</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -3498,26 +3431,8 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Epoch 0: 81.18
-Epoch 0: 81.18 84.17
-Epoch 1: 86.10
-Epoch 1: 86.10 85.96
-Epoch 2: 87.44
-Epoch 2: 87.44 86.89
-Epoch 3: 88.36
-Epoch 3: 88.36 87.53
-Epoch 4: 89.06
-Epoch 4: 89.06 87.81
-Epoch 5: 89.73
-Epoch 5: 89.73 87.99
-Epoch 6: 90.36
-Epoch 6: 90.36 87.98
-Epoch 7: 90.79
-Epoch 7: 90.79 88.18
-Epoch 8: 91.22
-Epoch 8: 91.22 88.45
-Epoch 9: 91.66
-Epoch 9: 91.66 88.28
+<pre>Epoch 1/1
+train_loss: 0.000881 , train_accuracy: 81.18 , valid_loss: 0.000705 , valid_accuracy: 84.17
 </pre>
 </div>
 </div>
@@ -3546,7 +3461,12 @@ Epoch 9: 91.66 88.28
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">machine</span><span class="o">.</span><span class="n">history</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="ow">in</span> <span class="n">train_datasource</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_train</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">net</span><span class="p">)(</span><span class="n">X_train</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
+    <span class="k">break</span>
+    <span class="c1">#accuracy_accum += jnp.sum(jnp.argmax(jax.vmap(net)(X_train), axis=-1) != y_train)</span>
 </pre></div>
 
     </div>
@@ -3558,22 +3478,14 @@ Epoch 9: 91.66 88.28
 
 <div class="output_area">
 
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[&lt;matplotlib.lines.Line2D at 0x7f9b241942e0&gt;]</pre>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>64
+[8 6 5 6 6 3 8 8 6 9 5 8 8 6 8 8 5 5 8 8 5 5 5 8 8 5 6 9 8 8 8 6 8 5 5 0 5
+ 6 6 8 8 8 5 6 5 5 8 8 5 5 5 5 6 3 5 6 3 6 6 6 0 3 6 8]
+[9 0 0 3 0 2 7 2 5 5 0 9 5 5 7 9 1 0 6 4 3 1 4 8 4 3 0 2 4 4 5 3 6 6 0 8 5
+ 2 1 6 6 7 9 5 9 2 7 3 0 3 3 3 7 2 2 6 6 8 3 3 5 0 5 5]
+</pre>
 </div>
-
-</div>
-
-<div class="output_area">
-
-
-
-<div class="output_png output_subarea ">
-<img src="data:image/png;base64,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">
-</div>
-
 </div>
 
 </div>
@@ -3591,6 +3503,78 @@ Epoch 9: 91.66 88.28
 </div>
 </div>
 </div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'goog'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>hellogoog
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span>print<span class="o">??</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre><span class="ansi-red-fg">Docstring:</span>
+print(value, ..., sep=' ', end='\n', file=sys.stdout, flush=False)
+
+Prints the values to a stream, or to sys.stdout by default.
+Optional keyword arguments:
+file:  a file-like object (stream); defaults to the current sys.stdout.
+sep:   string inserted between values, default a space.
+end:   string appended after the last value, default a newline.
+flush: whether to forcibly flush the stream.
+<span class="ansi-red-fg">Type:</span>      builtin_function_or_method
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
 </div>
 
 
