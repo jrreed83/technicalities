@@ -97,7 +97,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      50 min read
+      51 min read
     
 </span></p>
 
@@ -143,11 +143,13 @@ window.onload = wrap_img;
   <div class="post-content e-content" itemprop="articleBody">
     <ul id="toc" class="section-nav">
 <li class="toc-entry toc-h2"><a href="#Introduction">Introduction </a></li>
+<li class="toc-entry toc-h2"><a href="#What-is-JAX">What is JAX </a></li>
+<li class="toc-entry toc-h2"><a href="#The-Fashion-MNIST-Dataset">The Fashion MNIST Dataset </a></li>
 <li class="toc-entry toc-h2"><a href="#Data-API">Data API </a></li>
 <li class="toc-entry toc-h2"><a href="#Modules">Modules </a>
 <ul>
 <li class="toc-entry toc-h3"><a href="#Linear-Layer">Linear Layer </a></li>
-<li class="toc-entry toc-h3"><a href="#Layer-Function">Layer Function </a></li>
+<li class="toc-entry toc-h3"><a href="#Layer-Functions">Layer Functions </a></li>
 <li class="toc-entry toc-h3"><a href="#Sequential-Module">Sequential Module </a></li>
 </ul>
 </li>
@@ -171,8 +173,63 @@ window.onload = wrap_img;
 <h2 id="Introduction">
 <a class="anchor" href="#Introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction<a class="anchor-link" href="#Introduction"> </a>
 </h2>
-<p>In this article, I'm going to start implementing a JAX-based neural network library, and use it to synthesize a Fashion-MNIST classifier.  Features will be added over the coming weeks and months as I try tp tackle more advanced topics.  I don't intend to write a full-featured library/framework like Tensorflow or Pytorch.  Instead, my goal is compile a set of loosely coupled components that I can mix-and-match to solve problems that interest me.</p>
+<p>In this article, I'm going to start implementing a JAX-based neural network library, and use it to synthesize a Fashion-MNIST classifier.  Features will be added over the coming weeks and months as I try tp tackle more advanced topics.  I don't intend to write a full-featured library/framework like Tensorflow or Pytorch.  Instead, my goal is compile a set of loosely coupled components that I can mix-and-match to solve problems that interest me.  I'm going to code up as much as I can from scratch and validate my implementation against JAX itself, or other well-known libraries.</p>
 
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),</span> <span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">fashion_mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span> 
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span> <span class="o">=</span> <span class="n">X_train</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">,</span> <span class="n">X_test</span> <span class="o">/</span> <span class="mf">255.0</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span>
+  <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">)),</span>
+  <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">keras</span><span class="o">.</span><span class="n">activations</span><span class="o">.</span><span class="n">relu</span><span class="p">),</span>
+  <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">keras</span><span class="o">.</span><span class="n">activations</span><span class="o">.</span><span class="n">softmax</span><span class="p">)</span>                          
+<span class="p">])</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="n">loss</span><span class="o">=</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">sparse_categorical_crossentropy</span><span class="p">,</span> 
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(),</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">'accuracy'</span><span class="p">])</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+<pre><code>Epoch 1/5
+1875/1875 [==============================] - 5s 2ms/step - loss: 0.4955 - accuracy: 0.8250
+Epoch 2/5
+1875/1875 [==============================] - 4s 2ms/step - loss: 0.3726 - accuracy: 0.8643
+Epoch 3/5
+1875/1875 [==============================] - 4s 2ms/step - loss: 0.3354 - accuracy: 0.8781
+Epoch 4/5
+1875/1875 [==============================] - 4s 2ms/step - loss: 0.3136 - accuracy: 0.8845
+Epoch 5/5
+1875/1875 [==============================] - 4s 2ms/step - loss: 0.2937 - accuracy: 0.8927</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="What-is-JAX">
+<a class="anchor" href="#What-is-JAX" aria-hidden="true"><span class="octicon octicon-link"></span></a>What is JAX<a class="anchor-link" href="#What-is-JAX"> </a>
+</h2>
+<p>I've only been learning about JAX for a couple of weeks, and still have a lot to learn.  From what I've gathered so far, JAX is a high-performance numeric computing library that uses Google's XLA (Accelerated Linear Algebra) compiler.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="The-Fashion-MNIST-Dataset">
+<a class="anchor" href="#The-Fashion-MNIST-Dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Fashion MNIST Dataset<a class="anchor-link" href="#The-Fashion-MNIST-Dataset"> </a>
+</h2>
 </div>
 </div>
 </div>
@@ -188,25 +245,12 @@ window.onload = wrap_img;
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">time</span> 
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Callable</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>2022-07-18 15:40:07.488699: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcudart.so.11.0'; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/lib:/usr/local/bin:/usr/local/lib:
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -2439,292 +2483,11 @@ window.onload = wrap_img;
 </div>
     
 
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lin</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">params</span><span class="p">,</span> <span class="n">extra_stuff</span> <span class="o">=</span> <span class="n">lin</span><span class="o">.</span><span class="n">tree_flatten</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">extra_stuff</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[2, 1]</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lin2</span> <span class="o">=</span> <span class="n">Linear</span><span class="o">.</span><span class="n">tree_unflatten</span><span class="p">(</span><span class="n">extra_stuff</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">lin</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">lin2</span><span class="o">.</span><span class="n">w</span><span class="p">)</span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[[ 0.43957582]
- [-0.26563603]]
-[[ 0.43957582]
- [-0.26563603]]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">jit</span>
-<span class="nd">@jax</span><span class="o">.</span><span class="n">value_and_grad</span>
-<span class="k">def</span> <span class="nf">mse</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="n">preds</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">preds</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-
-<span class="n">loss</span><span class="p">,</span> <span class="n">g_loss</span> <span class="o">=</span> <span class="n">mse</span><span class="p">(</span><span class="n">lin</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">g_loss</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>1.2169735 Linear(num_inputs=2, num_outputs=1)
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">g_loss</span><span class="o">.</span><span class="vm">__dict__</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{'ni': 2,
- 'no': 1,
- 'w': DeviceArray([[ 1.5454377 ],
-              [-0.11858664]], dtype=float32),
- 'b': DeviceArray([-0.7558269], dtype=float32)}</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">tree_flatten</span><span class="p">(</span><span class="n">g_loss</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>([DeviceArray([[ 1.5454377 ],
-               [-0.11858664]], dtype=float32),
-  DeviceArray([-0.7558269], dtype=float32)],
- PyTreeDef(CustomNode(&lt;class '__main__.Linear'&gt;[[2, 1]], [*, *])))</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">locals</span><span class="p">()[</span><span class="s1">'Linear'</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>type</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Layer-Function">
-<a class="anchor" href="#Layer-Function" aria-hidden="true"><span class="octicon octicon-link"></span></a>Layer Function<a class="anchor-link" href="#Layer-Function"> </a>
+<h3 id="Layer-Functions">
+<a class="anchor" href="#Layer-Functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Layer Functions<a class="anchor-link" href="#Layer-Functions"> </a>
 </h3>
 </div>
 </div>
@@ -2795,7 +2558,7 @@ window.onload = wrap_img;
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
     <span class="n">ex</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ex</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ex</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
 </pre></div>
 
     </div>
@@ -2812,8 +2575,9 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">jnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span> <span class="s1">'test failed'</span>
+<span class="k">assert</span> <span class="n">jnp</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -3094,70 +2858,101 @@ window.onload = wrap_img;
     <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
 
         <span class="c1"># TRAINING PHASE</span>
-        <span class="n">loss_accum</span><span class="p">,</span> <span class="n">accuracy_accum</span><span class="p">,</span> <span class="n">sample_cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="n">train_loss_accum</span><span class="p">,</span> <span class="n">train_accuracy_accum</span><span class="p">,</span> <span class="n">train_batch_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        
+        <span class="n">num_steps</span> <span class="o">=</span> <span class="mi">0</span> 
+        <span class="n">epoch_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         
         <span class="k">for</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="ow">in</span> <span class="n">train_datasource</span><span class="p">:</span>
-
+            <span class="n">num_steps</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="c1"># training loss and gradients for this particular batch</span>
-            <span class="n">probs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span><span class="c1">#jax.vmap(model)(X_train)</span>
+            <span class="n">probs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
             <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
             
             <span class="n">grads</span> <span class="o">=</span> <span class="n">grad_fn</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
             <span class="n">model</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">grads</span><span class="p">)</span>
             
-            <span class="c1">#loss, grad = loss_fn(net, X_train, y_train)</span>
-
-            <span class="c1"># update the model using gradient descent</span>
-            <span class="c1">#net = optimizer.step(net, grad)</span>
                 
             <span class="c1"># update for metrics</span>
-            <span class="n">loss_accum</span> <span class="o">+=</span> <span class="n">loss</span>
-            <span class="n">sample_cnt</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
-            <span class="n">accuracy_accum</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_train</span><span class="p">)</span>
-            <span class="c1">#accuracy_accum += jnp.sum(jnp.argmax(jax.vmap(net)(X_train), axis=-1) == y_train)</span>
+            <span class="n">train_loss_accum</span> <span class="o">+=</span> <span class="n">loss</span>
+            <span class="n">train_batch_size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
+            <span class="n">train_accuracy_accum</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_train</span><span class="p">)</span>
 
-
-        <span class="n">epoch_train_loss</span> <span class="o">=</span> <span class="n">loss_accum</span> <span class="o">/</span> <span class="n">sample_cnt</span> 
-        <span class="n">epoch_train_accuracy</span> <span class="o">=</span> <span class="n">accuracy_accum</span> <span class="o">/</span> <span class="n">sample_cnt</span>
+        <span class="n">epoch_train_loss</span> <span class="o">=</span> <span class="n">train_loss_accum</span> <span class="o">/</span> <span class="n">train_batch_size</span> 
+        <span class="n">epoch_train_accuracy</span> <span class="o">=</span> <span class="n">train_accuracy_accum</span> <span class="o">/</span> <span class="n">train_batch_size</span>
 
         <span class="n">history</span><span class="p">[</span><span class="s1">'loss'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch_train_loss</span><span class="p">)</span>
         <span class="n">history</span><span class="p">[</span><span class="s1">'accuracy'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch_train_accuracy</span><span class="p">)</span>      
 
         <span class="c1"># VALIDATION PHASE</span>
         <span class="k">if</span> <span class="n">valid_datasource</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">loss_accum</span><span class="p">,</span> <span class="n">accuracy_accum</span><span class="p">,</span> <span class="n">sample_cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> 
+            <span class="n">valid_loss_accum</span><span class="p">,</span> <span class="n">valid_accuracy_accum</span><span class="p">,</span> <span class="n">valid_batch_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> 
 
             <span class="c1"># Run validation step ...</span>
             <span class="k">for</span> <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="ow">in</span> <span class="n">valid_datasource</span><span class="p">:</span>
+                <span class="n">num_steps</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">probs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">X_valid</span><span class="p">)</span>
                 <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">)</span>
                 
-                <span class="n">accuracy_accum</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_valid</span><span class="p">)</span>
-                <span class="c1">#loss, _ = loss_fn(net, X_valid, y_valid)</span>
+                <span class="n">valid_accuracy_accum</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_valid</span><span class="p">)</span>
 
-                <span class="c1">#y_pred = predict(X_train)</span>
-                
-                <span class="c1">#valid_loss = loss_fn(predict(X_valid), y_valid)</span>
-                <span class="n">loss_accum</span> <span class="o">+=</span> <span class="n">loss</span>
-                <span class="n">sample_cnt</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_valid</span><span class="p">)</span>
-                <span class="c1">#accuracy_accum += jnp.sum(jnp.argmax(jax.vmap(net)(X_valid), axis=-1) == y_valid)</span>
+                <span class="n">valid_loss_accum</span> <span class="o">+=</span> <span class="n">loss</span>
+                <span class="n">valid_batch_size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_valid</span><span class="p">)</span>
 
-            <span class="n">epoch_valid_loss</span> <span class="o">=</span> <span class="n">loss_accum</span> <span class="o">/</span> <span class="n">sample_cnt</span> 
-            <span class="n">epoch_valid_accuracy</span> <span class="o">=</span> <span class="n">accuracy_accum</span> <span class="o">/</span> <span class="n">sample_cnt</span>
+            <span class="n">epoch_valid_loss</span> <span class="o">=</span> <span class="n">valid_loss_accum</span> <span class="o">/</span> <span class="n">valid_batch_size</span> 
+            <span class="n">epoch_valid_accuracy</span> <span class="o">=</span> <span class="n">valid_accuracy_accum</span> <span class="o">/</span> <span class="n">valid_batch_size</span>
 
             <span class="n">history</span><span class="p">[</span><span class="s1">'loss'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch_valid_loss</span><span class="p">)</span>
             <span class="n">history</span><span class="p">[</span><span class="s1">'accuracy'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch_valid_accuracy</span><span class="p">)</span>
   
+        <span class="n">seconds_per_epoch</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">epoch_start</span> 
+        <span class="n">mseconds_per_step</span> <span class="o">=</span> <span class="p">(</span><span class="n">seconds_per_epoch</span> <span class="o">/</span> <span class="n">num_steps</span><span class="p">)</span><span class="o">*</span><span class="mi">1_000</span> 
+
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">num_epochs</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">seconds_per_epoch</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">s'</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">' , '</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">mseconds_per_step</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">/step'</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">' , '</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'train_loss: </span><span class="si">{</span><span class="n">epoch_train_loss</span><span class="si">:</span><span class="s1">.6f</span><span class="si">}</span><span class="s1"> , train_accuracy: </span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">epoch_train_accuracy</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">valid_datasource</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">' , '</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'valid_loss: </span><span class="si">{</span><span class="n">epoch_valid_loss</span><span class="si">:</span><span class="s1">.6f</span><span class="si">}</span><span class="s1"> , valid_accuracy: </span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">epoch_valid_accuracy</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">history</span>
-        
+    
 </pre></div>
 
     </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">3.3e-3</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>-2.4814860601221125</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -3226,15 +3021,15 @@ window.onload = wrap_img;
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Epoch 1/5
-train_loss: 0.007568 , train_accuracy: 80.38 , valid_loss: 0.007337 , valid_accuracy: 84.12
+5.36s , 5.72e-03s , train_loss: 0.007557 , train_accuracy: 80.38 , valid_loss: 0.007337 , valid_accuracy: 84.12
 Epoch 2/5
-train_loss: 0.007250 , train_accuracy: 85.44 , valid_loss: 0.007235 , valid_accuracy: 85.59
+5.52s , 5.88e-03s , train_loss: 0.007250 , train_accuracy: 85.44 , valid_loss: 0.007235 , valid_accuracy: 85.59
 Epoch 3/5
-train_loss: 0.007160 , train_accuracy: 86.83 , valid_loss: 0.007178 , valid_accuracy: 86.43
+5.64s , 6.02e-03s , train_loss: 0.007160 , train_accuracy: 86.83 , valid_loss: 0.007178 , valid_accuracy: 86.43
 Epoch 4/5
-train_loss: 0.007110 , train_accuracy: 87.64 , valid_loss: 0.007146 , valid_accuracy: 87.08
+5.98s , 6.37e-03s , train_loss: 0.007110 , train_accuracy: 87.64 , valid_loss: 0.007146 , valid_accuracy: 87.08
 Epoch 5/5
-train_loss: 0.007075 , train_accuracy: 88.32 , valid_loss: 0.007117 , valid_accuracy: 87.49
+6.14s , 6.54e-03s , train_loss: 0.007075 , train_accuracy: 88.32 , valid_loss: 0.007117 , valid_accuracy: 87.49
 </pre>
 </div>
 </div>
