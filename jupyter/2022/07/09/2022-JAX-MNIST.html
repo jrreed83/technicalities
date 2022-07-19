@@ -2887,7 +2887,7 @@ Epoch 5/5
             <span class="n">train_batch_size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
             <span class="n">train_accuracy_accum</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_train</span><span class="p">)</span>
             <span class="n">train_accuracy</span> <span class="o">=</span> <span class="n">train_accuracy_accum</span> <span class="o">/</span> <span class="n">train_batch_size</span>
-            <span class="n">train_loss</span> <span class="o">=</span> <span class="n">train_loss_accum</span> <span class="o">/</span> <span class="n">train_num_batches</span>
+            <span class="n">train_loss</span> <span class="o">=</span> <span class="n">train_loss_accum</span> <span class="o">/</span> <span class="n">train_num_batches</span> <span class="c1"># average loss per batch</span>
 
             <span class="c1"># Logging ....</span>
             <span class="n">batch_duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">batch_start</span>
@@ -2978,12 +2978,48 @@ Epoch 5/5
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">fashion_mnist_loss</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
-    <span class="n">y_one_hot</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">fashion_mnist_loss</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="c1"># average cross entropy, batch</span>
+    <span class="n">y_one_hot</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_one_hot</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]])</span>
+<span class="n">fashion_mnist_loss</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>DeviceArray(1.1769392, dtype=float32)</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -3037,7 +3073,11 @@ Epoch 5/5
 Epoch 2/5
 624/625  [           ]  6.13s 10.34ms/batch  ,  train_loss:  0.41  ,  train_accuracy:  85.45 
 Epoch 3/5
-547/625  [           ]  5.71s 9.96ms/batch  ,  train_loss:  0.32  ,  train_accuracy:  86.76  
+624/625  [           ]  6.50s 7.56ms/batch  ,  train_loss:  0.37  ,  train_accuracy:  86.83  
+Epoch 4/5
+624/625  [           ]  6.16s 7.62ms/batch  ,  train_loss:  0.34  ,  train_accuracy:  87.76  
+Epoch 5/5
+624/625  [           ]  6.46s 9.58ms/batch  ,  train_loss:  0.32  ,  train_accuracy:  88.52  
 </pre>
 </div>
 </div>
