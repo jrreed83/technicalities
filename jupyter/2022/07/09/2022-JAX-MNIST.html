@@ -97,7 +97,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      59 min read
+      50 min read
     
 </span></p>
 
@@ -142,18 +142,18 @@ window.onload = wrap_img;
 
   <div class="post-content e-content" itemprop="articleBody">
     <ul id="toc" class="section-nav">
-<li class="toc-entry toc-h2"><a href="#PyTorch-/-fast.ai-like-Data-API">PyTorch / fast.ai like Data API </a></li>
-<li class="toc-entry toc-h2"><a href="#Model-API">Model API </a>
+<li class="toc-entry toc-h2"><a href="#Introduction">Introduction </a></li>
+<li class="toc-entry toc-h2"><a href="#Data-API">Data API </a></li>
+<li class="toc-entry toc-h2"><a href="#Modules">Modules </a>
 <ul>
 <li class="toc-entry toc-h3"><a href="#Linear-Layer">Linear Layer </a></li>
-<li class="toc-entry toc-h3"><a href="#Helper-Functions">Helper Functions </a></li>
+<li class="toc-entry toc-h3"><a href="#Layer-Function">Layer Function </a></li>
 <li class="toc-entry toc-h3"><a href="#Sequential-Module">Sequential Module </a></li>
 </ul>
 </li>
 <li class="toc-entry toc-h2"><a href="#Cross-entropy-Loss">Cross-entropy Loss </a></li>
-<li class="toc-entry toc-h2"><a href="#Stochastic-Gradient-Descent">Stochastic Gradient Descent </a></li>
+<li class="toc-entry toc-h2"><a href="#Optimizers">Optimizers </a></li>
 <li class="toc-entry toc-h2"><a href="#Training-Loop">Training Loop </a></li>
-<li class="toc-entry toc-h2"><a href="#API-Improvements">API Improvements </a></li>
 <li class="toc-entry toc-h2"><a href="#Performance-Curve">Performance Curve </a></li>
 <li class="toc-entry toc-h2"><a href="#Conclusion">Conclusion </a></li>
 </ul><!--
@@ -165,6 +165,17 @@ window.onload = wrap_img;
 
 <div class="container" id="notebook-container">
         
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Introduction">
+<a class="anchor" href="#Introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction<a class="anchor-link" href="#Introduction"> </a>
+</h2>
+<p>In this article, I'm going to start implementing a JAX-based neural network library, and use it to synthesize a Fashion-MNIST classifier.  Features will be added over the coming weeks and months as I try tp tackle more advanced topics.  I don't intend to write a full-featured library/framework like Tensorflow or Pytorch.  Instead, my goal is compile a set of loosely coupled components that I can mix-and-match to solve problems that interest me.</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -205,8 +216,8 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="PyTorch-/-fast.ai-like-Data-API">
-<a class="anchor" href="#PyTorch-/-fast.ai-like-Data-API" aria-hidden="true"><span class="octicon octicon-link"></span></a>PyTorch / fast.ai like Data API<a class="anchor-link" href="#PyTorch-/-fast.ai-like-Data-API"> </a>
+<h2 id="Data-API">
+<a class="anchor" href="#Data-API" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data API<a class="anchor-link" href="#Data-API"> </a>
 </h2>
 </div>
 </div>
@@ -2336,8 +2347,8 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Model-API">
-<a class="anchor" href="#Model-API" aria-hidden="true"><span class="octicon octicon-link"></span></a>Model API<a class="anchor-link" href="#Model-API"> </a>
+<h2 id="Modules">
+<a class="anchor" href="#Modules" aria-hidden="true"><span class="octicon octicon-link"></span></a>Modules<a class="anchor-link" href="#Modules"> </a>
 </h2>
 </div>
 </div>
@@ -2368,186 +2379,6 @@ window.onload = wrap_img;
 </div>
 </div>
 </div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Linear</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="n">w</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span> 
-    <span class="n">b</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span>
-    <span class="n">ni</span><span class="p">:</span> <span class="nb">int</span> 
-    <span class="n">no</span><span class="p">:</span> <span class="nb">int</span> 
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_inputs</span><span class="p">,</span> <span class="n">num_outputs</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ni</span> <span class="o">=</span> <span class="n">num_inputs</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">no</span> <span class="o">=</span> <span class="n">num_outputs</span> 
-        <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">num_inputs</span><span class="p">,</span> <span class="n">num_outputs</span><span class="p">))</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">/</span> <span class="n">num_inputs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_outputs</span><span class="p">)</span>
-        
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
-        
-    <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s1">'b'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">}</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">l</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>WARNING:absl:No GPU/TPU found, falling back to CPU. (Set TF_CPP_MIN_LOG_LEVEL=0 and rerun for more info.)
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[[-0.37713784]
- [ 0.5444933 ]
- [ 0.9541705 ]
- [ 0.3122406 ]
- [-0.03162232]]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">mse</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="n">preds</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">preds</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mse</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">mse</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">)))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>3.167813
-1.0486954
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">mse_grad</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">mse</span><span class="p">)</span>
-<span class="n">mse_grad</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
-<span class="ansi-green-fg">/tmp/ipykernel_147578/2465860446.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> mse_grad <span class="ansi-blue-fg">=</span> jax<span class="ansi-blue-fg">.</span>grad<span class="ansi-blue-fg">(</span>mse<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-fg">----&gt; 2</span><span class="ansi-red-fg"> </span>mse_grad<span class="ansi-blue-fg">(</span>l<span class="ansi-blue-fg">,</span> x<span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">2.0</span><span class="ansi-blue-fg">)</span>
-
-    <span class="ansi-red-fg">[... skipping hidden 5 frame]</span>
-
-<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/api.py</span> in <span class="ansi-cyan-fg">_check_arg</span><span class="ansi-blue-fg">(arg)</span>
-<span class="ansi-green-intense-fg ansi-bold">   2972</span> <span class="ansi-green-fg">def</span> _check_arg<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">   2973</span>   <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> <span class="ansi-blue-fg">(</span>isinstance<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">,</span> core<span class="ansi-blue-fg">.</span>Tracer<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">or</span> _valid_jaxtype<span class="ansi-blue-fg">(</span>arg<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">-&gt; 2974</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">raise</span> TypeError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">f"Argument '{arg}' of type {type(arg)} is not a valid JAX type."</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   2975</span> 
-<span class="ansi-green-intense-fg ansi-bold">   2976</span> <span class="ansi-red-fg"># TODO(mattjj,necula): this duplicates code in core.valid_jaxtype, but one</span>
-
-<span class="ansi-red-fg">TypeError</span>: Argument '&lt;__main__.Linear object at 0x7fd2a0592f70&gt;' of type &lt;class '__main__.Linear'&gt; is not a valid JAX type.</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -2636,6 +2467,39 @@ window.onload = wrap_img;
 </pre></div>
 
     </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">extra_stuff</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[2, 1]</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -2859,8 +2723,8 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Helper-Functions">
-<a class="anchor" href="#Helper-Functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Helper Functions<a class="anchor-link" href="#Helper-Functions"> </a>
+<h3 id="Layer-Function">
+<a class="anchor" href="#Layer-Function" aria-hidden="true"><span class="octicon octicon-link"></span></a>Layer Function<a class="anchor-link" href="#Layer-Function"> </a>
 </h3>
 </div>
 </div>
@@ -3127,184 +2991,11 @@ window.onload = wrap_img;
 </div>
 </div>
 </div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">value_and_grad</span>
-<span class="k">def</span> <span class="nf">cross_entropy</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">num_cats</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-    <span class="n">y_one_hot</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">num_cats</span><span class="p">)</span>
-    <span class="n">log_softmax</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="p">)(</span><span class="n">X</span><span class="p">))</span>
-    <span class="k">return</span> <span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">log_softmax</span> <span class="o">*</span> <span class="n">y_one_hot</span><span class="p">)</span>
-    
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">value</span><span class="p">,</span> <span class="n">grads</span> <span class="o">=</span> <span class="n">cross_entropy</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
-<span class="ansi-green-fg">/tmp/ipykernel_147578/2426296439.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>value<span class="ansi-blue-fg">,</span> grads <span class="ansi-blue-fg">=</span> cross_entropy<span class="ansi-blue-fg">(</span>model<span class="ansi-blue-fg">,</span> np<span class="ansi-blue-fg">.</span>random<span class="ansi-blue-fg">.</span>randn<span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">5</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">28</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">28</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">      2</span> print<span class="ansi-blue-fg">(</span>value<span class="ansi-blue-fg">)</span>
-
-    <span class="ansi-red-fg">[... skipping hidden 8 frame]</span>
-
-<span class="ansi-green-fg">/tmp/ipykernel_147578/140557507.py</span> in <span class="ansi-cyan-fg">cross_entropy</span><span class="ansi-blue-fg">(model, X, y, num_cats)</span>
-<span class="ansi-green-intense-fg ansi-bold">      2</span> <span class="ansi-green-fg">def</span> cross_entropy<span class="ansi-blue-fg">(</span>model<span class="ansi-blue-fg">,</span> X<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">,</span> num_cats<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">10</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">      3</span>     y_one_hot <span class="ansi-blue-fg">=</span> jax<span class="ansi-blue-fg">.</span>nn<span class="ansi-blue-fg">.</span>one_hot<span class="ansi-blue-fg">(</span>y<span class="ansi-blue-fg">,</span> num_cats<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-fg">----&gt; 4</span><span class="ansi-red-fg">     </span>log_softmax <span class="ansi-blue-fg">=</span> jnp<span class="ansi-blue-fg">.</span>log<span class="ansi-blue-fg">(</span>jax<span class="ansi-blue-fg">.</span>vmap<span class="ansi-blue-fg">(</span>model<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">(</span>X<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">      5</span>     <span class="ansi-green-fg">return</span> <span class="ansi-blue-fg">-</span>jnp<span class="ansi-blue-fg">.</span>mean<span class="ansi-blue-fg">(</span>log_softmax <span class="ansi-blue-fg">*</span> y_one_hot<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">      6</span> 
-
-    <span class="ansi-red-fg">[... skipping hidden 3 frame]</span>
-
-<span class="ansi-green-fg">/tmp/ipykernel_147578/1928037884.py</span> in <span class="ansi-cyan-fg">__call__</span><span class="ansi-blue-fg">(self, x)</span>
-<span class="ansi-green-intense-fg ansi-bold">      6</span>     <span class="ansi-green-fg">def</span> __call__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> x<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">      7</span>         <span class="ansi-green-fg">for</span> layer <span class="ansi-green-fg">in</span> self<span class="ansi-blue-fg">.</span>layers<span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">----&gt; 8</span><span class="ansi-red-fg">             </span>x <span class="ansi-blue-fg">=</span> layer<span class="ansi-blue-fg">(</span>x<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">      9</span>         <span class="ansi-green-fg">return</span> x
-<span class="ansi-green-intense-fg ansi-bold">     10</span>     <span class="ansi-green-fg">def</span> tree_flatten<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-
-<span class="ansi-green-fg">/tmp/ipykernel_147578/3007004617.py</span> in <span class="ansi-cyan-fg">__call__</span><span class="ansi-blue-fg">(self, x)</span>
-<span class="ansi-green-intense-fg ansi-bold">     22</span> 
-<span class="ansi-green-intense-fg ansi-bold">     23</span>     <span class="ansi-green-fg">def</span> __call__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> x<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">---&gt; 24</span><span class="ansi-red-fg">         </span><span class="ansi-green-fg">return</span> jnp<span class="ansi-blue-fg">.</span>dot<span class="ansi-blue-fg">(</span>x<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>w<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">+</span> self<span class="ansi-blue-fg">.</span>b
-<span class="ansi-green-intense-fg ansi-bold">     25</span> 
-<span class="ansi-green-intense-fg ansi-bold">     26</span>     <span class="ansi-green-fg">def</span> params<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-
-    <span class="ansi-red-fg">[... skipping hidden 23 frame]</span>
-
-<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/numpy/lax_numpy.py</span> in <span class="ansi-cyan-fg">dot</span><span class="ansi-blue-fg">(a, b, precision)</span>
-<span class="ansi-green-intense-fg ansi-bold">   2724</span>     <span class="ansi-green-fg">return</span> lax<span class="ansi-blue-fg">.</span>mul<span class="ansi-blue-fg">(</span>a<span class="ansi-blue-fg">,</span> b<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   2725</span>   <span class="ansi-green-fg">if</span> _max<span class="ansi-blue-fg">(</span>a_ndim<span class="ansi-blue-fg">,</span> b_ndim<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">&lt;=</span> <span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">-&gt; 2726</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">return</span> lax<span class="ansi-blue-fg">.</span>dot<span class="ansi-blue-fg">(</span>a<span class="ansi-blue-fg">,</span> b<span class="ansi-blue-fg">,</span> precision<span class="ansi-blue-fg">=</span>precision<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   2727</span> 
-<span class="ansi-green-intense-fg ansi-bold">   2728</span>   <span class="ansi-green-fg">if</span> b_ndim <span class="ansi-blue-fg">==</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">:</span>
-
-<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/lax/lax.py</span> in <span class="ansi-cyan-fg">dot</span><span class="ansi-blue-fg">(lhs, rhs, precision, preferred_element_type)</span>
-<span class="ansi-green-intense-fg ansi-bold">    654</span>                        preferred_element_type=preferred_element_type)
-<span class="ansi-green-intense-fg ansi-bold">    655</span>   <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">--&gt; 656</span><span class="ansi-red-fg">     raise TypeError("Incompatible shapes for dot: got {} and {}.".format(
-</span><span class="ansi-green-intense-fg ansi-bold">    657</span>         lhs.shape, rhs.shape))
-<span class="ansi-green-intense-fg ansi-bold">    658</span> 
-
-<span class="ansi-red-fg">TypeError</span>: Incompatible shapes for dot: got (28, 28) and (784, 128).</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">updated_model</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">tree_map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">,</span> <span class="n">g</span><span class="p">:</span> <span class="n">p</span> <span class="o">-</span> <span class="mf">1e-3</span><span class="o">*</span><span class="n">g</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">grads</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-green-fg">/tmp/ipykernel_147578/3807978763.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>updated_model <span class="ansi-blue-fg">=</span> jax<span class="ansi-blue-fg">.</span>tree_util<span class="ansi-blue-fg">.</span>tree_map<span class="ansi-blue-fg">(</span><span class="ansi-green-fg">lambda</span> p<span class="ansi-blue-fg">,</span> g<span class="ansi-blue-fg">:</span> p <span class="ansi-blue-fg">-</span> <span class="ansi-cyan-fg">1e-3</span><span class="ansi-blue-fg">*</span>g<span class="ansi-blue-fg">,</span> model<span class="ansi-blue-fg">,</span> grads<span class="ansi-blue-fg">)</span>
-
-<span class="ansi-red-fg">NameError</span>: name 'grads' is not defined</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">jnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">updated_model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">w</span> <span class="o">-</span> <span class="mf">1e-3</span><span class="o">*</span><span class="n">grads</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">w</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-green-fg">/tmp/ipykernel_147578/2008119821.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span><span class="ansi-green-fg">assert</span> jnp<span class="ansi-blue-fg">.</span>all<span class="ansi-blue-fg">(</span>jnp<span class="ansi-blue-fg">.</span>isclose<span class="ansi-blue-fg">(</span>updated_model<span class="ansi-blue-fg">.</span>layers<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">.</span>w<span class="ansi-blue-fg">,</span> model<span class="ansi-blue-fg">.</span>layers<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">.</span>w <span class="ansi-blue-fg">-</span> <span class="ansi-cyan-fg">1e-3</span><span class="ansi-blue-fg">*</span>grads<span class="ansi-blue-fg">.</span>layers<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">.</span>w<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-
-<span class="ansi-red-fg">NameError</span>: name 'updated_model' is not defined</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Stochastic-Gradient-Descent">
-<a class="anchor" href="#Stochastic-Gradient-Descent" aria-hidden="true"><span class="octicon octicon-link"></span></a>Stochastic Gradient Descent<a class="anchor-link" href="#Stochastic-Gradient-Descent"> </a>
+<h2 id="Optimizers">
+<a class="anchor" href="#Optimizers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Optimizers<a class="anchor-link" href="#Optimizers"> </a>
 </h2>
 </div>
 </div>
@@ -3387,17 +3078,6 @@ window.onload = wrap_img;
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="API-Improvements">
-<a class="anchor" href="#API-Improvements" aria-hidden="true"><span class="octicon octicon-link"></span></a>API Improvements<a class="anchor-link" href="#API-Improvements"> </a>
-</h2>
-<p>I can't claim the credit for the API implemented in this section; it's <strong>heavily</strong> inspired by the excellent fastai library.  I'm not lifting code from the fastai repository, but I'm definitely using some of the .</p>
-
-</div>
-</div>
-</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -3405,9 +3085,7 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span> 
-
-<span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">train_datasource</span><span class="p">,</span> <span class="n">valid_datasource</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">grad_fn</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">train_datasource</span><span class="p">,</span> <span class="n">valid_datasource</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">grad_fn</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
     <span class="n">history</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'loss'</span><span class="p">:[],</span> <span class="s1">'accuracy'</span><span class="p">:[]}</span>
     
     <span class="k">if</span> <span class="n">valid_datasource</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -3512,26 +3190,6 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#def fashion_mnist_loss(model, X, y):</span>
-<span class="c1">#    y_one_hot = jax.nn.one_hot(y, 10)</span>
-<span class="c1">#    log_softmax = jnp.log(jax.vmap(model)(X))</span>
-<span class="c1">#    return -jnp.mean(log_softmax * y_one_hot)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train_</span><span class="p">,</span> <span class="n">y_train_</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[:</span><span class="mi">40_000</span><span class="p">,:,:],</span> <span class="n">y_train</span><span class="p">[:</span><span class="mi">40_000</span><span class="p">]</span>
 <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[</span><span class="mi">40_000</span><span class="p">:,:,:],</span> <span class="n">y_train</span><span class="p">[</span><span class="mi">40_000</span><span class="p">:]</span>
 
@@ -3542,11 +3200,7 @@ window.onload = wrap_img;
 <span class="n">valid_datasource</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">valid_dataset</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">fashion_mnist_mlp</span><span class="p">()</span>
 
-<span class="c1">#@jax.grad</span>
-<span class="c1">#def grad_fn(model, X, y):</span>
-<span class="c1">#    y_one_hot = jax.nn.one_hot(y, 10)</span>
-<span class="c1">#    log_softmax = jnp.log(model(X))</span>
-<span class="c1">#    return -jnp.mean(log_softmax * y_one_hot)</span>
+
 
 <span class="n">grad_fn</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">fashion_mnist_loss</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">y</span><span class="p">))</span>
 
@@ -3611,410 +3265,6 @@ train_loss: 0.007075 , train_accuracy: 88.32 , valid_loss: 0.007117 , valid_accu
 </div>
 </div>
 </div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre><span class="ansi-red-fg">Init signature:</span> tf<span class="ansi-blue-fg">.</span>keras<span class="ansi-blue-fg">.</span>layers<span class="ansi-blue-fg">.</span>Dense<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
-<span class="ansi-red-fg">Source:</span>        
-<span class="ansi-green-fg">class</span> Dense<span class="ansi-blue-fg">(</span>Layer<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-  <span class="ansi-blue-fg">"""Just your regular densely-connected NN layer.</span>
-
-<span class="ansi-blue-fg">  `Dense` implements the operation:</span>
-<span class="ansi-blue-fg">  `output = activation(dot(input, kernel) + bias)`</span>
-<span class="ansi-blue-fg">  where `activation` is the element-wise activation function</span>
-<span class="ansi-blue-fg">  passed as the `activation` argument, `kernel` is a weights matrix</span>
-<span class="ansi-blue-fg">  created by the layer, and `bias` is a bias vector created by the layer</span>
-<span class="ansi-blue-fg">  (only applicable if `use_bias` is `True`). These are all attributes of</span>
-<span class="ansi-blue-fg">  `Dense`.</span>
-
-<span class="ansi-blue-fg">  Note: If the input to the layer has a rank greater than 2, then `Dense`</span>
-<span class="ansi-blue-fg">  computes the dot product between the `inputs` and the `kernel` along the</span>
-<span class="ansi-blue-fg">  last axis of the `inputs` and axis 0 of the `kernel` (using `tf.tensordot`).</span>
-<span class="ansi-blue-fg">  For example, if input has dimensions `(batch_size, d0, d1)`,</span>
-<span class="ansi-blue-fg">  then we create a `kernel` with shape `(d1, units)`, and the `kernel` operates</span>
-<span class="ansi-blue-fg">  along axis 2 of the `input`, on every sub-tensor of shape `(1, 1, d1)`</span>
-<span class="ansi-blue-fg">  (there are `batch_size * d0` such sub-tensors).</span>
-<span class="ansi-blue-fg">  The output in this case will have shape `(batch_size, d0, units)`.</span>
-
-<span class="ansi-blue-fg">  Besides, layer attributes cannot be modified after the layer has been called</span>
-<span class="ansi-blue-fg">  once (except the `trainable` attribute).</span>
-<span class="ansi-blue-fg">  When a popular kwarg `input_shape` is passed, then keras will create</span>
-<span class="ansi-blue-fg">  an input layer to insert before the current layer. This can be treated</span>
-<span class="ansi-blue-fg">  equivalent to explicitly defining an `InputLayer`.</span>
-
-<span class="ansi-blue-fg">  Example:</span>
-
-<span class="ansi-blue-fg">  &gt;&gt;&gt; # Create a `Sequential` model and add a Dense layer as the first layer.</span>
-<span class="ansi-blue-fg">  &gt;&gt;&gt; model = tf.keras.models.Sequential()</span>
-<span class="ansi-blue-fg">  &gt;&gt;&gt; model.add(tf.keras.Input(shape=(16,)))</span>
-<span class="ansi-blue-fg">  &gt;&gt;&gt; model.add(tf.keras.layers.Dense(32, activation='relu'))</span>
-<span class="ansi-blue-fg">  &gt;&gt;&gt; # Now the model will take as input arrays of shape (None, 16)</span>
-<span class="ansi-blue-fg">  &gt;&gt;&gt; # and output arrays of shape (None, 32).</span>
-<span class="ansi-blue-fg">  &gt;&gt;&gt; # Note that after the first layer, you don't need to specify</span>
-<span class="ansi-blue-fg">  &gt;&gt;&gt; # the size of the input anymore:</span>
-<span class="ansi-blue-fg">  &gt;&gt;&gt; model.add(tf.keras.layers.Dense(32))</span>
-<span class="ansi-blue-fg">  &gt;&gt;&gt; model.output_shape</span>
-<span class="ansi-blue-fg">  (None, 32)</span>
-
-<span class="ansi-blue-fg">  Args:</span>
-<span class="ansi-blue-fg">    units: Positive integer, dimensionality of the output space.</span>
-<span class="ansi-blue-fg">    activation: Activation function to use.</span>
-<span class="ansi-blue-fg">      If you don't specify anything, no activation is applied</span>
-<span class="ansi-blue-fg">      (ie. "linear" activation: `a(x) = x`).</span>
-<span class="ansi-blue-fg">    use_bias: Boolean, whether the layer uses a bias vector.</span>
-<span class="ansi-blue-fg">    kernel_initializer: Initializer for the `kernel` weights matrix.</span>
-<span class="ansi-blue-fg">    bias_initializer: Initializer for the bias vector.</span>
-<span class="ansi-blue-fg">    kernel_regularizer: Regularizer function applied to</span>
-<span class="ansi-blue-fg">      the `kernel` weights matrix.</span>
-<span class="ansi-blue-fg">    bias_regularizer: Regularizer function applied to the bias vector.</span>
-<span class="ansi-blue-fg">    activity_regularizer: Regularizer function applied to</span>
-<span class="ansi-blue-fg">      the output of the layer (its "activation").</span>
-<span class="ansi-blue-fg">    kernel_constraint: Constraint function applied to</span>
-<span class="ansi-blue-fg">      the `kernel` weights matrix.</span>
-<span class="ansi-blue-fg">    bias_constraint: Constraint function applied to the bias vector.</span>
-
-<span class="ansi-blue-fg">  Input shape:</span>
-<span class="ansi-blue-fg">    N-D tensor with shape: `(batch_size, ..., input_dim)`.</span>
-<span class="ansi-blue-fg">    The most common situation would be</span>
-<span class="ansi-blue-fg">    a 2D input with shape `(batch_size, input_dim)`.</span>
-
-<span class="ansi-blue-fg">  Output shape:</span>
-<span class="ansi-blue-fg">    N-D tensor with shape: `(batch_size, ..., units)`.</span>
-<span class="ansi-blue-fg">    For instance, for a 2D input with shape `(batch_size, input_dim)`,</span>
-<span class="ansi-blue-fg">    the output would have shape `(batch_size, units)`.</span>
-<span class="ansi-blue-fg">  """</span>
-
-  <span class="ansi-green-fg">def</span> __init__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span>
-               units<span class="ansi-blue-fg">,</span>
-               activation<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-               use_bias<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">,</span>
-               kernel_initializer<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">'glorot_uniform'</span><span class="ansi-blue-fg">,</span>
-               bias_initializer<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">'zeros'</span><span class="ansi-blue-fg">,</span>
-               kernel_regularizer<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-               bias_regularizer<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-               activity_regularizer<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-               kernel_constraint<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-               bias_constraint<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-               <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-    super<span class="ansi-blue-fg">(</span>Dense<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>__init__<span class="ansi-blue-fg">(</span>
-        activity_regularizer<span class="ansi-blue-fg">=</span>activity_regularizer<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
-
-    self<span class="ansi-blue-fg">.</span>units <span class="ansi-blue-fg">=</span> int<span class="ansi-blue-fg">(</span>units<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> isinstance<span class="ansi-blue-fg">(</span>units<span class="ansi-blue-fg">,</span> int<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">else</span> units
-    <span class="ansi-green-fg">if</span> self<span class="ansi-blue-fg">.</span>units <span class="ansi-blue-fg">&lt;</span> <span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">:</span>
-      <span class="ansi-green-fg">raise</span> ValueError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">f'Received an invalid value for `units`, expected '</span>
-                       <span class="ansi-blue-fg">f'a positive integer. Received: units={units}'</span><span class="ansi-blue-fg">)</span>
-    self<span class="ansi-blue-fg">.</span>activation <span class="ansi-blue-fg">=</span> activations<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>activation<span class="ansi-blue-fg">)</span>
-    self<span class="ansi-blue-fg">.</span>use_bias <span class="ansi-blue-fg">=</span> use_bias
-    self<span class="ansi-blue-fg">.</span>kernel_initializer <span class="ansi-blue-fg">=</span> initializers<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>kernel_initializer<span class="ansi-blue-fg">)</span>
-    self<span class="ansi-blue-fg">.</span>bias_initializer <span class="ansi-blue-fg">=</span> initializers<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>bias_initializer<span class="ansi-blue-fg">)</span>
-    self<span class="ansi-blue-fg">.</span>kernel_regularizer <span class="ansi-blue-fg">=</span> regularizers<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>kernel_regularizer<span class="ansi-blue-fg">)</span>
-    self<span class="ansi-blue-fg">.</span>bias_regularizer <span class="ansi-blue-fg">=</span> regularizers<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>bias_regularizer<span class="ansi-blue-fg">)</span>
-    self<span class="ansi-blue-fg">.</span>kernel_constraint <span class="ansi-blue-fg">=</span> constraints<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>kernel_constraint<span class="ansi-blue-fg">)</span>
-    self<span class="ansi-blue-fg">.</span>bias_constraint <span class="ansi-blue-fg">=</span> constraints<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>bias_constraint<span class="ansi-blue-fg">)</span>
-
-    self<span class="ansi-blue-fg">.</span>input_spec <span class="ansi-blue-fg">=</span> InputSpec<span class="ansi-blue-fg">(</span>min_ndim<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">)</span>
-    self<span class="ansi-blue-fg">.</span>supports_masking <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">True</span>
-
-  <span class="ansi-green-fg">def</span> build<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> input_shape<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-    dtype <span class="ansi-blue-fg">=</span> tf<span class="ansi-blue-fg">.</span>as_dtype<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>dtype <span class="ansi-green-fg">or</span> backend<span class="ansi-blue-fg">.</span>floatx<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-    <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> <span class="ansi-blue-fg">(</span>dtype<span class="ansi-blue-fg">.</span>is_floating <span class="ansi-green-fg">or</span> dtype<span class="ansi-blue-fg">.</span>is_complex<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-      <span class="ansi-green-fg">raise</span> TypeError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'A Dense layer can only be built with a floating-point '</span>
-                      <span class="ansi-blue-fg">f'dtype. Received: dtype={dtype}'</span><span class="ansi-blue-fg">)</span>
-
-    input_shape <span class="ansi-blue-fg">=</span> tf<span class="ansi-blue-fg">.</span>TensorShape<span class="ansi-blue-fg">(</span>input_shape<span class="ansi-blue-fg">)</span>
-    last_dim <span class="ansi-blue-fg">=</span> tf<span class="ansi-blue-fg">.</span>compat<span class="ansi-blue-fg">.</span>dimension_value<span class="ansi-blue-fg">(</span>input_shape<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">-</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span>
-    <span class="ansi-green-fg">if</span> last_dim <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
-      <span class="ansi-green-fg">raise</span> ValueError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'The last dimension of the inputs to a Dense layer '</span>
-                       <span class="ansi-blue-fg">'should be defined. Found None. '</span>
-                       <span class="ansi-blue-fg">f'Full input shape received: {input_shape}'</span><span class="ansi-blue-fg">)</span>
-    self<span class="ansi-blue-fg">.</span>input_spec <span class="ansi-blue-fg">=</span> InputSpec<span class="ansi-blue-fg">(</span>min_ndim<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">,</span> axes<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">{</span><span class="ansi-blue-fg">-</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">:</span> last_dim<span class="ansi-blue-fg">}</span><span class="ansi-blue-fg">)</span>
-    self<span class="ansi-blue-fg">.</span>kernel <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>add_weight<span class="ansi-blue-fg">(</span>
-        <span class="ansi-blue-fg">'kernel'</span><span class="ansi-blue-fg">,</span>
-        shape<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">[</span>last_dim<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>units<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
-        initializer<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>kernel_initializer<span class="ansi-blue-fg">,</span>
-        regularizer<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>kernel_regularizer<span class="ansi-blue-fg">,</span>
-        constraint<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>kernel_constraint<span class="ansi-blue-fg">,</span>
-        dtype<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>dtype<span class="ansi-blue-fg">,</span>
-        trainable<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">)</span>
-    <span class="ansi-green-fg">if</span> self<span class="ansi-blue-fg">.</span>use_bias<span class="ansi-blue-fg">:</span>
-      self<span class="ansi-blue-fg">.</span>bias <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>add_weight<span class="ansi-blue-fg">(</span>
-          <span class="ansi-blue-fg">'bias'</span><span class="ansi-blue-fg">,</span>
-          shape<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">[</span>self<span class="ansi-blue-fg">.</span>units<span class="ansi-blue-fg">,</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
-          initializer<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>bias_initializer<span class="ansi-blue-fg">,</span>
-          regularizer<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>bias_regularizer<span class="ansi-blue-fg">,</span>
-          constraint<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>bias_constraint<span class="ansi-blue-fg">,</span>
-          dtype<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>dtype<span class="ansi-blue-fg">,</span>
-          trainable<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">)</span>
-    <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
-      self<span class="ansi-blue-fg">.</span>bias <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span>
-    self<span class="ansi-blue-fg">.</span>built <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">True</span>
-
-  <span class="ansi-green-fg">def</span> call<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> inputs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-    <span class="ansi-green-fg">if</span> inputs<span class="ansi-blue-fg">.</span>dtype<span class="ansi-blue-fg">.</span>base_dtype <span class="ansi-blue-fg">!=</span> self<span class="ansi-blue-fg">.</span>_compute_dtype_object<span class="ansi-blue-fg">.</span>base_dtype<span class="ansi-blue-fg">:</span>
-      inputs <span class="ansi-blue-fg">=</span> tf<span class="ansi-blue-fg">.</span>cast<span class="ansi-blue-fg">(</span>inputs<span class="ansi-blue-fg">,</span> dtype<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>_compute_dtype_object<span class="ansi-blue-fg">)</span>
-
-    <span class="ansi-green-fg">if</span> isinstance<span class="ansi-blue-fg">(</span>inputs<span class="ansi-blue-fg">,</span> tf<span class="ansi-blue-fg">.</span>RaggedTensor<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">and</span> inputs<span class="ansi-blue-fg">.</span>shape<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">-</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">]</span> <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">not</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
-      <span class="ansi-red-fg"># In case we encounter a RaggedTensor with a fixed last dimension (last</span>
-      <span class="ansi-red-fg"># dimension not ragged), we can map the call method to the flat values.</span>
-      <span class="ansi-green-fg">return</span> tf<span class="ansi-blue-fg">.</span>ragged<span class="ansi-blue-fg">.</span>map_flat_values<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>call<span class="ansi-blue-fg">,</span> inputs<span class="ansi-blue-fg">)</span>
-
-    rank <span class="ansi-blue-fg">=</span> inputs<span class="ansi-blue-fg">.</span>shape<span class="ansi-blue-fg">.</span>rank
-    <span class="ansi-green-fg">if</span> rank <span class="ansi-blue-fg">==</span> <span class="ansi-cyan-fg">2</span> <span class="ansi-green-fg">or</span> rank <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
-      <span class="ansi-red-fg"># We use embedding_lookup_sparse as a more efficient matmul operation for</span>
-      <span class="ansi-red-fg"># large sparse input tensors. The op will result in a sparse gradient, as</span>
-      <span class="ansi-red-fg"># opposed to sparse_ops.sparse_tensor_dense_matmul which results in dense</span>
-      <span class="ansi-red-fg"># gradients. This can lead to sigfinicant speedups, see b/171762937.</span>
-      <span class="ansi-green-fg">if</span> isinstance<span class="ansi-blue-fg">(</span>inputs<span class="ansi-blue-fg">,</span> tf<span class="ansi-blue-fg">.</span>SparseTensor<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-        <span class="ansi-red-fg"># We need to fill empty rows, as the op assumes at least one id per row.</span>
-        inputs<span class="ansi-blue-fg">,</span> _ <span class="ansi-blue-fg">=</span> tf<span class="ansi-blue-fg">.</span>sparse<span class="ansi-blue-fg">.</span>fill_empty_rows<span class="ansi-blue-fg">(</span>inputs<span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">)</span>
-        <span class="ansi-red-fg"># We need to do some munging of our input to use the embedding lookup as</span>
-        <span class="ansi-red-fg"># a matrix multiply. We split our input matrix into separate ids and</span>
-        <span class="ansi-red-fg"># weights tensors. The values of the ids tensor should be the column</span>
-        <span class="ansi-red-fg"># indices of our input matrix and the values of the weights tensor</span>
-        <span class="ansi-red-fg"># can continue to the actual matrix weights.</span>
-        <span class="ansi-red-fg"># The column arrangement of ids and weights</span>
-        <span class="ansi-red-fg"># will be summed over and does not matter. See the documentation for</span>
-        <span class="ansi-red-fg"># sparse_ops.sparse_tensor_dense_matmul a more detailed explanation</span>
-        <span class="ansi-red-fg"># of the inputs to both ops.</span>
-        ids <span class="ansi-blue-fg">=</span> tf<span class="ansi-blue-fg">.</span>SparseTensor<span class="ansi-blue-fg">(</span>
-            indices<span class="ansi-blue-fg">=</span>inputs<span class="ansi-blue-fg">.</span>indices<span class="ansi-blue-fg">,</span>
-            values<span class="ansi-blue-fg">=</span>inputs<span class="ansi-blue-fg">.</span>indices<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">:</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
-            dense_shape<span class="ansi-blue-fg">=</span>inputs<span class="ansi-blue-fg">.</span>dense_shape<span class="ansi-blue-fg">)</span>
-        weights <span class="ansi-blue-fg">=</span> inputs
-        outputs <span class="ansi-blue-fg">=</span> tf<span class="ansi-blue-fg">.</span>nn<span class="ansi-blue-fg">.</span>embedding_lookup_sparse<span class="ansi-blue-fg">(</span>
-            self<span class="ansi-blue-fg">.</span>kernel<span class="ansi-blue-fg">,</span> ids<span class="ansi-blue-fg">,</span> weights<span class="ansi-blue-fg">,</span> combiner<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">'sum'</span><span class="ansi-blue-fg">)</span>
-      <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
-        outputs <span class="ansi-blue-fg">=</span> tf<span class="ansi-blue-fg">.</span>matmul<span class="ansi-blue-fg">(</span>a<span class="ansi-blue-fg">=</span>inputs<span class="ansi-blue-fg">,</span> b<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>kernel<span class="ansi-blue-fg">)</span>
-    <span class="ansi-red-fg"># Broadcast kernel to inputs.</span>
-    <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
-      outputs <span class="ansi-blue-fg">=</span> tf<span class="ansi-blue-fg">.</span>tensordot<span class="ansi-blue-fg">(</span>inputs<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>kernel<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">[</span>rank <span class="ansi-blue-fg">-</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span>
-      <span class="ansi-red-fg"># Reshape the output back to the original ndim of the input.</span>
-      <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> tf<span class="ansi-blue-fg">.</span>executing_eagerly<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-        shape <span class="ansi-blue-fg">=</span> inputs<span class="ansi-blue-fg">.</span>shape<span class="ansi-blue-fg">.</span>as_list<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
-        output_shape <span class="ansi-blue-fg">=</span> shape<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">:</span><span class="ansi-blue-fg">-</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">+</span> <span class="ansi-blue-fg">[</span>self<span class="ansi-blue-fg">.</span>kernel<span class="ansi-blue-fg">.</span>shape<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">-</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span>
-        outputs<span class="ansi-blue-fg">.</span>set_shape<span class="ansi-blue-fg">(</span>output_shape<span class="ansi-blue-fg">)</span>
-
-    <span class="ansi-green-fg">if</span> self<span class="ansi-blue-fg">.</span>use_bias<span class="ansi-blue-fg">:</span>
-      outputs <span class="ansi-blue-fg">=</span> tf<span class="ansi-blue-fg">.</span>nn<span class="ansi-blue-fg">.</span>bias_add<span class="ansi-blue-fg">(</span>outputs<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>bias<span class="ansi-blue-fg">)</span>
-
-    <span class="ansi-green-fg">if</span> self<span class="ansi-blue-fg">.</span>activation <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">not</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
-      outputs <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>activation<span class="ansi-blue-fg">(</span>outputs<span class="ansi-blue-fg">)</span>
-    <span class="ansi-green-fg">return</span> outputs
-
-  <span class="ansi-green-fg">def</span> compute_output_shape<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> input_shape<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-    input_shape <span class="ansi-blue-fg">=</span> tf<span class="ansi-blue-fg">.</span>TensorShape<span class="ansi-blue-fg">(</span>input_shape<span class="ansi-blue-fg">)</span>
-    input_shape <span class="ansi-blue-fg">=</span> input_shape<span class="ansi-blue-fg">.</span>with_rank_at_least<span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">)</span>
-    <span class="ansi-green-fg">if</span> tf<span class="ansi-blue-fg">.</span>compat<span class="ansi-blue-fg">.</span>dimension_value<span class="ansi-blue-fg">(</span>input_shape<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">-</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
-      <span class="ansi-green-fg">raise</span> ValueError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'The last dimension of the input shape of a Dense layer '</span>
-                       <span class="ansi-blue-fg">'should be defined. Found None. '</span>
-                       <span class="ansi-blue-fg">f'Received: input_shape={input_shape}'</span><span class="ansi-blue-fg">)</span>
-    <span class="ansi-green-fg">return</span> input_shape<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">:</span><span class="ansi-blue-fg">-</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">.</span>concatenate<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>units<span class="ansi-blue-fg">)</span>
-
-  <span class="ansi-green-fg">def</span> get_config<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-    config <span class="ansi-blue-fg">=</span> super<span class="ansi-blue-fg">(</span>Dense<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>get_config<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
-    config<span class="ansi-blue-fg">.</span>update<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">{</span>
-        <span class="ansi-blue-fg">'units'</span><span class="ansi-blue-fg">:</span> self<span class="ansi-blue-fg">.</span>units<span class="ansi-blue-fg">,</span>
-        <span class="ansi-blue-fg">'activation'</span><span class="ansi-blue-fg">:</span> activations<span class="ansi-blue-fg">.</span>serialize<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>activation<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
-        <span class="ansi-blue-fg">'use_bias'</span><span class="ansi-blue-fg">:</span> self<span class="ansi-blue-fg">.</span>use_bias<span class="ansi-blue-fg">,</span>
-        <span class="ansi-blue-fg">'kernel_initializer'</span><span class="ansi-blue-fg">:</span> initializers<span class="ansi-blue-fg">.</span>serialize<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>kernel_initializer<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
-        <span class="ansi-blue-fg">'bias_initializer'</span><span class="ansi-blue-fg">:</span> initializers<span class="ansi-blue-fg">.</span>serialize<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>bias_initializer<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
-        <span class="ansi-blue-fg">'kernel_regularizer'</span><span class="ansi-blue-fg">:</span> regularizers<span class="ansi-blue-fg">.</span>serialize<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>kernel_regularizer<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
-        <span class="ansi-blue-fg">'bias_regularizer'</span><span class="ansi-blue-fg">:</span> regularizers<span class="ansi-blue-fg">.</span>serialize<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>bias_regularizer<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
-        <span class="ansi-blue-fg">'activity_regularizer'</span><span class="ansi-blue-fg">:</span>
-            regularizers<span class="ansi-blue-fg">.</span>serialize<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>activity_regularizer<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
-        <span class="ansi-blue-fg">'kernel_constraint'</span><span class="ansi-blue-fg">:</span> constraints<span class="ansi-blue-fg">.</span>serialize<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>kernel_constraint<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
-        <span class="ansi-blue-fg">'bias_constraint'</span><span class="ansi-blue-fg">:</span> constraints<span class="ansi-blue-fg">.</span>serialize<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>bias_constraint<span class="ansi-blue-fg">)</span>
-    <span class="ansi-blue-fg">}</span><span class="ansi-blue-fg">)</span>
-    <span class="ansi-green-fg">return</span> config
-<span class="ansi-red-fg">File:</span>           ~/anaconda3/lib/python3.8/site-packages/keras/layers/core/dense.py
-<span class="ansi-red-fg">Type:</span>           type
-<span class="ansi-red-fg">Subclasses:</span>     Dense
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span>print<span class="o">??</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre><span class="ansi-red-fg">Docstring:</span>
-print(value, ..., sep=' ', end='\n', file=sys.stdout, flush=False)
-
-Prints the values to a stream, or to sys.stdout by default.
-Optional keyword arguments:
-file:  a file-like object (stream); defaults to the current sys.stdout.
-sep:   string inserted between values, default a space.
-end:   string appended after the last value, default a newline.
-flush: whether to forcibly flush the stream.
-<span class="ansi-red-fg">Type:</span>      builtin_function_or_method
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">fashion_mnist_mlp</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">))</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(2, 10)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>array([[-1.36403014, -0.35703367,  0.45756755, ...,  0.53845649,
-        -0.44979458, -0.77233799],
-       [-0.98455966, -0.17481828,  1.16870836, ...,  0.91413078,
-         0.46064645, -1.13064741]])</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(10,)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
 </div>
 
 
