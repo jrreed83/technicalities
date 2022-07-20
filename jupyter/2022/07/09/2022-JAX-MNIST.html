@@ -175,8 +175,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In this article, I'm going to start implementing a JAX-based neural network library, and use it to synthesize a Fashion-MNIST classifier. Features will be added over the coming weeks and months as I try tackle more advanced topics and architectures. I don't intend to write a full-featured library/framework like Tensorflow or Pytorch. Instead, my goal is compile a set of loosely coupled components that I can mix-and-match to solve problems that interest me. When there's some educational benefit, funtionality will be written from scratch and validated against other well-known libraries.</p>
-<p>Why do I want to do this:</p>
+<p>In this article, I'm going to start implementing a JAX-based neural network library, and use it to synthesize a Fashion-MNIST classifier. Features will be added over the coming weeks and months as I tackle more advanced topics and architectures. I don't intend to write a full-featured library/framework like Tensorflow or Pytorch. Instead, my goal is compile a set of loosely coupled components that I can mix-and-match to solve problems that interest me. When there's some educational benefit, funtionality will be written from scratch and validated against other mature libraries.  Yes, this will be a slow process, but I'm certain to learn a lot if I stick to the plan.</p>
 
 </div>
 </div>
@@ -486,9 +485,6 @@ Epoch 5/5
             <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">num_inputs</span><span class="p">,</span> <span class="n">num_outputs</span><span class="p">))</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">/</span> <span class="n">num_inputs</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_outputs</span><span class="p">)</span>
-    
-    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">params</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">'Linear(num_inputs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ni</span><span class="si">}</span><span class="s1">, num_outputs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">no</span><span class="si">}</span><span class="s1">)'</span>
@@ -503,44 +499,10 @@ Epoch 5/5
     <span class="k">def</span> <span class="nf">tree_unflatten</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">aux_data</span><span class="p">,</span> <span class="n">children</span><span class="p">):</span>
         <span class="n">layer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">aux_data</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">layer</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">children</span>
-        <span class="c1">#layer.merge(params=children)</span>
         <span class="k">return</span> <span class="n">layer</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">relu</span><span class="o">.</span><span class="vm">__name__</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>'relu'</pre>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -1336,11 +1298,10 @@ Function(softmax)</pre>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train_</span><span class="p">,</span> <span class="n">y_train_</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[:</span><span class="mi">40_000</span><span class="p">,:,:],</span> <span class="n">y_train</span><span class="p">[:</span><span class="mi">40_000</span><span class="p">]</span>
-<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[</span><span class="mi">40_000</span><span class="p">:,:,:],</span> <span class="n">y_train</span><span class="p">[</span><span class="mi">40_000</span><span class="p">:]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#X_valid, y_valid = X_train[40_000:,:,:], y_train[40_000:]</span>
 
-<span class="n">train_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">X_train_</span><span class="p">,</span> <span class="n">y_train_</span><span class="p">)</span>
-<span class="n">valid_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">)</span>
+<span class="n">train_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">valid_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
 
 <span class="n">train_datasource</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">valid_datasource</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">valid_dataset</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
@@ -1372,15 +1333,15 @@ Function(softmax)</pre>
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Epoch 1/5
-624/625  [           ]   4.78s  7.43ms/batch  ,  train_loss:   0.56  ,  train_accuracy:  80.31 
+937/937  [           ]   7.49s 384.38ms/batch  ,  train_loss:   0.52  ,  train_accuracy:  81.72 
 Epoch 2/5
-624/625  [           ]   4.79s  7.07ms/batch  ,  train_loss:   0.41  ,  train_accuracy:  85.45 
+937/937  [           ]   7.14s  6.94ms/batch  ,  train_loss:   0.39  ,  train_accuracy:  86.18 
 Epoch 3/5
-624/625  [           ]   4.85s  8.14ms/batch  ,  train_loss:   0.37  ,  train_accuracy:  86.83 
+937/937  [           ]   7.28s  7.01ms/batch  ,  train_loss:   0.35  ,  train_accuracy:  87.43 
 Epoch 4/5
-624/625  [           ]   4.94s  7.94ms/batch  ,  train_loss:   0.34  ,  train_accuracy:  87.76 
+937/937  [           ]   7.34s  7.47ms/batch  ,  train_loss:   0.32  ,  train_accuracy:  88.36 
 Epoch 5/5
-624/625  [           ]   5.61s  8.44ms/batch  ,  train_loss:   0.32  ,  train_accuracy:  88.52 
+937/937  [           ]   7.26s  6.90ms/batch  ,  train_loss:   0.30  ,  train_accuracy:  89.08 
 </pre>
 </div>
 </div>
