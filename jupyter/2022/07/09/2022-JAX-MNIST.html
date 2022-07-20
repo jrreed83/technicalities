@@ -175,7 +175,8 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In this article, I'm going to start implementing a JAX-based neural network library, and use it to synthesize a Fashion-MNIST classifier. Features will be added over the coming weeks and months as I try tackle more advanced topics and architectures. I don't intend to write a full-featured library/framework like Tensorflow or Pytorch. Instead, my goal is compile a set of loosely coupled components that I can mix-and-match to solve problems that interest me. When there's some educational benefit, funtionality will be written from scratch and validated against other well-known libraries.  By taking this approach, I'm hoping to ...</p>
+<p>In this article, I'm going to start implementing a JAX-based neural network library, and use it to synthesize a Fashion-MNIST classifier. Features will be added over the coming weeks and months as I try tackle more advanced topics and architectures. I don't intend to write a full-featured library/framework like Tensorflow or Pytorch. Instead, my goal is compile a set of loosely coupled components that I can mix-and-match to solve problems that interest me. When there's some educational benefit, funtionality will be written from scratch and validated against other well-known libraries.</p>
+<p>Why do I want to do this:</p>
 
 </div>
 </div>
@@ -496,7 +497,7 @@ Epoch 5/5
         <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
         
     <span class="k">def</span> <span class="nf">tree_flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ni</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ni</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">tree_unflatten</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">aux_data</span><span class="p">,</span> <span class="n">children</span><span class="p">):</span>
@@ -507,6 +508,39 @@ Epoch 5/5
 </pre></div>
 
     </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">relu</span><span class="o">.</span><span class="vm">__name__</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>'relu'</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -524,6 +558,145 @@ Epoch 5/5
 </div>
 </div>
 </div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">register_pytree_node_class</span>
+<span class="k">class</span> <span class="nc">Function</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span> 
+        
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Function(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">)'</span>
+    
+    <span class="k">def</span> <span class="nf">tree_flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">tree_unflatten</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">aux_data</span><span class="p">,</span> <span class="n">children</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">aux_data</span><span class="p">)</span>
+    
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">tree_flatten</span><span class="p">(</span><span class="n">Function</span><span class="p">(</span><span class="n">relu</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="n">jax</span><span class="o">.</span><span class="n">tree_unflatten</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[] PyTreeDef(CustomNode(&lt;class '__main__.Function'&gt;[&lt;function relu at 0x7f7e65272dc0&gt;], [None]))
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Function(relu)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">a</span> <span class="p">:</span> <span class="n">a</span><span class="o">+</span><span class="mi">1</span>
+<span class="n">x</span><span class="o">.</span><span class="vm">__name__</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>'&lt;lambda&gt;'</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span> 
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># flatten a single 2D image</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="c1"># x is a batch of 2D images, flatten each image </span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>    
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -622,6 +795,24 @@ Epoch 5/5
 
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">relu</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>    
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">register_pytree_node_class</span>
 <span class="k">class</span> <span class="nc">Relu</span><span class="p">(</span><span class="n">Parametric</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
@@ -653,7 +844,7 @@ Epoch 5/5
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">jnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">Relu</span><span class="p">()(</span><span class="n">x</span><span class="p">),</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span> <span class="s1">'test failed'</span>
+<span class="k">assert</span> <span class="n">jnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span> <span class="s1">'test failed'</span>
 </pre></div>
 
     </div>
@@ -672,6 +863,25 @@ Epoch 5/5
 </div>
 </div>
 </div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">ex</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ex</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>    
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -712,8 +922,8 @@ Epoch 5/5
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">jnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">Softmax</span><span class="p">()(</span><span class="n">x</span><span class="p">),</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span> <span class="s1">'test failed'</span>
-<span class="k">assert</span> <span class="n">jnp</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Softmax</span><span class="p">()(</span><span class="n">x</span><span class="p">)),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">assert</span> <span class="n">jnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span> <span class="s1">'test failed'</span>
+<span class="k">assert</span> <span class="n">jnp</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -732,6 +942,24 @@ Epoch 5/5
 </div>
 </div>
 </div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">normalize_image</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">/</span> <span class="mf">255.0</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -783,7 +1011,12 @@ Epoch 5/5
 <span class="k">class</span> <span class="nc">Sequential</span><span class="p">(</span><span class="n">Parametric</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">layers</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">layers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">Parametric</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">Function</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="n">layer</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Function</span><span class="p">(</span><span class="n">layer</span><span class="p">))</span>
     
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
@@ -807,7 +1040,6 @@ Epoch 5/5
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">tree_unflatten</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">aux_data</span><span class="p">,</span> <span class="n">children</span><span class="p">):</span>
         <span class="n">layers</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># Want a more generic way to unflatten</span>
         <span class="k">for</span> <span class="n">params</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">children</span><span class="p">,</span> <span class="n">aux_data</span><span class="p">):</span>
             <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">tree_unflatten</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">params</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">)</span>
@@ -827,63 +1059,14 @@ Epoch 5/5
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># class Sequential(Module):</span>
-<span class="c1">#     layers: List</span>
-<span class="c1">#     def __init__(self, *layers):</span>
-<span class="c1">#         self.layers = layers</span>
-<span class="c1">#     def __call__(self, x):</span>
-<span class="c1">#         for layer in self.layers:</span>
-<span class="c1">#             x = layer(x)</span>
-<span class="c1">#         return x</span>
-<span class="c1">#     def tree_flatten(self):</span>
-<span class="c1">#         aux_data, children = [], []</span>
-<span class="c1">#         for layer in self.layers:</span>
-<span class="c1">#             if isinstance(layer, Module):</span>
-<span class="c1">#                 params, extra_stuff = layer.tree_flatten()</span>
-<span class="c1">#                 aux_data.append([layer.__class__.__name__] + extra_stuff)</span>
-<span class="c1">#                 children.append(params) </span>
-<span class="c1">#             elif callable(layer):</span>
-<span class="c1">#                 # a layer function that doesn't have any paramerers ...</span>
-<span class="c1">#                 aux_data.append(layer.__name__)</span>
-<span class="c1">#                 children.append(None)    </span>
-<span class="c1">#         return children, aux_data</span>
-<span class="c1">#     @classmethod</span>
-<span class="c1">#     def tree_unflatten(cls, aux_data, children):</span>
-<span class="c1">#         layers = []</span>
-<span class="c1">#         # Want a more generic way to unflatten</span>
-<span class="c1">#         for params, spec in zip(children, aux_data):</span>
-<span class="c1">#             if isinstance(spec, list):</span>
-<span class="c1">#                 layer_name, *args = spec</span>
-<span class="c1">#                 if layer_name == 'Linear':</span>
-<span class="c1">#                     layers.append(Linear.tree_unflatten(args, params))   </span>
-<span class="c1">#             elif isinstance(spec, str) and spec in _registry:</span>
-<span class="c1">#                 layers.append(_registry[spec])</span>
-<span class="c1">#         return Sequential(*layers)</span>
-    
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">fashion_mnist_mlp</span><span class="p">():</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span>
-        <span class="n">NormalizeImage</span><span class="p">(),</span>
-        <span class="n">Flatten</span><span class="p">(),</span>
+        <span class="n">normalize_image</span><span class="p">,</span>
+        <span class="n">flatten</span><span class="p">,</span>
         <span class="n">Linear</span><span class="p">(</span><span class="mi">784</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
-        <span class="n">Relu</span><span class="p">(),</span>
+        <span class="n">relu</span><span class="p">,</span>
         <span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
-        <span class="n">Softmax</span><span class="p">()</span>   
+        <span class="n">softmax</span>  
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">model</span>
@@ -903,12 +1086,12 @@ Epoch 5/5
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>NormalizeImage()
-Flatten()
+<pre>Function(normalize_image)
+Function(flatten)
 Linear(num_inputs=784, num_outputs=128)
-Relu()
+Function(relu)
 Linear(num_inputs=128, num_outputs=10)
-Softmax()
+Function(softmax)
 
 </pre>
 </div>
@@ -919,12 +1102,12 @@ Softmax()
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>NormalizeImage()
-Flatten()
+<pre>Function(normalize_image)
+Function(flatten)
 Linear(num_inputs=784, num_outputs=128)
-Relu()
+Function(relu)
 Linear(num_inputs=128, num_outputs=10)
-Softmax()</pre>
+Function(softmax)</pre>
 </div>
 
 </div>
@@ -1189,15 +1372,15 @@ Softmax()</pre>
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Epoch 1/5
-624/625  [           ]   4.69s  7.45ms/batch  ,  train_loss:   0.56  ,  train_accuracy:  80.31 
+624/625  [           ]   4.78s  7.43ms/batch  ,  train_loss:   0.56  ,  train_accuracy:  80.31 
 Epoch 2/5
-624/625  [           ]   4.73s  7.01ms/batch  ,  train_loss:   0.41  ,  train_accuracy:  85.45 
+624/625  [           ]   4.79s  7.07ms/batch  ,  train_loss:   0.41  ,  train_accuracy:  85.45 
 Epoch 3/5
-624/625  [           ]   4.77s  6.95ms/batch  ,  train_loss:   0.37  ,  train_accuracy:  86.83 
+624/625  [           ]   4.85s  8.14ms/batch  ,  train_loss:   0.37  ,  train_accuracy:  86.83 
 Epoch 4/5
-624/625  [           ]   4.72s  8.10ms/batch  ,  train_loss:   0.34  ,  train_accuracy:  87.76 
+624/625  [           ]   4.94s  7.94ms/batch  ,  train_loss:   0.34  ,  train_accuracy:  87.76 
 Epoch 5/5
-624/625  [           ]   4.74s  9.16ms/batch  ,  train_loss:   0.32  ,  train_accuracy:  88.52 
+624/625  [           ]   5.61s  8.44ms/batch  ,  train_loss:   0.32  ,  train_accuracy:  88.52 
 </pre>
 </div>
 </div>
