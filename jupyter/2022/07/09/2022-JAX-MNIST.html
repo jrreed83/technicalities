@@ -1077,9 +1077,9 @@ Function(softmax)
             <span class="n">log_batch_count</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">train_num_batches</span><span class="si">}</span><span class="s1">'</span>
             <span class="n">log_epoch_time</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">epoch_duration</span><span class="si">:</span><span class="s1">&gt;5.2f</span><span class="si">}</span><span class="s1">s'</span>
             <span class="n">log_batch_time</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="mi">1_000</span><span class="o">*</span><span class="n">batch_duration</span><span class="si">:</span><span class="s1">&gt;5.2f</span><span class="si">}</span><span class="s1">ms/batch'</span>
-            <span class="n">log_batch_loss</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'train_loss:  </span><span class="si">{</span><span class="n">train_loss</span><span class="si">:</span><span class="s1">&gt;5.2f</span><span class="si">}</span><span class="s1">'</span>
-            <span class="n">log_batch_accuracy</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'train_accuracy:  </span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">train_accuracy</span><span class="si">:</span><span class="s1">&lt;5.2f</span><span class="si">}</span><span class="s1">'</span>
-            <span class="n">log_string</span> <span class="o">=</span>  <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">log_batch_count</span><span class="si">}</span><span class="s1">  [           ]  </span><span class="si">{</span><span class="n">log_epoch_time</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">log_batch_time</span><span class="si">}</span><span class="s1">  ,  </span><span class="si">{</span><span class="n">log_batch_loss</span><span class="si">}</span><span class="s1">  ,  </span><span class="si">{</span><span class="n">log_batch_accuracy</span><span class="si">}</span><span class="s1"> '</span>
+            <span class="n">log_batch_loss</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'train_loss:  </span><span class="si">{</span><span class="n">train_loss</span><span class="si">:</span><span class="s1">&gt;5.4f</span><span class="si">}</span><span class="s1">'</span>
+            <span class="n">log_batch_accuracy</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'train_accuracy:  </span><span class="si">{</span><span class="n">train_accuracy</span><span class="si">:</span><span class="s1">&lt;5.4f</span><span class="si">}</span><span class="s1">'</span>
+            <span class="n">log_string</span> <span class="o">=</span>  <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">log_batch_count</span><span class="si">:</span><span class="s1">&lt;10s</span><span class="si">}</span><span class="s1">  [           ]  </span><span class="si">{</span><span class="n">log_epoch_time</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">log_batch_time</span><span class="si">}</span><span class="s1">  ,  </span><span class="si">{</span><span class="n">log_batch_loss</span><span class="si">}</span><span class="s1">  ,  </span><span class="si">{</span><span class="n">log_batch_accuracy</span><span class="si">}</span><span class="s1"> '</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">log_string</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">'</span><span class="se">\r</span><span class="s1">'</span><span class="p">)</span> 
 
         <span class="c1"># </span>
@@ -1180,15 +1180,15 @@ Function(softmax)
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Epoch 1/5
-937/937  [           ]   7.49s 384.38ms/batch  ,  train_loss:   0.52  ,  train_accuracy:  81.72 
+937/937     [           ]   7.22s 53.34ms/batch  ,  train_loss:  0.5235  ,  train_accuracy:  0.8172 
 Epoch 2/5
-937/937  [           ]   7.14s  6.94ms/batch  ,  train_loss:   0.39  ,  train_accuracy:  86.18 
+937/937     [           ]   7.12s  7.16ms/batch  ,  train_loss:  0.3882  ,  train_accuracy:  0.8618 
 Epoch 3/5
-937/937  [           ]   7.28s  7.01ms/batch  ,  train_loss:   0.35  ,  train_accuracy:  87.43 
+937/937     [           ]   7.19s  7.34ms/batch  ,  train_loss:  0.3469  ,  train_accuracy:  0.8743 
 Epoch 4/5
-937/937  [           ]   7.34s  7.47ms/batch  ,  train_loss:   0.32  ,  train_accuracy:  88.36 
+937/937     [           ]   7.39s  9.65ms/batch  ,  train_loss:  0.3202  ,  train_accuracy:  0.8837 
 Epoch 5/5
-937/937  [           ]   7.26s  6.90ms/batch  ,  train_loss:   0.30  ,  train_accuracy:  89.08 
+937/937     [           ]   7.20s  6.86ms/batch  ,  train_loss:  0.2999  ,  train_accuracy:  0.8908 
 </pre>
 </div>
 </div>
@@ -1497,6 +1497,40 @@ details.
 
 <div class="output_text output_subarea output_execute_result">
 <pre>DeviceArray(6., dtype=float32)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="s1">'hello'</span>
+<span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s1">&lt;20s</span><span class="si">}</span><span class="s1">'</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>'hello               '</pre>
 </div>
 
 </div>
