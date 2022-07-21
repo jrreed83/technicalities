@@ -1024,7 +1024,7 @@ Function(softmax)
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">train_datasource</span><span class="p">,</span> <span class="n">valid_datasource</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">grad_fn</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">train_datasource</span><span class="p">,</span> <span class="n">valid_datasource</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">grad_fn</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
     <span class="n">history</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'loss'</span><span class="p">:[],</span> <span class="s1">'accuracy'</span><span class="p">:[]}</span>
     
     <span class="k">if</span> <span class="n">valid_datasource</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1123,24 +1123,6 @@ Function(softmax)
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-cyan-fg">  File </span><span class="ansi-green-fg">"/tmp/ipykernel_159067/3849411444.py"</span><span class="ansi-cyan-fg">, line </span><span class="ansi-green-fg">1</span>
-<span class="ansi-red-fg">    def train(num_epochs, train_datasource, valid_datasource=None, optimizer, loss_fn, grad_fn, model):</span>
-              ^
-<span class="ansi-red-fg">SyntaxError</span><span class="ansi-red-fg">:</span> non-default argument follows default argument
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
     
 
@@ -1151,7 +1133,8 @@ Function(softmax)
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">fashion_mnist_loss</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">fashion_mnist_loss</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
     <span class="c1"># average cross entropy, batch</span>
     <span class="n">y_one_hot</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_one_hot</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
@@ -1176,12 +1159,12 @@ Function(softmax)
 <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 <span class="n">valid_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
 
-<span class="n">train_datasource</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
+<span class="n">train_datasource</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 <span class="n">valid_datasource</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">valid_dataset</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">fashion_mnist_mlp</span><span class="p">()</span>
 
 
-<span class="n">grad_fn</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">fashion_mnist_loss</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">y</span><span class="p">),</span> <span class="p">)</span>
+<span class="n">grad_fn</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">fashion_mnist_loss</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">y</span><span class="p">)))</span>
 
 <span class="n">history</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span>
     <span class="n">num_epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
@@ -1205,15 +1188,15 @@ Function(softmax)
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Epoch 1/5
-937/937     [===============================]   7.22s  7.25ms/batch  ,  train_loss:  0.5235  ,  train_accuracy:  0.8172 
+1874/1875   [=============================&gt; ]   3.20s  1.91ms/batch  ,  train_loss:  0.4958  ,  train_accuracy:  0.8245  
 Epoch 2/5
-937/937     [===============================]   7.40s  7.11ms/batch  ,  train_loss:  0.3882  ,  train_accuracy:  0.8618 
+1874/1875   [=============================&gt; ]   3.07s  1.48ms/batch  ,  train_loss:  0.3725  ,  train_accuracy:  0.8654 
 Epoch 3/5
-937/937     [===============================]   7.42s  6.99ms/batch  ,  train_loss:  0.3469  ,  train_accuracy:  0.8743 
+1874/1875   [=============================&gt; ]   3.09s  1.53ms/batch  ,  train_loss:  0.3339  ,  train_accuracy:  0.8778 
 Epoch 4/5
-937/937     [===============================]   7.33s 10.95ms/batch  ,  train_loss:  0.3202  ,  train_accuracy:  0.8837 
+1874/1875   [=============================&gt; ]   3.25s  1.55ms/batch  ,  train_loss:  0.3080  ,  train_accuracy:  0.8869 
 Epoch 5/5
-937/937     [===============================]   7.35s  7.69ms/batch  ,  train_loss:  0.2999  ,  train_accuracy:  0.8908 
+1874/1875   [=============================&gt; ]   3.18s  2.83ms/batch  ,  train_loss:  0.2900  ,  train_accuracy:  0.8934 
 </pre>
 </div>
 </div>
