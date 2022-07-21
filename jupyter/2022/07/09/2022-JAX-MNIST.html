@@ -97,7 +97,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      9 min read
+      10 min read
     
 </span></p>
 
@@ -1024,7 +1024,7 @@ Function(softmax)
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">train_datasource</span><span class="p">,</span> <span class="n">valid_datasource</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">grad_fn</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">train_datasource</span><span class="p">,</span> <span class="n">valid_datasource</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">grad_fn</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
     <span class="n">history</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'loss'</span><span class="p">:[],</span> <span class="s1">'accuracy'</span><span class="p">:[]}</span>
     
     <span class="k">if</span> <span class="n">valid_datasource</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1059,15 +1059,21 @@ Function(softmax)
             <span class="n">grads</span> <span class="o">=</span> <span class="n">grad_fn</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
             <span class="n">model</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">grads</span><span class="p">)</span>
             
-            <span class="n">accuracy</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_train</span>
+            <span class="n">num_correct</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_train</span><span class="p">)</span>
             
             <span class="c1"># update for metrics</span>
             <span class="c1">#train_loss_per_batch.append(loss)</span>
             <span class="c1">#train_accuracy_per_batch.append(accuracy)</span>
+
+            <span class="c1">#train_loss_accum = jnp.sum(jnp.array(train_loss_per_batch)) </span>
+            <span class="c1">#train_batch_size += len(y_train)</span>
+            <span class="c1">#train_accuracy_accum = jnp.sum(jnp.array(train_accuracy_per_batch))</span>
+            <span class="c1">#train_accuracy = train_accuracy_accum / train_batch_size</span>
+            <span class="c1">#train_loss = train_loss_accum / train_num_batches # average loss per batch</span>
             
             <span class="n">train_loss_accum</span> <span class="o">+=</span> <span class="n">loss</span> 
             <span class="n">train_batch_size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
-            <span class="n">train_accuracy_accum</span> <span class="o">+=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_train</span><span class="p">)</span>
+            <span class="n">train_accuracy_accum</span> <span class="o">+=</span> <span class="n">num_correct</span>
             <span class="n">train_accuracy</span> <span class="o">=</span> <span class="n">train_accuracy_accum</span> <span class="o">/</span> <span class="n">train_batch_size</span>
             <span class="n">train_loss</span> <span class="o">=</span> <span class="n">train_loss_accum</span> <span class="o">/</span> <span class="n">train_num_batches</span> <span class="c1"># average loss per batch</span>
 
@@ -1117,6 +1123,24 @@ Function(softmax)
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-cyan-fg">  File </span><span class="ansi-green-fg">"/tmp/ipykernel_159067/3849411444.py"</span><span class="ansi-cyan-fg">, line </span><span class="ansi-green-fg">1</span>
+<span class="ansi-red-fg">    def train(num_epochs, train_datasource, valid_datasource=None, optimizer, loss_fn, grad_fn, model):</span>
+              ^
+<span class="ansi-red-fg">SyntaxError</span><span class="ansi-red-fg">:</span> non-default argument follows default argument
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     
 
@@ -1147,7 +1171,8 @@ Function(softmax)
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># train_datasource = Datasource(MNIST, batchsize=64)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),</span> <span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">fashion_mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span> 
+<span class="c1"># train_datasource = Datasource(MNIST, batchsize=64)</span>
 <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 <span class="n">valid_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
 
@@ -1161,7 +1186,7 @@ Function(softmax)
 <span class="n">history</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span>
     <span class="n">num_epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
     <span class="n">train_datasource</span><span class="o">=</span><span class="n">train_datasource</span><span class="p">,</span> 
-    <span class="n">valid_datasource</span><span class="o">=</span><span class="n">valid_datasource</span><span class="p">,</span> 
+    <span class="n">valid_datasource</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span> 
     <span class="n">loss_fn</span><span class="o">=</span><span class="n">fashion_mnist_loss</span><span class="p">,</span> 
     <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
@@ -1180,15 +1205,15 @@ Function(softmax)
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Epoch 1/5
-937/937     [===============================]   7.16s  7.07ms/batch  ,  train_loss:  0.5235  ,  train_accuracy:  0.8172 
+937/937     [===============================]   7.22s  7.25ms/batch  ,  train_loss:  0.5235  ,  train_accuracy:  0.8172 
 Epoch 2/5
-937/937     [===============================]   7.18s  7.17ms/batch  ,  train_loss:  0.3882  ,  train_accuracy:  0.8618 
+937/937     [===============================]   7.40s  7.11ms/batch  ,  train_loss:  0.3882  ,  train_accuracy:  0.8618 
 Epoch 3/5
-937/937     [===============================]   7.22s  7.08ms/batch  ,  train_loss:  0.3469  ,  train_accuracy:  0.8743 
+937/937     [===============================]   7.42s  6.99ms/batch  ,  train_loss:  0.3469  ,  train_accuracy:  0.8743 
 Epoch 4/5
-937/937     [===============================]   7.16s  7.63ms/batch  ,  train_loss:  0.3202  ,  train_accuracy:  0.8837 
+937/937     [===============================]   7.33s 10.95ms/batch  ,  train_loss:  0.3202  ,  train_accuracy:  0.8837 
 Epoch 5/5
-937/937     [===============================]   7.25s  7.15ms/batch  ,  train_loss:  0.2999  ,  train_accuracy:  0.8908 
+937/937     [===============================]   7.35s  7.69ms/batch  ,  train_loss:  0.2999  ,  train_accuracy:  0.8908 
 </pre>
 </div>
 </div>
@@ -1698,6 +1723,79 @@ When step is given, it specifies the increment (or decrement).
 <span class="ansi-red-fg">Type:</span>           type
 <span class="ansi-red-fg">Subclasses:</span>     
 </pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),</span> <span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">fashion_mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span> 
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span> <span class="o">=</span> <span class="n">X_train</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">,</span> <span class="n">X_test</span> <span class="o">/</span> <span class="mf">255.0</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span>
+  <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">)),</span>
+  <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">activations</span><span class="o">.</span><span class="n">relu</span><span class="p">),</span>
+  <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">activations</span><span class="o">.</span><span class="n">softmax</span><span class="p">)</span>                          
+<span class="p">])</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="n">loss</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">sparse_categorical_crossentropy</span><span class="p">,</span> 
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(),</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">'accuracy'</span><span class="p">])</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>2022-07-21 10:25:17.632440: W tensorflow/core/framework/cpu_allocator_impl.cc:82] Allocation of 188160000 exceeds 10% of free system memory.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Epoch 1/5
+1875/1875 [==============================] - 3s 855us/step - loss: 0.5025 - accuracy: 0.8221
+Epoch 2/5
+1875/1875 [==============================] - 2s 813us/step - loss: 0.3739 - accuracy: 0.8648
+Epoch 3/5
+1875/1875 [==============================] - 2s 824us/step - loss: 0.3380 - accuracy: 0.8779
+Epoch 4/5
+1875/1875 [==============================] - 2s 849us/step - loss: 0.3148 - accuracy: 0.8843
+Epoch 5/5
+1875/1875 [==============================] - 2s 903us/step - loss: 0.2954 - accuracy: 0.8902
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;keras.callbacks.History at 0x7f7e58a3ba00&gt;</pre>
 </div>
 
 </div>
