@@ -143,7 +143,7 @@ window.onload = wrap_img;
   <div class="post-content e-content" itemprop="articleBody">
     <ul id="toc" class="section-nav">
 <li class="toc-entry toc-h2"><a href="#Introduction">Introduction </a></li>
-<li class="toc-entry toc-h2"><a href="#Why-JAX">Why JAX </a></li>
+<li class="toc-entry toc-h2"><a href="#JAX">JAX </a></li>
 <li class="toc-entry toc-h2"><a href="#The-Goal">The Goal </a></li>
 <li class="toc-entry toc-h2"><a href="#Let's-Start">Let&#39;s Start </a></li>
 <li class="toc-entry toc-h2"><a href="#Loading-the-Data">Loading the Data </a></li>
@@ -179,11 +179,12 @@ window.onload = wrap_img;
 <h2 id="Introduction">
 <a class="anchor" href="#Introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction<a class="anchor-link" href="#Introduction"> </a>
 </h2>
-<p>In this article, I'm going to start implementing a JAX-based neural network library, and use it to synthesize a Fashion-MNIST classifier. Features will be added over the coming weeks and months as I tackle more advanced topics and architectures. I don't intend to write a full-featured framework. My goal is to engineer a set of loosely coupled components that I can mix-and-match to solve problems that interest me.  Except for basic linear algebra and automatic differentiation, I'll try to implement everything from scratch and use Tensorflow/Keras to validate my implementation.  The reason I'm choosing to test against Tensorflow is that I have more experience working with it (plus it's very easy to throw something together in Keras).  I'll be sure to give credit to any design ideas and techniques I use in the process of building out this project.</p>
-<h2 id="Why-JAX">
-<a class="anchor" href="#Why-JAX" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why JAX<a class="anchor-link" href="#Why-JAX"> </a>
+<p>In this article, I'm going to start implementing a JAX-based neural network library, and use it to synthesize a Fashion-MNIST classifier. Features will be added over the coming weeks and months as I tackle more advanced topics and architectures. I don't intend to write a full-featured framework. My goal is to engineer some components that I can mix-and-match (and easily customize) to solve problems that interest me.  Except for basic linear algebra and automatic differentiation, I'll try to implement everything from scratch and use Tensorflow/Keras to validate my implementation.  The reason I'm choosing to test against Tensorflow is that I have more experience working with it (plus it's very easy to throw something together in Keras).  I'll be sure to give credit to any design ideas and techniques I use in the process of building out functionality.</p>
+<h2 id="JAX">
+<a class="anchor" href="#JAX" aria-hidden="true"><span class="octicon octicon-link"></span></a>JAX<a class="anchor-link" href="#JAX"> </a>
 </h2>
-<p>JAX is an array-processing library that uses Google's XLA (Accelerated Linear Algebra) compiler to generate highly performance code that can run on a variety of hardware platforms.  It feels a lot like numpy, with a number of advantages including built in automatic differentiation, parallelization, and just-in-time compilation.</p>
+<p>JAX is an array-processing library that uses Google's XLA (Accelerated Linear Algebra) compiler to generate highly performance code that can run on a variety of hardware platforms.  It feels a lot like numpy, with a number of advantages including built in automatic differentiation, parallelization, and just-in-time compilation.  It's built in array type is called a <code>DeviceArray</code>.  Unlike numpy's <code>ndarray</code> type though, elements of <code>DeviceArray</code>s cannot be directly mutated.</p>
+<p>The other fundamental datatype in JAX is the <em>pytree</em>, which (not surprisingly) is a tree of python objects.</p>
 
 </div>
 </div>
