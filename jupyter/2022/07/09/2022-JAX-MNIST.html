@@ -309,7 +309,7 @@ Epoch 5/5
 <h2 id="Loading-the-Data">
 <a class="anchor" href="#Loading-the-Data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Loading the Data<a class="anchor-link" href="#Loading-the-Data"> </a>
 </h2>
-<p>I've looked at enough Pytorch and fast.ai code to appreciate the  that the <code>Dataset</code> and <code>Dataloader</code> abstractions are really convenient to work with.  In Pytorch, a <code>Dataset</code> is much more general that what I have here.  In fact, because the data returned by <code>tf.keras.datasets.fashion_mnist.load_data()</code> is just a few numpy arrays, the <code>Dataset</code> abstraction is pretty useless right now.</p>
+<p>Tensorflow and Pytorch both have really convenient, powerful ways of working with data, but I prefer the Pytorch approach.</p>
 
 </div>
 </div>
@@ -340,7 +340,6 @@ Epoch 5/5
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The <code>Dataloader</code> is responsible for slicing the passed in dataset into a collection of batches that can be used for training, validating, testing, or anything else you can think of.</p>
 
 </div>
 </div>
