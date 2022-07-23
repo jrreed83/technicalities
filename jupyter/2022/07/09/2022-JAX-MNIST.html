@@ -179,12 +179,12 @@ window.onload = wrap_img;
 <h2 id="Introduction">
 <a class="anchor" href="#Introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction<a class="anchor-link" href="#Introduction"> </a>
 </h2>
-<p>In this article, I'm going to start implementing a JAX-based neural network library, and use it to synthesize a Fashion-MNIST classifier. Features will be added over the coming weeks and months as I tackle more advanced topics and architectures. I don't intend to write a full-featured framework. My goal is to engineer some components that I can mix-and-match (and easily customize) to solve problems that interest me.  Except for basic linear algebra and automatic differentiation, I'll try to implement everything from scratch and use Tensorflow/Keras to validate my implementation.  The reason I'm choosing to test against Tensorflow is that I have more experience working with it (plus it's very easy to throw something together in Keras).  I'll be sure to give credit to any design ideas and techniques I use in the process of building out functionality.</p>
+<p>In this article, I'm going to start implementing a JAX-based neural network library, and use it to synthesize a Fashion-MNIST classifier. Features will be added over the coming weeks and months as I tackle more advanced topics and architectures. I don't intend to write a full-featured framework. My goal is to engineer components that I can mix-and-match (and easily customize) to solve problems that interest me.  Except for basic linear algebra and automatic differentiation, I'll try to implement everything from scratch and use Tensorflow/Keras to validate my implementation.  The reason I'm choosing to test against Tensorflow is that I have more experience working with it (plus it's very easy to throw something together in Keras).  I'll be sure to give credit to any design ideas and techniques I use in the process of building out functionality.</p>
 <h2 id="JAX">
 <a class="anchor" href="#JAX" aria-hidden="true"><span class="octicon octicon-link"></span></a>JAX<a class="anchor-link" href="#JAX"> </a>
 </h2>
 <p>JAX is an array-processing library that uses Google's XLA (Accelerated Linear Algebra) compiler to generate highly performance code that can run on a variety of hardware platforms.  It feels a lot like numpy, with a number of advantages including built in automatic differentiation, parallelization, and just-in-time compilation.  It's built in array type is called a <code>DeviceArray</code>.  Unlike numpy's <code>ndarray</code> type though, elements of <code>DeviceArray</code>s cannot be directly mutated.</p>
-<p>The other fundamental datatype in JAX is the <em>pytree</em>, which (not surprisingly given the name) is a tree of python objects.  A lot of the magic and simplicity of JAX comes from working with pytrees.  More on this later.</p>
+<p>The other fundamental datatype in JAX is the <em>pytree</em>, which is a tree of python objects.  A lot of the magic and simplicity of JAX comes from working with pytrees.  More on this later.</p>
 
 </div>
 </div>
@@ -309,7 +309,7 @@ Epoch 5/5
 <h2 id="Loading-the-Data">
 <a class="anchor" href="#Loading-the-Data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Loading the Data<a class="anchor-link" href="#Loading-the-Data"> </a>
 </h2>
-<p>I've looked at enough Pytorch and fast.ai code to realize that the <code>Dataset</code> and <code>Dataloader</code> approach to batching data are really convenient to work with.  In Pytorch, a <code>Dataset</code> is much more general that what I have here.  In fact, because the data returned by <code>tf.keras.datasets.fashion_mnist.load_data()</code> is just a few numpy arrays, the <code>Dataset</code> abstraction is pretty useless right now.</p>
+<p>I've looked at enough Pytorch and fast.ai code to appreciate the  that the <code>Dataset</code> and <code>Dataloader</code> abstractions are really convenient to work with.  In Pytorch, a <code>Dataset</code> is much more general that what I have here.  In fact, because the data returned by <code>tf.keras.datasets.fashion_mnist.load_data()</code> is just a few numpy arrays, the <code>Dataset</code> abstraction is pretty useless right now.</p>
 
 </div>
 </div>
@@ -568,23 +568,6 @@ Epoch 5/5
 </div>
 </div>
 </div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">A</span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1112,8 +1095,6 @@ Function(softmax)
         <span class="n">epoch_duration</span> <span class="o">=</span> <span class="mf">0.0</span>
         
         <span class="c1"># we know how many batches there are ... keep track</span>
-        <span class="c1">#train_loss_per_batch = []</span>
-        <span class="c1">#train_accuracy_per_batch = []</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">train_datasource</span><span class="p">):</span>
             
             <span class="c1"># logging</span>
