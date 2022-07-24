@@ -97,7 +97,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      11 min read
+      12 min read
     
 </span></p>
 
@@ -156,7 +156,7 @@ window.onload = wrap_img;
 </ul>
 </li>
 <li class="toc-entry toc-h2"><a href="#Cross-Entropy-Loss">Cross Entropy Loss </a></li>
-<li class="toc-entry toc-h2"><a href="#The-Optimizers">The Optimizers </a></li>
+<li class="toc-entry toc-h2"><a href="#Optimizers">Optimizers </a></li>
 <li class="toc-entry toc-h2"><a href="#Progress-Bar">Progress Bar </a></li>
 <li class="toc-entry toc-h2"><a href="#The-Training-Loop">The Training Loop </a></li>
 <li class="toc-entry toc-h2"><a href="#Keras-Execution">Keras Execution </a></li>
@@ -819,13 +819,20 @@ Function(softmax)
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="The-Optimizers">
-<a class="anchor" href="#The-Optimizers" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Optimizers<a class="anchor-link" href="#The-Optimizers"> </a>
+<h2 id="Optimizers">
+<a class="anchor" href="#Optimizers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Optimizers<a class="anchor-link" href="#Optimizers"> </a>
 </h2>
-<p>Optimizers use gradient information and a learning-rate parameter to update model parameters.</p>
+<p>Optimizers update model parameters at each minibatch.  The simplest optimizer, stochastic gradient descent (aka SGD), is shown below and updates the parameters ($W$) as follows:</p>
 $$
-    w \leftarrow w - \alpha \frac{\partial \ell}{\partial w}
-$$
+    W \leftarrow W - \alpha \frac{\partial \ell}{\partial W}
+$$<p>where $\ell$ represents the loss-function used in model training and $\alpha$ is the learning rate.</p>
+<p>While certainly simple and fast, SGD is not the <em>go-to</em> optmizer these days.  That title seems to go to the Adam optimizer, as it tends to be the optimizer used in most examples I've seen.  From their original paper, Kingma and Ba describe Adam as</p>
+<blockquote>
+<p>"an algorithm for first-order gradient-based optimization of stochastic objective functions, based on adaptive estimates of lower-order moments."</p>
+</blockquote>
+<p>and from the same paper:&gt; "The method computes individual adaptive learning rates for different parameters from estimates of first and second moments of the gradients; the name Adam is derived from adaptive moment estimation."</p>
+<p>For now, an optimizer has an <code>__init__</code> and <code>step</code> method.  The <code>__init__</code> method initializes the parameters used to calculate the step direction or step size, while the <code>step</code> method updates the model and any optimizer parameters.</p>
+
 </div>
 </div>
 </div>
@@ -899,6 +906,14 @@ $$
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>SGD</code> and <code>Adam</code> classes also show why registering models as pytrees is so important.  You see all those calls to <code>jax.tree_map</code>?  This function</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
