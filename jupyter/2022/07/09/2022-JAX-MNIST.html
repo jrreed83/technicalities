@@ -149,14 +149,8 @@ window.onload = wrap_img;
 <li class="toc-entry toc-h2"><a href="#The-Sequential-Model">The Sequential Model </a>
 <ul>
 <li class="toc-entry toc-h3"><a href="#Linear-Layer">Linear Layer </a></li>
-<li class="toc-entry toc-h3"><a href="#Function-Layer">Function Layer </a>
-<ul>
-<li class="toc-entry toc-h4"><a href="#Flatten">Flatten </a></li>
-<li class="toc-entry toc-h4"><a href="#RELU">RELU </a></li>
-<li class="toc-entry toc-h4"><a href="#Softmax">Softmax </a></li>
-<li class="toc-entry toc-h4"><a href="#Rescaling">Rescaling </a></li>
-</ul>
-</li>
+<li class="toc-entry toc-h3"><a href="#Function-Layer">Function Layer </a></li>
+<li class="toc-entry toc-h3"><a href="#Helpful-Functions">Helpful Functions </a></li>
 </ul>
 </li>
 <li class="toc-entry toc-h2"><a href="#Sequential">Sequential </a></li>
@@ -473,7 +467,7 @@ Epoch 5/5
 <h3 id="Function-Layer">
 <a class="anchor" href="#Function-Layer" aria-hidden="true"><span class="octicon octicon-link"></span></a><code>Function</code> Layer<a class="anchor-link" href="#Function-Layer"> </a>
 </h3>
-<p>The <code>Function</code> class fills the same need that <code>Lambda</code> layers do in Keras: being able to conveniently plug functions into models.</p>
+<p>The <code>Function</code> class fills the same need that <code>Lambda</code> layers do in Keras: being able to conveniently plug functions into models.  As the <code>tree_flatten</code> method shows, classes registered as pytrees can be parameter-free.</p>
 
 </div>
 </div>
@@ -497,7 +491,7 @@ Epoch 5/5
         <span class="k">return</span> <span class="sa">f</span><span class="s1">'Function(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">)'</span>
     
     <span class="k">def</span> <span class="nf">tree_flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span>
+        <span class="k">return</span> <span class="p">[],</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">tree_unflatten</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">aux_data</span><span class="p">,</span> <span class="n">children</span><span class="p">):</span>
@@ -515,9 +509,11 @@ Epoch 5/5
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Flatten">
-<a class="anchor" href="#Flatten" aria-hidden="true"><span class="octicon octicon-link"></span></a>Flatten<a class="anchor-link" href="#Flatten"> </a>
-</h4>
+<h3 id="Helpful-Functions">
+<a class="anchor" href="#Helpful-Functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Helpful Functions<a class="anchor-link" href="#Helpful-Functions"> </a>
+</h3>
+<p>Here are a few functions that will be <em>lifted</em> to <code>Function</code> layer in the <code>Sequential</code> model.  One common approach for improving classification accuracy is to normalize your input data.  When working with gray-scale images, this typically means rescaling the pixels from $[0,255]$ to $[0,1]$.  This is what <code>rescale_image</code> does.</p>
+
 </div>
 </div>
 </div>
@@ -528,19 +524,7 @@ Epoch 5/5
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="n">shape</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="c1"># flatten a single 2D image</span>
-        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="c1"># x is a batch of 2D images, flatten each image </span>
-        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span> 
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'At the moment you can only pass 2D or 3D arrays to flatten, you passed a </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s1">D array'</span> 
-        <span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">rescale_image</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="n">x</span> <span class="o">/</span> <span class="mf">255.0</span>
 </pre></div>
 
     </div>
@@ -553,12 +537,33 @@ Epoch 5/5
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="RELU">
-<a class="anchor" href="#RELU" aria-hidden="true"><span class="octicon octicon-link"></span></a>RELU<a class="anchor-link" href="#RELU"> </a>
-</h4>
+<p>The model built in this post operates on batches of two-dimensional gray-scale images.  Each batch is a three-dimensional array and can be interpreted as a vertical stack of 2D images, where the height of the vertical stack is the number of images.  The <code>flatten</code> goes through each slice of the vertical stack and transforms the 2D array into a one-dimensional array.  In the process, the 3D input becomes a 2D array.</p>
+
 </div>
 </div>
 </div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'x must represent a batch of two-dimensional gray-scale images'</span> 
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span> 
+    
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -579,15 +584,6 @@ Epoch 5/5
 </div>
     
 
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Softmax">
-<a class="anchor" href="#Softmax" aria-hidden="true"><span class="octicon octicon-link"></span></a>Softmax<a class="anchor-link" href="#Softmax"> </a>
-</h4>
-</div>
-</div>
-</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -602,32 +598,6 @@ Epoch 5/5
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span> <span class="s1">'test failed'</span>
 <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Rescaling">
-<a class="anchor" href="#Rescaling" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rescaling<a class="anchor-link" href="#Rescaling"> </a>
-</h4>
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">rescale_image</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="n">x</span> <span class="o">/</span> <span class="mf">255.0</span>
 </pre></div>
 
     </div>
@@ -1082,15 +1052,15 @@ Function(softmax)
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Epoch 1/5
-1874/1875  [===============================] - 3s  1.49ms/batch  -  loss: 0.4958   -  accuracy: 0.8245      
+1874/1875  [===============================] - 3s  1.57ms/batch - loss: 0.4958  - accuracy: 0.8245      
 Epoch 2/5
-1874/1875  [===============================] - 2s  1.40ms/batch  -  loss: 0.3725   -  accuracy: 0.8654    
+1874/1875  [===============================] - 2s  1.50ms/batch - loss: 0.3725  - accuracy: 0.8654    
 Epoch 3/5
-1874/1875  [===============================] - 2s  1.53ms/batch  -  loss: 0.3339   -  accuracy: 0.8778    
+1874/1875  [===============================] - 3s  1.67ms/batch - loss: 0.3339  - accuracy: 0.8778    
 Epoch 4/5
-1874/1875  [===============================] - 2s  1.55ms/batch  -  loss: 0.3080   -  accuracy: 0.8869    
+1874/1875  [===============================] - 3s  1.85ms/batch - loss: 0.3080  - accuracy: 0.8869    
 Epoch 5/5
-1874/1875  [===============================] - 2s  1.46ms/batch  -  loss: 0.2900   -  accuracy: 0.8934    
+1874/1875  [===============================] - 3s  1.95ms/batch - loss: 0.2900  - accuracy: 0.8934    
 </pre>
 </div>
 </div>
