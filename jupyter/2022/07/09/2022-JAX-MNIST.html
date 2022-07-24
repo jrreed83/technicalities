@@ -143,7 +143,6 @@ window.onload = wrap_img;
   <div class="post-content e-content" itemprop="articleBody">
     <ul id="toc" class="section-nav">
 <li class="toc-entry toc-h2"><a href="#Introduction">Introduction </a></li>
-<li class="toc-entry toc-h2"><a href="#JAX">JAX </a></li>
 <li class="toc-entry toc-h2"><a href="#The-Goal">The Goal </a></li>
 <li class="toc-entry toc-h2"><a href="#Load-Libraries">Load Libraries </a></li>
 <li class="toc-entry toc-h2"><a href="#Loading-the-Data">Loading the Data </a></li>
@@ -179,13 +178,7 @@ window.onload = wrap_img;
 <h2 id="Introduction">
 <a class="anchor" href="#Introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction<a class="anchor-link" href="#Introduction"> </a>
 </h2>
-<p>In this post, I'm going to implement a basic Fashion-MNIST classifier using an almost scrarch-built neural network library built on top of JAX.</p>
-<p>In this article, I'm going to start implementing a JAX-based neural network library, and use it to synthesize a Fashion-MNIST classifier. Features will be added over the coming weeks and months as I tackle more advanced topics and architectures. I don't intend to write a full-featured framework. My goal is to engineer components that I can mix-and-match (and easily customize) to solve problems that interest me.  Except for basic linear algebra and automatic differentiation, I'll try to implement everything from scratch and use Tensorflow/Keras to validate my implementation.  The reason I'm choosing to test against Tensorflow is that I have more experience working with it (plus it's very easy to throw something together in Keras).  I'll be sure to give credit to any design ideas and techniques I use in the process of building out functionality.</p>
-<h2 id="JAX">
-<a class="anchor" href="#JAX" aria-hidden="true"><span class="octicon octicon-link"></span></a>JAX<a class="anchor-link" href="#JAX"> </a>
-</h2>
-<p>JAX is an array-processing library that uses Google's XLA (Accelerated Linear Algebra) compiler to generate highly performance code that can run on a variety of hardware platforms.  It feels a lot like numpy, with a number of advantages including built in automatic differentiation, parallelization, and just-in-time compilation.  It's built in array type is called a <code>DeviceArray</code>.  Unlike numpy's <code>ndarray</code> type though, elements of <code>DeviceArray</code>s cannot be directly mutated.</p>
-<p>The other fundamental datatype in JAX is the <em>pytree</em>, which is a tree of python objects.  A lot of the magic and simplicity of JAX comes from working with pytrees.  More on this later.</p>
+<p>In this post, I'm going to implement a basic Fashion-MNIST classifier using JAX.  JAX is an array-processing library that uses Google's XLA (Accelerated Linear Algebra) compiler to generate high-performance code that can run on a variety of hardware platforms.  It feels a lot like numpy, with a number of advantages including built in automatic differentiation, parallelization, and just-in-time compilation.  It's built in array type is called a <code>DeviceArray</code>.  Unlike numpy's <code>ndarray</code> type, elements of <code>DeviceArray</code>s cannot be directly mutated.  The other fundamental datatype in JAX is the <em>pytree</em>.</p>
 
 </div>
 </div>
@@ -196,7 +189,7 @@ window.onload = wrap_img;
 <h2 id="The-Goal">
 <a class="anchor" href="#The-Goal" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Goal<a class="anchor-link" href="#The-Goal"> </a>
 </h2>
-<p>Here is an example of how you could go about building a basic Fashion MNIST classifier in Keras.  The API design is very elegant and easy to 
+<p>Here's one of the Fashion MNIST classifiers you e .  The API design is very elegant and easy to 
 understand.  I even like the logging information provided by the call to <code>model.fit</code>, so much in fact that I'm going to replicate the style in
 my training loop.</p>
 <div class="highlight"><pre><span></span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),</span> <span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">fashion_mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span> 
@@ -433,7 +426,7 @@ Epoch 5/5
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The <code>Linear</code> layer shown below is similar to implementations you'd find in other libraries, except for the extra tree stuff.</p>
+<p>The <code>Linear</code> layer defined below is very similar to implementations you'd find in other libraries, except that it's explicity registered as a pytree.  One way to register a user-defined class (the one used here) as a pytree is to annotate the class definition with the <code>register_pytree_node_class</code> decorator, provide a <code>tree_flatten</code> method, and a <code>tree_unflatten</code> class method.  After going through this process, JAX will know how to transform back and forth between objects that the rest of JAX system can efficiently operate on, and objects that are specific to your application.</p>
 
 </div>
 </div>
@@ -484,14 +477,6 @@ Epoch 5/5
 </div>
     
 
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>User-defined classes, like <code>Linear</code> can be added to to registry by adding the <code>register_pytree_node_class</code>, and implementing the <code>tree_flatten</code> and <code>tree_unflatten</code> methods.</p>
-
-</div>
-</div>
-</div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
