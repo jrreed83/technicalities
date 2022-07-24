@@ -97,7 +97,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      10 min read
+      11 min read
     
 </span></p>
 
@@ -146,14 +146,17 @@ window.onload = wrap_img;
 <li class="toc-entry toc-h2"><a href="#The-Goal">The Goal </a></li>
 <li class="toc-entry toc-h2"><a href="#Load-Libraries">Load Libraries </a></li>
 <li class="toc-entry toc-h2"><a href="#Loading-the-Data">Loading the Data </a></li>
-<li class="toc-entry toc-h2"><a href="#The-Model">The Model </a>
+<li class="toc-entry toc-h2"><a href="#The-Sequential-Model">The Sequential Model </a>
 <ul>
-<li class="toc-entry toc-h3"><a href="#Linear-Layers">Linear Layers </a></li>
-<li class="toc-entry toc-h3"><a href="#Functional-Layers">Functional Layers </a></li>
-<li class="toc-entry toc-h3"><a href="#Flatten">Flatten </a></li>
-<li class="toc-entry toc-h3"><a href="#RELU">RELU </a></li>
-<li class="toc-entry toc-h3"><a href="#Softmax">Softmax </a></li>
-<li class="toc-entry toc-h3"><a href="#Rescaling">Rescaling </a></li>
+<li class="toc-entry toc-h3"><a href="#Linear-Layer">Linear Layer </a></li>
+<li class="toc-entry toc-h3"><a href="#Function-Layer">Function Layer </a>
+<ul>
+<li class="toc-entry toc-h4"><a href="#Flatten">Flatten </a></li>
+<li class="toc-entry toc-h4"><a href="#RELU">RELU </a></li>
+<li class="toc-entry toc-h4"><a href="#Softmax">Softmax </a></li>
+<li class="toc-entry toc-h4"><a href="#Rescaling">Rescaling </a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-entry toc-h2"><a href="#Sequential">Sequential </a></li>
@@ -380,19 +383,10 @@ Epoch 5/5
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="The-Model">
-<a class="anchor" href="#The-Model" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Model<a class="anchor-link" href="#The-Model"> </a>
+<h2 id="The-Sequential-Model">
+<a class="anchor" href="#The-Sequential-Model" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Sequential Model<a class="anchor-link" href="#The-Sequential-Model"> </a>
 </h2>
-<p>In this section, I'll describe each component of the <code>Sequential</code> model being</p>
-<div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span>
-    <span class="n">rescale_image</span><span class="p">,</span>
-    <span class="n">flatten</span><span class="p">,</span>
-    <span class="n">Linear</span><span class="p">(</span><span class="mi">784</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
-    <span class="n">relu</span><span class="p">,</span>
-    <span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
-    <span class="n">softmax</span>  
-<span class="p">)</span>
-</pre></div>
+<p>A sequential model is simply a list of <code>Callable</code> objects that is evaluated by evaluating each member of the list in sequence.  In my implementation, each element of the list must be a registered pytree, but I also wanted to have the flexibility to pass ordinary functions to the <code>Sequential</code> constructor and have everything just work.  As you'll soon seem this feature was implemented by modifying the <code>__init__</code> method.</p>
 
 </div>
 </div>
@@ -400,33 +394,16 @@ Epoch 5/5
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Linear-Layers">
-<a class="anchor" href="#Linear-Layers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Linear Layers<a class="anchor-link" href="#Linear-Layers"> </a>
+<h3 id="Linear-Layer">
+<a class="anchor" href="#Linear-Layer" aria-hidden="true"><span class="octicon octicon-link"></span></a><code>Linear</code> Layer<a class="anchor-link" href="#Linear-Layer"> </a>
 </h3>
 </div>
 </div>
 </div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Parametric</span><span class="p">:</span> <span class="k">pass</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The <code>Linear</code> layer defined below is very similar to implementations you'd find in other libraries, except that it's explicity registered as a pytree.  One way to register a user-defined class (the one used here) as a pytree is to annotate the class definition with the <code>register_pytree_node_class</code> decorator, provide a <code>tree_flatten</code> method, and a <code>tree_unflatten</code> class method.  After going through this process, JAX will know how to transform back and forth between objects that the rest of JAX system can efficiently operate on, and objects that are specific to your application.</p>
+<p>The <code>Linear</code> layer defined below is very similar to implementations (but less general) you'd find in other non-JAX neural network libraries.</p>
 
 </div>
 </div>
@@ -439,7 +416,7 @@ Epoch 5/5
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">register_pytree_node_class</span>
-<span class="k">class</span> <span class="nc">Linear</span><span class="p">(</span><span class="n">Parametric</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Linear</span><span class="p">:</span>
     <span class="n">w</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span> 
     <span class="n">b</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="n">ni</span><span class="p">:</span> <span class="nb">int</span> 
@@ -460,6 +437,9 @@ Epoch 5/5
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
         
+    <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'w'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">}</span>
+    
     <span class="k">def</span> <span class="nf">tree_flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ni</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no</span><span class="p">)</span>
 
@@ -480,10 +460,20 @@ Epoch 5/5
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Functional-Layers">
-<a class="anchor" href="#Functional-Layers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Functional Layers<a class="anchor-link" href="#Functional-Layers"> </a>
+<p>The one glaring difference is the decorator and the two <em>tree</em> methods.  As the JAX documentation explains, the <code>register_pytree_node_class</code>, <code>tree_flatten</code> method, and <code>tree_unflatten</code> class methods are used to add a user-defined class to the JAX pytree registry.  Once added, JAX will know how to transform back and forth between objects that the rest of JAX system (including the just-in-time compiler, vectorization/parallelization, and automatic differentiation) can efficiently operate on, and objects that are specific to your application.</p>
+<p>The <code>tree_flatten</code> method returns a two-element tuple consisting of the parameters you want to expose to JAX, and any meta-data that can help reconstruct the object.  Because JAX seems to really embrace the functional paradigm of immutable datastructures, I thought it might be better to express the parameters as a tuple.  For <code>Linear</code>, the parameters are the weights and biases of the neural network.  For now, the only meta-data that seems helpful are the number of inputs and outputs (although this could be derived from the shape of the weights.</p>
+<p>Another thing to notice about <code>Linear</code> is the <code>build</code> attribute.  Most of the time, you want to initialize the weights and biases at creation time.  However, you don't want to do this when JAX reconstructs the object from it's flattened representation.  You probably just want to plop the parameters right into a freshly constructed object. The <code>build</code> attribute gives you some control over this.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Function-Layer">
+<a class="anchor" href="#Function-Layer" aria-hidden="true"><span class="octicon octicon-link"></span></a><code>Function</code> Layer<a class="anchor-link" href="#Function-Layer"> </a>
 </h3>
-<p>The other layer's needed to implement the <code>Sequential</code> Model are Here's a class that's similar (but simpler) to a Keras <code>Lambda</code> layer.</p>
+<p>The <code>Function</code> class fills the same need that <code>Lambda</code> layers do in Keras: being able to conveniently plug functions into models.</p>
 
 </div>
 </div>
@@ -525,9 +515,9 @@ Epoch 5/5
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Flatten">
+<h4 id="Flatten">
 <a class="anchor" href="#Flatten" aria-hidden="true"><span class="octicon octicon-link"></span></a>Flatten<a class="anchor-link" href="#Flatten"> </a>
-</h3>
+</h4>
 </div>
 </div>
 </div>
@@ -563,9 +553,9 @@ Epoch 5/5
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="RELU">
+<h4 id="RELU">
 <a class="anchor" href="#RELU" aria-hidden="true"><span class="octicon octicon-link"></span></a>RELU<a class="anchor-link" href="#RELU"> </a>
-</h3>
+</h4>
 </div>
 </div>
 </div>
@@ -592,9 +582,9 @@ Epoch 5/5
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Softmax">
+<h4 id="Softmax">
 <a class="anchor" href="#Softmax" aria-hidden="true"><span class="octicon octicon-link"></span></a>Softmax<a class="anchor-link" href="#Softmax"> </a>
-</h3>
+</h4>
 </div>
 </div>
 </div>
@@ -624,9 +614,9 @@ Epoch 5/5
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Rescaling">
+<h4 id="Rescaling">
 <a class="anchor" href="#Rescaling" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rescaling<a class="anchor-link" href="#Rescaling"> </a>
-</h3>
+</h4>
 </div>
 </div>
 </div>
@@ -671,7 +661,8 @@ Epoch 5/5
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">layers</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">Parametric</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">Function</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s1">'tree_flatten'</span><span class="p">):</span>
+            <span class="c1">#if isinstance(layer, Parametric) or isinstance(layer, Function):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="n">layer</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Function</span><span class="p">(</span><span class="n">layer</span><span class="p">))</span>
