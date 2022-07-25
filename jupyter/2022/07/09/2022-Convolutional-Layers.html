@@ -289,37 +289,10 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">get_layer_outputs</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">input_batch</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ll</span> <span class="o">=</span> <span class="n">get_layer_outputs</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">input_batch</span><span class="p">)</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[array([[[[ 0.5709658 , -0.9792538 ],
-          [-1.0654193 , -0.06757978],
-          [ 0.5732696 , -0.03206941]],
- 
-         [[ 1.7229191 , -0.01773215],
-          [-1.194443  ,  1.0171514 ],
-          [ 0.42115533,  0.18736929]],
- 
-         [[ 1.0003719 ,  0.9343733 ],
-          [-0.83191144, -0.82429725],
-          [ 1.4794707 ,  0.18596372]]]], dtype=float32),
- array([[[[1.7229191, 1.0171514]]]], dtype=float32)]</pre>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -469,34 +442,6 @@ the number of input channels.  Here we generate a batch containing a single $4\t
 </div>
     
 
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">conv2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">kernel</span><span class="p">):</span>
-    <span class="n">xm</span><span class="p">,</span> <span class="n">xn</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> 
-    <span class="n">km</span><span class="p">,</span> <span class="n">kn</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">shape</span> 
-    
-    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">xm</span> <span class="o">-</span> <span class="n">km</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">xn</span> <span class="o">-</span> <span class="n">kn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
-    
-    <span class="n">ym</span><span class="p">,</span> <span class="n">yn</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ym</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">yn</span><span class="p">):</span>
-            <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">kernel</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">km</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">kn</span><span class="p">])</span> 
-    
-    <span class="k">return</span> <span class="n">y</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -512,7 +457,20 @@ the number of input channels.  Here we generate a batch containing a single $4\t
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">convolve</span><span class="p">(</span><span class="n">input_image</span><span class="p">,</span> <span class="n">kernels</span><span class="p">,</span> <span class="n">biases</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">conv2d_v1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">kernel</span><span class="p">):</span>
+    <span class="n">xm</span><span class="p">,</span> <span class="n">xn</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> 
+    <span class="n">km</span><span class="p">,</span> <span class="n">kn</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">shape</span> 
+    
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">xm</span> <span class="o">-</span> <span class="n">km</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">xn</span> <span class="o">-</span> <span class="n">kn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    
+    <span class="n">ym</span><span class="p">,</span> <span class="n">yn</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ym</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">yn</span><span class="p">):</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">kernel</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">km</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">kn</span><span class="p">])</span> 
+    
+    <span class="k">return</span> <span class="n">y</span>
+
+<span class="k">def</span> <span class="nf">convolve_v1</span><span class="p">(</span><span class="n">input_image</span><span class="p">,</span> <span class="n">kernels</span><span class="p">,</span> <span class="n">biases</span><span class="p">):</span>
     
     <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">input_chans</span> <span class="o">=</span> <span class="n">input_image</span><span class="o">.</span><span class="n">shape</span> 
     <span class="n">km</span><span class="p">,</span> <span class="n">kn</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">output_chans</span> <span class="o">=</span> <span class="n">kernels</span><span class="o">.</span><span class="n">shape</span>
@@ -550,7 +508,50 @@ the number of input channels.  Here we generate a batch containing a single $4\t
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">features_</span> <span class="o">=</span> <span class="n">convolve</span><span class="p">(</span><span class="n">input_image</span><span class="p">,</span> <span class="n">kernels</span><span class="p">,</span> <span class="n">biases</span><span class="p">)[</span><span class="kc">None</span><span class="p">,:,:,:]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">conv2d_v2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">kernel</span><span class="p">):</span>
+    <span class="n">xm</span><span class="p">,</span> <span class="n">xn</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> 
+    <span class="n">km</span><span class="p">,</span> <span class="n">kn</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">shape</span> 
+    
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">xm</span> <span class="o">-</span> <span class="n">km</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">xn</span> <span class="o">-</span> <span class="n">kn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    
+    <span class="n">ym</span><span class="p">,</span> <span class="n">yn</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ym</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">yn</span><span class="p">):</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">kernel</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">km</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">kn</span><span class="p">,:])</span> 
+    
+    <span class="k">return</span> <span class="n">y</span>
+
+<span class="k">def</span> <span class="nf">convolve_v2</span><span class="p">(</span><span class="n">features_in</span><span class="p">,</span> <span class="n">kernels</span><span class="p">,</span> <span class="n">biases</span><span class="p">):</span>
+    
+    <span class="n">fm</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">features_in</span><span class="o">.</span><span class="n">shape</span> 
+    <span class="n">km</span><span class="p">,</span> <span class="n">kn</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">no</span> <span class="o">=</span> <span class="n">kernels</span><span class="o">.</span><span class="n">shape</span>
+    
+    <span class="n">fm</span> <span class="o">=</span> <span class="n">fm</span> <span class="o">-</span> <span class="n">km</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span> <span class="o">-</span> <span class="n">kn</span> <span class="o">+</span> <span class="mi">1</span> 
+    
+    <span class="n">features_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">fm</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">no</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">no</span><span class="p">):</span>
+        <span class="n">features_out</span><span class="p">[:,:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">conv2d_v2</span><span class="p">(</span><span class="n">features_in</span><span class="p">,</span> <span class="n">kernels</span><span class="p">[:,:,:,</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="n">biases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">features_out</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">features_</span> <span class="o">=</span> <span class="n">convolve_v2</span><span class="p">(</span><span class="n">input_image</span><span class="p">,</span> <span class="n">kernels</span><span class="p">,</span> <span class="n">biases</span><span class="p">)[</span><span class="kc">None</span><span class="p">,:,:,:]</span>
 </pre></div>
 
     </div>
@@ -610,7 +611,7 @@ the number of input channels.  Here we generate a batch containing a single $4\t
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">feature_maps</span><span class="p">,</span> <span class="n">features_</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">ll</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">features_</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -931,6 +932,40 @@ array([[1.2988867, 1.2988867],
 
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array([0., 0., 0.])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">pool2D</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">fn</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">):</span>
     <span class="n">xm</span><span class="p">,</span> <span class="n">xn</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> 
     <span class="n">pm</span><span class="p">,</span> <span class="n">pn</span> <span class="o">=</span> <span class="n">pool_size</span> 
@@ -948,35 +983,6 @@ array([[1.2988867, 1.2988867],
             <span class="n">jj</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="n">ii</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">y</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">##    xm, xn = x.shape </span>
-<span class="c1">#    pm, pn = pool_size </span>
-<span class="c1">#    sm, sn = strides</span>
-<span class="c1">#    </span>
-<span class="c1">#    y = np.zeros((xm - pm + 1, xn - pn + 1))</span>
-<span class="c1">#    </span>
-<span class="c1">#    ym, yn = y.shape</span>
-<span class="c1">#    </span>
-<span class="c1">#    for i in range(0, ym):</span>
-<span class="c1">#        for j in range(0, yn):</span>
-<span class="c1">#            y[i,j] = np.max(x[i:i+pm,j:j+pn])</span>
-<span class="c1">#    </span>
-<span class="c1">#    return y</span>
 </pre></div>
 
     </div>
