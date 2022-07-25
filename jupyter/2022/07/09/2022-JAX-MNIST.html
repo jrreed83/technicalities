@@ -831,8 +831,8 @@ $$<p>where $\ell$ represents the loss-function used in model training and $\alph
 <blockquote>
 <p>"an algorithm for first-order gradient-based optimization of stochastic objective functions, based on adaptive estimates of lower-order moments."</p>
 </blockquote>
-<p>and from the same paper:&gt; "The method computes individual adaptive learning rates for different parameters from estimates of first and second moments of the gradients; the name Adam is derived from adaptive moment estimation."</p>
-<p>For now, an optimizer has an <code>__init__</code> and <code>step</code> method.  The <code>__init__</code> method initializes the parameters used to calculate the step direction or step size, while the <code>step</code> method updates the model and any optimizer parameters.</p>
+<p>and from the same paper:&gt; "The method computes individual adaptive learning rates for different parameters from estimates of first and second moments of the gradients; the name Adam is derived from adaptive moment estimation."
+For now, an optimizer has an <code>__init__</code> and <code>step</code> method.  The <code>__init__</code> method initializes the parameters used to calculate the step direction or step size, while the <code>step</code> method updates the model and any optimizer parameters.</p>
 
 </div>
 </div>
@@ -910,7 +910,10 @@ $$<p>where $\ell$ represents the loss-function used in model training and $\alph
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The <code>step</code> implementations illustrate why registering models as pytrees is so important.  In functional programming, you often <em>map</em> a function operating on a single item</p>
+<p>The <code>step</code> implementations above help illustrate why registering models as pytrees is so important.  Consider the following line taken from <code>Adam</code>'s <code>step</code> method:</p>
+<div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">tree_map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">,</span> <span class="n">g</span><span class="p">:</span> <span class="n">v_decay</span><span class="o">*</span><span class="n">v</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">v_decay</span><span class="p">)</span><span class="o">*</span><span class="n">g</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">grads</span><span class="p">)</span>
+</pre></div>
+<p>The passed in <code>lambda</code> is a function of two JAX arrays; <code>v</code> and <code>grads</code> are pytrees.  Internally, <code>jax.tree_map</code> flattens each of the pytrees, calls the <code>lambda</code> on each item in the flattened pytree, and unflattens the result.</p>
 
 </div>
 </div>
