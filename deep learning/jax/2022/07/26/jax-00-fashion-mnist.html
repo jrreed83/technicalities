@@ -199,7 +199,8 @@ Epoch 4/5
 1874/1875  [===============================] - 2s  1.46ms/batch - loss: 0.3079  - accuracy: 0.8871     - val_loss: 0.3797 - val_accuracy: 0.8616
 Epoch 5/5
 1874/1875  [===============================] - 2s  1.97ms/batch - loss: 0.2891  - accuracy: 0.8935     - val_loss: 0.3599 - val_accuracy: 0.8710</code></pre>
-<p>Besides using the Keras datasets library, everything will be written from scratch.  My goal is to demonstrate how simple it is to build the begininnings of a deep-learning library when you're working with the right set of tools.</p>
+<p>It's pretty standard stuff.  Grab some data,  prepare the data for model training and validation, build a network with a commonly used <em>sequential</em> API, 
+and finally train the model.  Besides using the Keras datasets library, everything will be written from scratch.  My goal is to demonstrate how simple it is to build the begininnings of a deep-learning library when you're working with the right set of tools.</p>
 
 </div>
 </div>
@@ -425,7 +426,7 @@ Number testing examples = 10000
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="The-Sequential-Model">The Sequential Model<a class="anchor-link" href="#The-Sequential-Model"> </a></h2><p>A sequential model is a list of <code>Callable</code> objects that is evaluated by calling each members <code>__call__</code> method in order.  Each list element is a registered pytree, but I also wanted to have the flexibility to pass ordinary functions to the <code>Sequential</code> constructor and have everything just work.  As you'll soon see this feature was implemented by modifying the <code>__init__</code> method.</p>
+<h2 id="The-Sequential-Model">The Sequential Model<a class="anchor-link" href="#The-Sequential-Model"> </a></h2><p>As was shown above, we're going to build a <em>sequential</em> model.  It is made from a list of <code>Callable</code> objects that is evaluated by calling each members <code>__call__</code> method in order.  Each list element is a registered pytree, but I also wanted to have the flexibility to pass ordinary functions to the <code>Sequential</code> constructor and have everything just work.  As you'll soon see this feature was implemented by modifying the <code>__init__</code> method. Before building <code>Sequential</code> though, we need some basic layers.</p>
 
 </div>
 </div>
