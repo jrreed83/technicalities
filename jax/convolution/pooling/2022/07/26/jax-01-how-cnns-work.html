@@ -4,23 +4,21 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Convolutional Layer | Technicalities</title>
+<title>Checking Understanding of Convolutional and Pooling Layers | Technicalities</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Convolutional Layer" />
+<meta property="og:title" content="Checking Understanding of Convolutional and Pooling Layers" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="A repository of code and other technical stuff." />
 <meta property="og:description" content="A repository of code and other technical stuff." />
-<link rel="canonical" href="https://jrreed83.github.io/technicalities/jupyter/2022/07/09/2022-Convolutional-Layers.html" />
-<meta property="og:url" content="https://jrreed83.github.io/technicalities/jupyter/2022/07/09/2022-Convolutional-Layers.html" />
+<link rel="canonical" href="https://jrreed83.github.io/technicalities/jax/convolution/pooling/2022/07/26/jax-01-how-cnns-work.html" />
+<meta property="og:url" content="https://jrreed83.github.io/technicalities/jax/convolution/pooling/2022/07/26/jax-01-how-cnns-work.html" />
 <meta property="og:site_name" content="Technicalities" />
-<meta property="og:image" content="https://jrreed83.github.io/technicalities/images/chart-preview.png" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2022-07-09T00:00:00-05:00" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta property="twitter:image" content="https://jrreed83.github.io/technicalities/images/chart-preview.png" />
-<meta property="twitter:title" content="Convolutional Layer" />
+<meta property="article:published_time" content="2022-07-26T00:00:00-05:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Checking Understanding of Convolutional and Pooling Layers" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-07-09T00:00:00-05:00","datePublished":"2022-07-09T00:00:00-05:00","description":"A repository of code and other technical stuff.","headline":"Convolutional Layer","image":"https://jrreed83.github.io/technicalities/images/chart-preview.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://jrreed83.github.io/technicalities/jupyter/2022/07/09/2022-Convolutional-Layers.html"},"url":"https://jrreed83.github.io/technicalities/jupyter/2022/07/09/2022-Convolutional-Layers.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-07-26T00:00:00-05:00","datePublished":"2022-07-26T00:00:00-05:00","description":"A repository of code and other technical stuff.","headline":"Checking Understanding of Convolutional and Pooling Layers","mainEntityOfPage":{"@type":"WebPage","@id":"https://jrreed83.github.io/technicalities/jax/convolution/pooling/2022/07/26/jax-01-how-cnns-work.html"},"url":"https://jrreed83.github.io/technicalities/jax/convolution/pooling/2022/07/26/jax-01-how-cnns-work.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/technicalities/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jrreed83.github.io/technicalities/feed.xml" title="Technicalities" /><link rel="shortcut icon" type="image/x-icon" href="/technicalities/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
@@ -91,8 +89,8 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Convolutional Layer</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-07-09T00:00:00-05:00" itemprop="datePublished">
-        Jul 9, 2022
+    <h1 class="post-title p-name" itemprop="name headline">Checking Understanding of Convolutional and Pooling Layers</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-07-26T00:00:00-05:00" itemprop="datePublished">
+        Jul 26, 2022
       </time>
        • <span class="read-time" title="Estimated read time">
     
@@ -104,7 +102,13 @@ window.onload = wrap_img;
     
       <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
       
-        <a class="category-tags-link" href="/technicalities/categories/#jupyter">jupyter</a>
+        <a class="category-tags-link" href="/technicalities/categories/#jax">jax</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/technicalities/categories/#convolution">convolution</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/technicalities/categories/#pooling">pooling</a>
         
       
       </p>
@@ -115,24 +119,24 @@ window.onload = wrap_img;
         <div class="pb-5 d-flex flex-justify-center">
           <div class="px-2">
 
-    <a href="https://github.com/jrreed83/technicalities/tree/master/_notebooks/2022-07-09-2022-Convolutional-Layers.ipynb" role="button" target="_blank">
+    <a href="https://github.com/jrreed83/technicalities/tree/master/_notebooks/2022-07-26-jax-01-how-cnns-work.ipynb" role="button" target="_blank">
 <img class="notebook-badge-image" src="/technicalities/assets/badges/github.svg" alt="View On GitHub">
     </a>
 </div>
 
           <div class="px-2">
-    <a href="https://mybinder.org/v2/gh/jrreed83/technicalities/master?filepath=_notebooks%2F2022-07-09-2022-Convolutional-Layers.ipynb" target="_blank">
+    <a href="https://mybinder.org/v2/gh/jrreed83/technicalities/master?filepath=_notebooks%2F2022-07-26-jax-01-how-cnns-work.ipynb" target="_blank">
         <img class="notebook-badge-image" src="/technicalities/assets/badges/binder.svg" alt="Open In Binder"/>
     </a>
 </div>
 
           <div class="px-2">
-    <a href="https://colab.research.google.com/github/jrreed83/technicalities/blob/master/_notebooks/2022-07-09-2022-Convolutional-Layers.ipynb" target="_blank">
+    <a href="https://colab.research.google.com/github/jrreed83/technicalities/blob/master/_notebooks/2022-07-26-jax-01-how-cnns-work.ipynb" target="_blank">
         <img class="notebook-badge-image" src="/technicalities/assets/badges/colab.svg" alt="Open In Colab"/>
     </a>
 </div>
           <div class="px-2">
-  <a href="https://deepnote.com/launch?url=https%3A%2F%2Fgithub.com%2Fjrreed83%2Ftechnicalities%2Fblob%2Fmaster%2F_notebooks%2F2022-07-09-2022-Convolutional-Layers.ipynb" target="_blank">
+  <a href="https://deepnote.com/launch?url=https%3A%2F%2Fgithub.com%2Fjrreed83%2Ftechnicalities%2Fblob%2Fmaster%2F_notebooks%2F2022-07-26-jax-01-how-cnns-work.ipynb" target="_blank">
       <img class="notebook-badge-image" src="/technicalities/assets/badges/deepnote.svg" alt="Launch in Deepnote"/>
   </a>
 </div>
@@ -154,7 +158,7 @@ window.onload = wrap_img;
 #################################################
 ### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
 #################################################
-# file to edit: _notebooks/2022-07-09-2022-Convolutional-Layers.ipynb
+# file to edit: _notebooks/2022-07-26-jax-01-how-cnns-work.ipynb
 -->
 
 <div class="container" id="notebook-container">
@@ -165,7 +169,7 @@ window.onload = wrap_img;
 <h2 id="Introduction">
 <a class="anchor" href="#Introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction<a class="anchor-link" href="#Introduction"> </a>
 </h2>
-<p>The purpose of this post is to check my understanding of 2D convolutional and pooling layers.  Keras will be used to create small <code>Conv2D</code> and <code>MaxPool2D</code> layers, apply them to a randomly</p>
+<p>The purpose of this post is to .  Keras will be used to create small <code>Conv2D</code> and <code>MaxPool2D</code> layers, apply them to a randomly</p>
 
 </div>
 </div>
@@ -1112,15 +1116,7 @@ array([[1.2988867, 1.2988867],
 
 
 
-  </div><!-- from https://github.com/utterance/utterances -->
-<script src="https://utteranc.es/client.js"
-        repo="jrreed83/technicalities"
-        issue-term="title"
-        label="blogpost-comment"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-</script><a class="u-url" href="/technicalities/jupyter/2022/07/09/2022-Convolutional-Layers.html" hidden></a>
+  </div><a class="u-url" href="/technicalities/jax/convolution/pooling/2022/07/26/jax-01-how-cnns-work.html" hidden></a>
 </article>
 
       </div>
