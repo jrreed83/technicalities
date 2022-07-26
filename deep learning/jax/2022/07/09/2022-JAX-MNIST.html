@@ -4,23 +4,21 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Fashion MNIST using Linear Layers with JAX | Technicalities</title>
+<title>Fashion MNIST with Vanilla JAX | Technicalities</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Fashion MNIST using Linear Layers with JAX" />
+<meta property="og:title" content="Fashion MNIST with Vanilla JAX" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="A repository of code and other technical stuff." />
 <meta property="og:description" content="A repository of code and other technical stuff." />
-<link rel="canonical" href="https://jrreed83.github.io/technicalities/jupyter/2022/07/09/2022-JAX-MNIST.html" />
-<meta property="og:url" content="https://jrreed83.github.io/technicalities/jupyter/2022/07/09/2022-JAX-MNIST.html" />
+<link rel="canonical" href="https://jrreed83.github.io/technicalities/deep%20learning/jax/2022/07/09/2022-JAX-MNIST.html" />
+<meta property="og:url" content="https://jrreed83.github.io/technicalities/deep%20learning/jax/2022/07/09/2022-JAX-MNIST.html" />
 <meta property="og:site_name" content="Technicalities" />
-<meta property="og:image" content="https://jrreed83.github.io/technicalities/images/chart-preview.png" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2022-07-09T00:00:00-05:00" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta property="twitter:image" content="https://jrreed83.github.io/technicalities/images/chart-preview.png" />
-<meta property="twitter:title" content="Fashion MNIST using Linear Layers with JAX" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Fashion MNIST with Vanilla JAX" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-07-09T00:00:00-05:00","datePublished":"2022-07-09T00:00:00-05:00","description":"A repository of code and other technical stuff.","headline":"Fashion MNIST using Linear Layers with JAX","image":"https://jrreed83.github.io/technicalities/images/chart-preview.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://jrreed83.github.io/technicalities/jupyter/2022/07/09/2022-JAX-MNIST.html"},"url":"https://jrreed83.github.io/technicalities/jupyter/2022/07/09/2022-JAX-MNIST.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-07-09T00:00:00-05:00","datePublished":"2022-07-09T00:00:00-05:00","description":"A repository of code and other technical stuff.","headline":"Fashion MNIST with Vanilla JAX","mainEntityOfPage":{"@type":"WebPage","@id":"https://jrreed83.github.io/technicalities/deep%20learning/jax/2022/07/09/2022-JAX-MNIST.html"},"url":"https://jrreed83.github.io/technicalities/deep%20learning/jax/2022/07/09/2022-JAX-MNIST.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/technicalities/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jrreed83.github.io/technicalities/feed.xml" title="Technicalities" /><link rel="shortcut icon" type="image/x-icon" href="/technicalities/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
@@ -91,7 +89,7 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Fashion MNIST using Linear Layers with JAX</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-07-09T00:00:00-05:00" itemprop="datePublished">
+    <h1 class="post-title p-name" itemprop="name headline">Fashion MNIST with Vanilla JAX</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-07-09T00:00:00-05:00" itemprop="datePublished">
         Jul 9, 2022
       </time>
        • <span class="read-time" title="Estimated read time">
@@ -104,7 +102,10 @@ window.onload = wrap_img;
     
       <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
       
-        <a class="category-tags-link" href="/technicalities/categories/#jupyter">jupyter</a>
+        <a class="category-tags-link" href="/technicalities/categories/#deep learning">deep learning</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/technicalities/categories/#JAX">JAX</a>
         
       
       </p>
@@ -143,7 +144,6 @@ window.onload = wrap_img;
   <div class="post-content e-content" itemprop="articleBody">
     <ul id="toc" class="section-nav">
 <li class="toc-entry toc-h2"><a href="#Introduction">Introduction </a></li>
-<li class="toc-entry toc-h2"><a href="#The-Goal">The Goal </a></li>
 <li class="toc-entry toc-h2"><a href="#Load-Libraries">Load Libraries </a></li>
 <li class="toc-entry toc-h2"><a href="#Loading-the-Data">Loading the Data </a></li>
 <li class="toc-entry toc-h2"><a href="#The-Sequential-Model">The Sequential Model </a>
@@ -185,15 +185,12 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="The-Goal">
-<a class="anchor" href="#The-Goal" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Goal<a class="anchor-link" href="#The-Goal"> </a>
-</h2>
-<p>To be a little more specific, here's what we're going to work toward:</p>
+<p>By the end of this write up, I'm going to end up with this:</p>
 <div class="highlight"><pre><span></span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),</span> <span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">fashion_mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span> 
 <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 <span class="n">valid_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
 <span class="n">train_datasource</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
-<span class="n">valid_datasource</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">valid_dataset</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
+<span class="n">valid_datasource</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">valid_dataset</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 
 <span class="n">network</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span>
     <span class="n">rescale_image</span><span class="p">,</span>
@@ -204,29 +201,30 @@ window.onload = wrap_img;
     <span class="n">softmax</span>  
 <span class="p">)</span>
 
-<span class="n">grad_fn</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">fashion_mnist_loss</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">y</span><span class="p">)))</span>
+<span class="n">grad_fn</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">sparse_cross_entropy</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="p">))))</span>
 
 <span class="n">history</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span>
     <span class="n">num_epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
     <span class="n">train_datasource</span><span class="o">=</span><span class="n">train_datasource</span><span class="p">,</span> 
-    <span class="n">valid_datasource</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span> 
-    <span class="n">loss_fn</span><span class="o">=</span><span class="n">fashion_mnist_loss</span><span class="p">,</span> 
+    <span class="n">valid_datasource</span><span class="o">=</span><span class="n">valid_datasource</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span> 
+    <span class="n">loss_fn</span><span class="o">=</span><span class="n">sparse_cross_entropy</span><span class="p">,</span> 
     <span class="n">model</span><span class="o">=</span><span class="n">network</span><span class="p">,</span>
     <span class="n">grad_fn</span><span class="o">=</span><span class="n">grad_fn</span>
 <span class="p">)</span>
 </pre></div>
 
 <pre><code>Epoch 1/5
-1874/1875  [===============================] - 3s  1.49ms/batch  -  loss: 0.4958   -  accuracy: 0.8245      
+1874/1875  [===============================] - 2s  1.65ms/batch - loss: 0.4956  - accuracy: 0.8250     - val_loss: 0.4446 - val_accuracy: 0.8396
 Epoch 2/5
-1874/1875  [===============================] - 2s  1.40ms/batch  -  loss: 0.3725   -  accuracy: 0.8654    
+1874/1875  [===============================] - 2s  1.40ms/batch - loss: 0.3716  - accuracy: 0.8654     - val_loss: 0.4271 - val_accuracy: 0.8446
 Epoch 3/5
-1874/1875  [===============================] - 2s  1.53ms/batch  -  loss: 0.3339   -  accuracy: 0.8778    
+1874/1875  [===============================] - 2s  1.39ms/batch - loss: 0.3330  - accuracy: 0.8791     - val_loss: 0.4034 - val_accuracy: 0.8528
 Epoch 4/5
-1874/1875  [===============================] - 2s  1.55ms/batch  -  loss: 0.3080   -  accuracy: 0.8869    
+1874/1875  [===============================] - 2s  1.46ms/batch - loss: 0.3079  - accuracy: 0.8871     - val_loss: 0.3797 - val_accuracy: 0.8616
 Epoch 5/5
-1874/1875  [===============================] - 2s  1.46ms/batch  -  loss: 0.2900   -  accuracy: 0.8934</code></pre>
+1874/1875  [===============================] - 2s  1.97ms/batch - loss: 0.2891  - accuracy: 0.8935     - val_loss: 0.3599 - val_accuracy: 0.8710</code></pre>
+<p>Besides using the Keras datasets library, everything will be written from scratch.  My goal is to demonstrate how simple it is to build the begininnings of a deep-learning library when you're working with the right set of tools.</p>
 
 </div>
 </div>
@@ -272,7 +270,7 @@ Epoch 5/5
 <h2 id="Loading-the-Data">
 <a class="anchor" href="#Loading-the-Data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Loading the Data<a class="anchor-link" href="#Loading-the-Data"> </a>
 </h2>
-<p>I really like Pytorch's approach to handling data, and could have just imported it's builtin <code>Dataset</code> and <code>Dataloader</code> classes.</p>
+<p>The <code>Dataset</code> and <code>Dataloader</code> classes shown below are stripped down versions of their Pytorch versions.  For now, a <code>Dataset</code> is a container for JAX feature and label arrays.  In fact, besides having a length ( because it has a <code>__len__</code> method), it's pretty useless.  The <code>Dataloader</code> gives you the ability to iterate over batches of data from a <code>Dataset</code>, which is very important for effective model training.</p>
 
 </div>
 </div>
@@ -327,6 +325,14 @@ Epoch 5/5
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Here's an example of the <code>Dataset</code> and <code>Dataloader</code> in action.  First we grab the training data using the Keras library and build a dataloader that grabs <code>8</code> images at a time.</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -334,9 +340,11 @@ Epoch 5/5
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">fashion_mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-<span class="n">dataloader</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">fashion_mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span> 
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">Dataloader</span><span class="p">(</span>
+    <span class="n">Dataset</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),</span>
+    <span class="n">batchsize</span><span class="o">=</span><span class="mi">8</span>
+<span class="p">)</span>
 </pre></div>
 
     </div>
@@ -346,6 +354,55 @@ Epoch 5/5
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To take a look at the first set of images, I'll convert <code>dataloader</code> to an iterator and use <code>next</code>:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">first_batch</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataloader</span><span class="p">))</span>
+<span class="n">X_0</span><span class="p">,</span> <span class="n">y_0</span> <span class="o">=</span> <span class="n">first_batch</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'shape of X_0 = </span><span class="si">{</span><span class="n">X_0</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">, shape of y_0 = </span><span class="si">{</span><span class="n">y_0</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>shape of X_0 = (8, 28, 28), shape of y_0 = (8,)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Indeed, the first batch contains 8, $28 x 28$ images.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -427,8 +484,8 @@ Epoch 5/5
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>The one glaring difference is the decorator and the two <em>tree</em> methods.  As the JAX documentation explains, the <code>register_pytree_node_class</code>, <code>tree_flatten</code> method, and <code>tree_unflatten</code> class methods are required to add a user-defined class to the JAX pytree registry.  Once added, JAX will know how to transform back and forth between objects that the rest of JAX system can efficiently operate on, and objects that are specific to your application.</p>
-<p>The <code>tree_flatten</code> method returns a two-element tuple consisting of the parameters you want to expose to JAX, and any meta-data that can help reconstruct the object.  Because JAX seems to really embrace the functional paradigm of immutable data structures, I thought it might be better to express the parameters as a tuple.  For <code>Linear</code>, the parameters are the weights and biases of the neural network.  For now, the only meta-data that seems helpful are the number of inputs and outputs (although this could be derived from the shape of the weights.</p>
-<p>Another thing to notice about <code>Linear</code> is the <code>build</code> attribute.  Most of the time, you want to initialize the weights and biases at creation time.  However, you don't want to do this when JAX reconstructs the object from it's flattened representation.  You probably just want to plop the parameters right into a freshly constructed object. The <code>build</code> attribute gives you some flexibility in that regard.</p>
+<p>The <code>tree_flatten</code> method returns a two-element tuple consisting of the parameters you want to expose to JAX, and any meta-data that can help reconstruct the object.  Because JAX embraces the functional paradigm of immutable data structures, I thought it might be better to express the parameters as a tuple.  For <code>Linear</code>, the parameters are the weights and biases of the neural network.  For now, the only meta-data that seems helpful are the number of inputs and outputs (although this could be derived from the shape of the weights.</p>
+<p>Another noteworthy thing about <code>Linear</code> is the <code>build</code> attribute.  Most of the time, you want to initialize the weights and biases at creation time time.  However, you don't want to do this when JAX reconstructs the object from it's flattened representation.  You probably just want to plop the parameters right into a freshly constructed object. The <code>build</code> attribute gives you some flexibility in that regard.</p>
 
 </div>
 </div>
@@ -593,7 +650,7 @@ Epoch 5/5
 <h3 id="Sequential-Model">
 <a class="anchor" href="#Sequential-Model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sequential Model<a class="anchor-link" href="#Sequential-Model"> </a>
 </h3>
-<p>With the supporting pieces implemented, we can define <code>Sequential</code>.</p>
+<p>With the supporting pieces implemented, the <code>Sequential</code> class can be defined.</p>
 
 </div>
 </div>
@@ -658,7 +715,7 @@ Epoch 5/5
 <li>if it is a pytree, adds the layer to the list of layers</li>
 <li>if it is a function, but not a pytree, wraps the function in a <code>Function</code> object and adds the pytree to the list of layers.</li>
 </ol>
-<p>Either way, at the end of construction, each <code>Sequential</code> instance is a list of registered pytrees.  At this point, <code>Sequential</code> is added to the pytree registry by implementing <code>tree_flatten</code> and <code>tree_unflatten</code> by looping over the layers, calling each layer's flatten of unflatten method, and collecting the results.</p>
+<p>Either way, at the end of construction, each <code>Sequential</code> instance is a list of pytrees.  At this point, <code>Sequential</code> is made into a pytree in the usual way: by implementing <code>tree_flatten</code> and <code>tree_unflatten</code> which loop over the layers, calling each layer's flatten of unflatten method, and collecting the results.</p>
 
 </div>
 </div>
@@ -712,40 +769,6 @@ Function(softmax)
 
 </pre>
 </div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">x</span><span class="p">[</span><span class="n">jnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">),[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>DeviceArray([0., 0., 0., 0., 0.], dtype=float32)</pre>
-</div>
-
 </div>
 
 </div>
@@ -922,86 +945,6 @@ $$<p>where $\ell$ represents the loss-function used in model training and $\alph
 </div>
 </div>
 </div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span>jax.tree_map<span class="o">??</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea ">
-<pre><span class="ansi-red-fg">Signature:</span>
-jax<span class="ansi-blue-fg">.</span>tree_map<span class="ansi-blue-fg">(</span>
-    f<span class="ansi-blue-fg">:</span> Callable<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">...</span><span class="ansi-blue-fg">,</span> Any<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
-    tree<span class="ansi-blue-fg">:</span> Any<span class="ansi-blue-fg">,</span>
-    <span class="ansi-blue-fg">*</span>rest<span class="ansi-blue-fg">:</span> Any<span class="ansi-blue-fg">,</span>
-    is_leaf<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>Callable<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">[</span>Any<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> bool<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> NoneType<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> Any
-<span class="ansi-red-fg">Source:</span>   
-<span class="ansi-green-fg">def</span> tree_map<span class="ansi-blue-fg">(</span>f<span class="ansi-blue-fg">:</span> Callable<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">...</span><span class="ansi-blue-fg">,</span> Any<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> tree<span class="ansi-blue-fg">:</span> Any<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>rest<span class="ansi-blue-fg">:</span> Any<span class="ansi-blue-fg">,</span>
-             is_leaf<span class="ansi-blue-fg">:</span> Optional<span class="ansi-blue-fg">[</span>Callable<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">[</span>Any<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> bool<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> Any<span class="ansi-blue-fg">:</span>
-  <span class="ansi-blue-fg">"""Maps a multi-input function over pytree args to produce a new pytree.</span>
-
-<span class="ansi-blue-fg">  Args:</span>
-<span class="ansi-blue-fg">    f: function that takes ``1 + len(rest)`` arguments, to be applied at the</span>
-<span class="ansi-blue-fg">      corresponding leaves of the pytrees.</span>
-<span class="ansi-blue-fg">    tree: a pytree to be mapped over, with each leaf providing the first</span>
-<span class="ansi-blue-fg">      positional argument to ``f``.</span>
-<span class="ansi-blue-fg">    rest: a tuple of pytrees, each of which has the same structure as ``tree``</span>
-<span class="ansi-blue-fg">      or has ``tree`` as a prefix.</span>
-<span class="ansi-blue-fg">    is_leaf: an optionally specified function that will be called at each</span>
-<span class="ansi-blue-fg">      flattening step. It should return a boolean, which indicates whether</span>
-<span class="ansi-blue-fg">      the flattening should traverse the current object, or if it should be</span>
-<span class="ansi-blue-fg">      stopped immediately, with the whole subtree being treated as a leaf.</span>
-
-<span class="ansi-blue-fg">  Returns:</span>
-<span class="ansi-blue-fg">    A new pytree with the same structure as ``tree`` but with the value at each</span>
-<span class="ansi-blue-fg">    leaf given by ``f(x, *xs)`` where ``x`` is the value at the corresponding</span>
-<span class="ansi-blue-fg">    leaf in ``tree`` and ``xs`` is the tuple of values at corresponding nodes in</span>
-<span class="ansi-blue-fg">    ``rest``.</span>
-
-<span class="ansi-blue-fg">  Examples:</span>
-
-<span class="ansi-blue-fg">    &gt;&gt;&gt; import jax.tree_util</span>
-<span class="ansi-blue-fg">    &gt;&gt;&gt; jax.tree_util.tree_map(lambda x: x + 1, {"x": 7, "y": 42})</span>
-<span class="ansi-blue-fg">    {'x': 8, 'y': 43}</span>
-
-<span class="ansi-blue-fg">    If multiple inputs are passed, the structure of the tree is taken from the</span>
-<span class="ansi-blue-fg">    first input; subsequent inputs need only have ``tree`` as a prefix:</span>
-
-<span class="ansi-blue-fg">    &gt;&gt;&gt; jax.tree_util.tree_map(lambda x, y: [x] + y, [5, 6], [[7, 9], [1, 2]])</span>
-<span class="ansi-blue-fg">    [[5, 7, 9], [6, 1, 2]]</span>
-<span class="ansi-blue-fg">  """</span>
-  leaves<span class="ansi-blue-fg">,</span> treedef <span class="ansi-blue-fg">=</span> tree_flatten<span class="ansi-blue-fg">(</span>tree<span class="ansi-blue-fg">,</span> is_leaf<span class="ansi-blue-fg">)</span>
-  all_leaves <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">[</span>leaves<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">+</span> <span class="ansi-blue-fg">[</span>treedef<span class="ansi-blue-fg">.</span>flatten_up_to<span class="ansi-blue-fg">(</span>r<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">for</span> r <span class="ansi-green-fg">in</span> rest<span class="ansi-blue-fg">]</span>
-  <span class="ansi-green-fg">return</span> treedef<span class="ansi-blue-fg">.</span>unflatten<span class="ansi-blue-fg">(</span>f<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>xs<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">for</span> xs <span class="ansi-green-fg">in</span> zip<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>all_leaves<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-red-fg">File:</span>      ~/anaconda3/lib/python3.8/site-packages/jax/_src/tree_util.py
-<span class="ansi-red-fg">Type:</span>      function
-</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -1173,7 +1116,7 @@ jax<span class="ansi-blue-fg">.</span>tree_map<span class="ansi-blue-fg">(</span
 <h2 id="The-Training-Loop">
 <a class="anchor" href="#The-Training-Loop" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Training Loop<a class="anchor-link" href="#The-Training-Loop"> </a>
 </h2>
-<p>The training loop is pretty basic, but looks cluttered because it's arranged as a single function.  Most frameworks split the training loop into several pieces, and incorporates a callback system that allows a user to customize it's functionality.  Otherwise, you'd likely have to resort to writing a new training loop for each problem.  Besides that, a callback system would lead to less cluttered (and therefore less buggy) code.</p>
+<p>The training loop is pretty simple, but I admit that it looks a little cluttered.  Most frameworks and libraries split the it into several separate functions, and incorporate a callback system that allows a user to customize it's functionality.  Without the flexibility that a callback system offers, you'd probably need to implement a new training loop for every project.  Besides that, callbacks lend themselved to less cluttered (and therefore less buggy) code.  I'll likely work on some semi-simple callback system in the future.</p>
 
 </div>
 </div>
@@ -1503,15 +1446,7 @@ Epoch 5/5
 
 
 
-  </div><!-- from https://github.com/utterance/utterances -->
-<script src="https://utteranc.es/client.js"
-        repo="jrreed83/technicalities"
-        issue-term="title"
-        label="blogpost-comment"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-</script><a class="u-url" href="/technicalities/jupyter/2022/07/09/2022-JAX-MNIST.html" hidden></a>
+  </div><a class="u-url" href="/technicalities/deep%20learning/jax/2022/07/09/2022-JAX-MNIST.html" hidden></a>
 </article>
 
       </div>
