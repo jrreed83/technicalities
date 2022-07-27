@@ -95,7 +95,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      5 min read
+      3 min read
     
 </span></p>
 
@@ -147,11 +147,7 @@ window.onload = wrap_img;
   <div class="post-content e-content" itemprop="articleBody">
     <ul id="toc" class="section-nav">
 <li class="toc-entry toc-h2"><a href="#Introduction">Introduction </a></li>
-<li class="toc-entry toc-h2"><a href="#Import-Libraries">Import Libraries </a>
-<ul>
-<li class="toc-entry toc-h3"><a href="#Convolutional-Layer">Convolutional Layer </a></li>
-</ul>
-</li>
+<li class="toc-entry toc-h2"><a href="#Import-Libraries">Import Libraries </a></li>
 <li class="toc-entry toc-h2"><a href="#Pooling">Pooling </a></li>
 </ul><!--
 #################################################
@@ -191,7 +187,8 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 </pre></div>
@@ -219,7 +216,7 @@ window.onload = wrap_img;
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span>
-    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span>    
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)),</span>    
     <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPool2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
 <span class="p">])</span>
 </pre></div>
@@ -261,7 +258,7 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Feature Mapping:  (1, 28, 28, 3) -&gt; (1, 13, 13, 4)
+<pre>Feature Mapping:  (1, 28, 28, 3) -&gt; (1, 7, 7, 4)
 </pre>
 </div>
 </div>
@@ -276,6 +273,14 @@ window.onload = wrap_img;
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>The <code>inputs</code> array consists of a single 28-by-28 3-channel array, with an additional axis to make it a batch.  We have to do this because models in Keras operate over batches and not single examples.  Because <code>Conv2D</code> uses 4 filters, and <code>MaxPool2D</code> preserves the number of channels, the <code>outputs</code> also has 4 channels.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This is the recommended way to get the features from all layers in the model</p>
 
 </div>
 </div>
@@ -299,46 +304,10 @@ window.onload = wrap_img;
 </div>
     
 
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">keras_features</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(1, 27, 27, 4)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Convolutional-Layer">
-<a class="anchor" href="#Convolutional-Layer" aria-hidden="true"><span class="octicon octicon-link"></span></a>Convolutional Layer<a class="anchor-link" href="#Convolutional-Layer"> </a>
-</h3>
-<p>The first function argument is the number of filters and the second argument is the shape of the kernel.</p>
+<p>Because <code>model</code> has two layers, the <code>keras_features</code> array has two elements.  Here are the shapes of each:</p>
 
 </div>
 </div>
@@ -350,35 +319,8 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">conv_layer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Arrays fed to <code>layer</code> must be a 4D tensor where the first axis is the batch size, the second axis is the width, the third axis is the height, and the fourth axis is 
-the number of input channels.  Here we generate a batch containing a single $4\times4$ array with 3-channels, pass it to <code>conv_layer</code> and look at the shape of output features.</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">input_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">features</span> <span class="o">=</span> <span class="n">conv_layer</span><span class="p">(</span><span class="n">input_batch</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Feature Mapping:  </span><span class="si">{</span><span class="n">input_image</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1"> -&gt; </span><span class="si">{</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Conv2D output shape = </span><span class="si">{</span><span class="n">keras_features</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'MaxPool2D output shape = </span><span class="si">{</span><span class="n">keras_features</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -391,36 +333,12 @@ the number of input channels.  Here we generate a batch containing a single $4\t
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Feature Mapping:  (1, 4, 4, 3) -&gt; (1, 3, 3, 2)
+<pre>Conv2D output shape = (1, 14, 14, 4)
+MaxPool2D output shape = (1, 7, 7, 4)
 </pre>
 </div>
 </div>
 
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>This means that there's still one image in the batch, but it shrunk from $4\times4$ to $3\times3$.  This resizing effect occurred because unless the input is padded, convolution always reduces the input by a function of it's kernel (or filter size). Also notice that the number of channels went from 3 to 2.  In general, the number of output channels will match the <code>filters</code> argument passed in to the <code>Conv2D</code> constructor.</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">kernels</span><span class="p">,</span> <span class="n">biases</span> <span class="o">=</span> <span class="n">conv_layer</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
-</pre></div>
-
-    </div>
 </div>
 </div>
 
@@ -435,23 +353,7 @@ the number of input channels.  Here we generate a batch containing a single $4\t
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">kernels</span><span class="p">,</span> <span class="n">biases</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'kernels shape = </span><span class="si">{</span><span class="n">kernels</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">, biases shape =</span><span class="si">{</span><span class="n">biases</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'kernels shape = </span><span class="si">{</span><span class="n">kernels</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">, biases shape = </span><span class="si">{</span><span class="n">biases</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -464,7 +366,7 @@ the number of input channels.  Here we generate a batch containing a single $4\t
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>kernels shape = (2, 2, 3, 2), biases shape =(2,)
+<pre>kernels shape = (2, 2, 3, 4), biases shape = (4,)
 </pre>
 </div>
 </div>
@@ -490,118 +392,7 @@ the number of input channels.  Here we generate a batch containing a single $4\t
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">conv2d_v1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">kernel</span><span class="p">):</span>
-    <span class="n">xm</span><span class="p">,</span> <span class="n">xn</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> 
-    <span class="n">km</span><span class="p">,</span> <span class="n">kn</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">shape</span> 
-    
-    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">xm</span> <span class="o">-</span> <span class="n">km</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">xn</span> <span class="o">-</span> <span class="n">kn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
-    
-    <span class="n">ym</span><span class="p">,</span> <span class="n">yn</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ym</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">yn</span><span class="p">):</span>
-            <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">kernel</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">km</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">kn</span><span class="p">])</span> 
-    
-    <span class="k">return</span> <span class="n">y</span>
-
-<span class="k">def</span> <span class="nf">convolve_v1</span><span class="p">(</span><span class="n">input_image</span><span class="p">,</span> <span class="n">kernels</span><span class="p">,</span> <span class="n">biases</span><span class="p">):</span>
-    
-    <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">input_chans</span> <span class="o">=</span> <span class="n">input_image</span><span class="o">.</span><span class="n">shape</span> 
-    <span class="n">km</span><span class="p">,</span> <span class="n">kn</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">output_chans</span> <span class="o">=</span> <span class="n">kernels</span><span class="o">.</span><span class="n">shape</span>
-    
-    <span class="n">w</span> <span class="o">=</span> <span class="n">width</span> <span class="o">-</span> <span class="n">km</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="n">h</span> <span class="o">=</span> <span class="n">height</span> <span class="o">-</span> <span class="n">kn</span> <span class="o">+</span> <span class="mi">1</span> 
-    
-    <span class="n">features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">output_chans</span><span class="p">))</span>
-
-    <span class="k">for</span> <span class="n">out_chan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">output_chans</span><span class="p">):</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">in_chan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">input_chans</span><span class="p">):</span>
-            <span class="n">y</span> <span class="o">+=</span> <span class="n">conv2d</span><span class="p">(</span>
-                <span class="n">input_image</span><span class="p">[:,:,</span><span class="n">in_chan</span><span class="p">],</span>
-                <span class="n">kernels</span><span class="p">[:,:,</span><span class="n">in_chan</span><span class="p">,</span> <span class="n">out_chan</span><span class="p">],</span> 
-            <span class="p">)</span>
-        
-        <span class="c1"># one bias per output feature</span>
-        <span class="n">features</span><span class="p">[:,:,</span><span class="n">out_chan</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">biases</span><span class="p">[</span><span class="n">out_chan</span><span class="p">]</span>
-    
-    <span class="k">return</span> <span class="n">features</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">conv2d_v2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">kernel</span><span class="p">):</span>
-    <span class="n">xm</span><span class="p">,</span> <span class="n">xn</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> 
-    <span class="n">km</span><span class="p">,</span> <span class="n">kn</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">shape</span> 
-    
-    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">xm</span> <span class="o">-</span> <span class="n">km</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">xn</span> <span class="o">-</span> <span class="n">kn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
-    
-    <span class="n">ym</span><span class="p">,</span> <span class="n">yn</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ym</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">yn</span><span class="p">):</span>
-            <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">kernel</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">km</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">kn</span><span class="p">,:])</span> 
-    
-    <span class="k">return</span> <span class="n">y</span>
-
-<span class="k">def</span> <span class="nf">convolve_v2</span><span class="p">(</span><span class="n">features_in</span><span class="p">,</span> <span class="n">kernels</span><span class="p">,</span> <span class="n">biases</span><span class="p">):</span>
-    
-    <span class="n">fm</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">features_in</span><span class="o">.</span><span class="n">shape</span> 
-    <span class="n">km</span><span class="p">,</span> <span class="n">kn</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">no</span> <span class="o">=</span> <span class="n">kernels</span><span class="o">.</span><span class="n">shape</span>
-    
-    <span class="n">fm</span> <span class="o">=</span> <span class="n">fm</span> <span class="o">-</span> <span class="n">km</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span> <span class="o">-</span> <span class="n">kn</span> <span class="o">+</span> <span class="mi">1</span> 
-    
-    <span class="n">features_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">fm</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">no</span><span class="p">))</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">no</span><span class="p">):</span>
-        <span class="n">features_out</span><span class="p">[:,:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">conv2d_v2</span><span class="p">(</span><span class="n">features_in</span><span class="p">,</span> <span class="n">kernels</span><span class="p">[:,:,:,</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="n">biases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-    
-    <span class="k">return</span> <span class="n">features_out</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">features_</span> <span class="o">=</span> <span class="n">convolve_v2</span><span class="p">(</span><span class="n">input_image</span><span class="p">,</span> <span class="n">kernels</span><span class="p">,</span> <span class="n">biases</span><span class="p">)[</span><span class="kc">None</span><span class="p">,:,:,:]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">features_</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="mi">100</span> <span class="o">//</span> <span class="mi">3</span>
 </pre></div>
 
     </div>
@@ -616,17 +407,7 @@ the number of input channels.  Here we generate a batch containing a single $4\t
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>array([[[[ 0.57096572, -0.97925384],
-         [-1.06541922, -0.0675798 ],
-         [ 0.57326961, -0.03206957]],
-
-        [[ 1.72291908, -0.01773216],
-         [-1.19444309,  1.01715131],
-         [ 0.42115538,  0.18736924]],
-
-        [[ 1.00037184,  0.93437332],
-         [-0.83191143, -0.82429726],
-         [ 1.47947074,  0.18596377]]]])</pre>
+<pre>33</pre>
 </div>
 
 </div>
@@ -644,7 +425,98 @@ the number of input channels.  Here we generate a batch containing a single $4\t
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">ll</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">features_</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>34</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">conv2d_v2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">strides</span><span class="p">):</span>
+    <span class="n">xm</span><span class="p">,</span> <span class="n">xn</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> 
+    <span class="n">km</span><span class="p">,</span> <span class="n">kn</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">shape</span> 
+    
+    <span class="n">sm</span><span class="p">,</span> <span class="n">sn</span> <span class="o">=</span> <span class="n">strides</span>
+    <span class="n">ym</span><span class="p">,</span> <span class="n">yn</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">xm</span> <span class="o">-</span> <span class="n">km</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="n">sm</span><span class="p">),</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">xn</span> <span class="o">-</span> <span class="n">kn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="n">sn</span><span class="p">)</span>
+    
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">ym</span><span class="o">*</span><span class="n">yn</span><span class="p">)</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xm</span><span class="o">-</span><span class="n">km</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">sm</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xn</span><span class="o">-</span><span class="n">kn</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">sn</span><span class="p">):</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">kernel</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">km</span><span class="p">,</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">kn</span><span class="p">,:])</span>
+            <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">(</span><span class="n">ym</span><span class="p">,</span> <span class="n">yn</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">convolve_v2</span><span class="p">(</span><span class="n">features_in</span><span class="p">,</span> <span class="n">kernels</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)):</span>
+    
+    <span class="n">num_outputs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">biases</span><span class="p">)</span>
+    
+    <span class="c1"># Get the list of output feature maps</span>
+    <span class="n">features_out</span> <span class="o">=</span> <span class="p">[</span><span class="n">conv2d_v2</span><span class="p">(</span><span class="n">features_in</span><span class="p">,</span> <span class="n">kernels</span><span class="p">[:,:,:,</span><span class="n">i</span><span class="p">],</span> <span class="n">strides</span><span class="p">)</span> <span class="o">+</span> <span class="n">biases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_outputs</span><span class="p">)]</span>
+    
+    <span class="c1"># Build the final array by horizontally stacking the 2D images</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">features_out</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">my_conv_features</span> <span class="o">=</span> <span class="n">convolve_v2</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">,:,:,:],</span> <span class="n">kernels</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,:,:,:]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">keras_features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">my_conv_features</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -1119,6 +991,39 @@ array([[1.2988867, 1.2988867],
 
 <div class="output_text output_subarea output_execute_result">
 <pre>array([[[ 1.3011235 , -0.24245605]]])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(10, 10, 2)</pre>
 </div>
 
 </div>
