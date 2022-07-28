@@ -95,7 +95,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      4 min read
+      5 min read
     
 </span></p>
 
@@ -201,44 +201,11 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>First, I am going to create a small sequential model in Keras consisting of a convolutional layer followed by a max-pooling layer.</p>
+<p>Here's a small sequential model consisting of a convolutional layer and max-pooling layer.</p>
 
 </div>
 </div>
 </div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strides</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(2, 2)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -262,7 +229,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Next, I want to apply the model to a random input.  After this, I'll be able to get at the weights and features.</p>
+<p>For this experiment, I don't care what the model input is.  So I'll apply <code>model</code> to a 1-element batch consisting of a random 28-by-28 array with 3 channels.  As you can see, <code>outputs</code> is a 1-element batch consisting of a 7-by-7 array with 4 channels.  We definitely don't want <code>model</code> to change the number of items in the batch, so the fact that the first-dimension (which is the batch dimension) for <code>inputs</code> and <code>outputs</code> is 1 make sense.</p>
 
 </div>
 </div>
@@ -274,7 +241,7 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">3</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,:,:,:]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Feature Mapping:  </span><span class="si">{</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1"> -&gt; </span><span class="si">{</span><span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 </pre></div>
@@ -300,6 +267,14 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We definitely don't want <code>model</code> to change the number of items in the batch, so the fact that the first-dimension (which is the batch dimension) for <code>inputs</code> and <code>outputs</code> is 1 make sense.  It also makes sense that the number of channels in <code>outputs</code> should be 4.  The <code>filters=4</code> argument in <code>Conv2D</code> means that no matter how large or small the input is, <code>Conv2D</code> will generate a feature map with 4 channels.  We'll see how this works in more detail later on.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
