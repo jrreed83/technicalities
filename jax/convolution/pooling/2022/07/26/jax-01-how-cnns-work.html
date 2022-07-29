@@ -236,7 +236,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>For this experiment, I don't care what the model input is.  So I'll apply <code>model</code> to a 1-element batch consisting of a random 28-by-28 array with 3 channels.  As you can see, <code>outputs</code> is a 1-element batch consisting of a 7-by-7 array with 4 channels.</p>
+<p>For this experiment, I don't care what the model input is.  So I'll apply <code>model</code> to a 1-element batch consisting of a random 28-by-28 array with 3 channels.  As you can see, <code>outputs</code> is a 1-element batch consisting of a 7-by-7 array with 4 channels. Here's a little table comapring the shape of <code>inputs</code> and <code>outputs</code>.</p>
 
 </div>
 </div>
@@ -277,15 +277,8 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We definitely don't want <code>model</code> to change the number of items in the batch, so the fact that the first-dimension (which is the batch dimension) for <code>inputs</code> and <code>outputs</code> is 1 make sense.  It also makes sense that the number of channels in <code>outputs</code> should be 4.  The <code>filters=4</code> argument in <code>Conv2D</code> means that no matter how large or small the input is, <code>Conv2D</code> will generate a feature map with 4 channels.  We'll see how this works in more detail later on.  Because pooling layers preserve the number of channels between inputs and outputs, <code>outputs</code> also has 4 channels.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>This is the recommended way to get the features from all layers in the model: basically use Keras' functional API to build a model that returns the outputs from each layer, given an input batch.</p>
+<p>Getting the pooling layer output is easy; it's the same as <code>outputs</code>.  However, it's not immediately obvious how to get the intermediate convolution output. tion, the recommended way to extract the outputs from all the layers in your model is to use the so-called <em>Functional</em> API.</p>
+<p>features from all layers in the model: basically use Keras' functional API to build a model that returns the outputs from each layer, given an input batch.</p>
 
 </div>
 </div>
@@ -396,6 +389,9 @@ MaxPool2D output shape = (1, 7, 7, 4)
 <h2 id="Convolutional-Layer">
 <a class="anchor" href="#Convolutional-Layer" aria-hidden="true"><span class="octicon octicon-link"></span></a>Convolutional Layer<a class="anchor-link" href="#Convolutional-Layer"> </a>
 </h2>
+<p>Convolution is essentially a rolling dot-product, and this is exactly how the implementation below works.  For now, <code>conv2d</code> is a function of a single, multi-channel image <code>x</code>, <code>kernel</code> is one of the output filters, and <code>strides</code> is a pair of integers defining the number of vertical and horizontal positions</p>
+<p>I don't have a good technical reason for making the output array <code>y</code> one dimensional and reshaping at the end; it just looks cleaner than the alternatives.</p>
+
 </div>
 </div>
 </div>
