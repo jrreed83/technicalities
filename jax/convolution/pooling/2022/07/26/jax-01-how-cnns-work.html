@@ -95,7 +95,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      8 min read
+      10 min read
     
 </span></p>
 
@@ -236,7 +236,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>For this experiment, I don't care what the model input is.  So I'll apply <code>model</code> to a 1-element batch consisting of a random 28-by-28 array with 3 channels.  As you can see, <code>outputs</code> is a 1-element batch consisting of a 7-by-7 array with 4 channels. Here's a little table comapring the shape of <code>inputs</code> and <code>outputs</code>.</p>
+<p>For this experiment, I don't care what the model input is.  So I'll apply <code>model</code> to a 1-element batch consisting of a random 28-by-28 array with 3 channels.  As you can see, <code>outputs</code> is a 1-element batch consisting of a 7-by-7 array with 4 channels. Here's a little table comparing the shape of <code>inputs</code> and <code>outputs</code>.</p>
 
 </div>
 </div>
@@ -250,6 +250,7 @@ window.onload = wrap_img;
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Feature Mapping:  </span><span class="si">{</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1"> -&gt; </span><span class="si">{</span><span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 </pre></div>
 
@@ -277,8 +278,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Getting the pooling layer output is easy; it's the same as <code>outputs</code>.  However, it's not immediately obvious how to get the intermediate convolution output. tion, the recommended way to extract the outputs from all the layers in your model is to use the so-called <em>Functional</em> API.</p>
-<p>features from all layers in the model: basically use Keras' functional API to build a model that returns the outputs from each layer, given an input batch.</p>
+<p>Getting the pooling layer output is easy; it's the same as <code>outputs</code>.  However, it's not immediately obvious how to get the intermediate convolution output. The recommended way to extract the outputs from all the layers in your model is to use the so-called <em>Functional</em> API.</p>
 
 </div>
 </div>
@@ -296,47 +296,6 @@ window.onload = wrap_img;
 </pre></div>
 
     </div>
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Because <code>model</code> has two layers, the <code>keras_features</code> array has two elements.  Here are the shapes of each:</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Conv2D output shape = </span><span class="si">{</span><span class="n">keras_features</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'MaxPool2D output shape = </span><span class="si">{</span><span class="n">keras_features</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Conv2D output shape = (1, 14, 14, 4)
-MaxPool2D output shape = (1, 7, 7, 4)
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -520,7 +479,7 @@ MaxPool2D output shape = (1, 7, 7, 4)
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jax_result</span> <span class="o">=</span> <span class="n">jax_conv2d</span><span class="p">(</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jax_result</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">conv_general_dilated</span><span class="p">(</span>
     <span class="n">lhs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
     <span class="n">rhs</span><span class="o">=</span><span class="n">kernels</span><span class="p">,</span>
     <span class="n">window_strides</span><span class="o">=</span><span class="n">strides</span><span class="p">,</span>
@@ -530,22 +489,6 @@ MaxPool2D output shape = (1, 7, 7, 4)
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(1, 14, 14, 4)</pre>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -637,166 +580,6 @@ MaxPool2D output shape = (1, 7, 7, 4)
 
 <div class="output_text output_subarea output_execute_result">
 <pre>(1, 14, 14, 4)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jax_conv2d</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">conv_general_dilated</span>
-jax_conv2d<span class="o">??</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea ">
-<pre><span class="ansi-red-fg">Signature:</span>
-jax_conv2d<span class="ansi-blue-fg">(</span>
-    lhs<span class="ansi-blue-fg">:</span> Any<span class="ansi-blue-fg">,</span>
-    rhs<span class="ansi-blue-fg">:</span> Any<span class="ansi-blue-fg">,</span>
-    window_strides<span class="ansi-blue-fg">:</span> Sequence<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
-    padding<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>str<span class="ansi-blue-fg">,</span> Sequence<span class="ansi-blue-fg">[</span>Tuple<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">,</span> int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
-    lhs_dilation<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>Sequence<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> NoneType<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-    rhs_dilation<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>Sequence<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> NoneType<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-    dimension_numbers<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>NoneType<span class="ansi-blue-fg">,</span> jax<span class="ansi-blue-fg">.</span>_src<span class="ansi-blue-fg">.</span>lax<span class="ansi-blue-fg">.</span>convolution<span class="ansi-blue-fg">.</span>ConvDimensionNumbers<span class="ansi-blue-fg">,</span> Tuple<span class="ansi-blue-fg">[</span>str<span class="ansi-blue-fg">,</span> str<span class="ansi-blue-fg">,</span> str<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-    feature_group_count<span class="ansi-blue-fg">:</span> int <span class="ansi-blue-fg">=</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span>
-    batch_group_count<span class="ansi-blue-fg">:</span> int <span class="ansi-blue-fg">=</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span>
-    precision<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>NoneType<span class="ansi-blue-fg">,</span> str<span class="ansi-blue-fg">,</span> jax<span class="ansi-blue-fg">.</span>_src<span class="ansi-blue-fg">.</span>lax<span class="ansi-blue-fg">.</span>lax<span class="ansi-blue-fg">.</span>Precision<span class="ansi-blue-fg">,</span> Tuple<span class="ansi-blue-fg">[</span>str<span class="ansi-blue-fg">,</span> str<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> Tuple<span class="ansi-blue-fg">[</span>jax<span class="ansi-blue-fg">.</span>_src<span class="ansi-blue-fg">.</span>lax<span class="ansi-blue-fg">.</span>lax<span class="ansi-blue-fg">.</span>Precision<span class="ansi-blue-fg">,</span> jax<span class="ansi-blue-fg">.</span>_src<span class="ansi-blue-fg">.</span>lax<span class="ansi-blue-fg">.</span>lax<span class="ansi-blue-fg">.</span>Precision<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-    preferred_element_type<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>Any<span class="ansi-blue-fg">,</span> NoneType<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> Any
-<span class="ansi-red-fg">Source:</span>   
-<span class="ansi-green-fg">def</span> conv_general_dilated<span class="ansi-blue-fg">(</span>
-  lhs<span class="ansi-blue-fg">:</span> Array<span class="ansi-blue-fg">,</span> rhs<span class="ansi-blue-fg">:</span> Array<span class="ansi-blue-fg">,</span> window_strides<span class="ansi-blue-fg">:</span> Sequence<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
-  padding<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>str<span class="ansi-blue-fg">,</span> Sequence<span class="ansi-blue-fg">[</span>Tuple<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">,</span> int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
-  lhs_dilation<span class="ansi-blue-fg">:</span> Optional<span class="ansi-blue-fg">[</span>Sequence<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-  rhs_dilation<span class="ansi-blue-fg">:</span> Optional<span class="ansi-blue-fg">[</span>Sequence<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-  dimension_numbers<span class="ansi-blue-fg">:</span> ConvGeneralDilatedDimensionNumbers  <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-  feature_group_count<span class="ansi-blue-fg">:</span> int <span class="ansi-blue-fg">=</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span> batch_group_count<span class="ansi-blue-fg">:</span> int <span class="ansi-blue-fg">=</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span>
-  precision<span class="ansi-blue-fg">:</span> lax<span class="ansi-blue-fg">.</span>PrecisionLike <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-  preferred_element_type<span class="ansi-blue-fg">:</span> Optional<span class="ansi-blue-fg">[</span>DType<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> Array<span class="ansi-blue-fg">:</span>
-  <span class="ansi-blue-fg">"""General n-dimensional convolution operator, with optional dilation.</span>
-
-<span class="ansi-blue-fg">  Wraps XLA's `Conv</span>
-<span class="ansi-blue-fg">  &lt;https://www.tensorflow.org/xla/operation_semantics#conv_convolution&gt;`_</span>
-<span class="ansi-blue-fg">  operator.</span>
-
-<span class="ansi-blue-fg">  Args:</span>
-<span class="ansi-blue-fg">    lhs: a rank `n+2` dimensional input array.</span>
-<span class="ansi-blue-fg">    rhs: a rank `n+2` dimensional array of kernel weights.</span>
-<span class="ansi-blue-fg">    window_strides: a sequence of `n` integers, representing the inter-window</span>
-<span class="ansi-blue-fg">      strides.</span>
-<span class="ansi-blue-fg">    padding: either the string `'SAME'`, the string `'VALID'`, or a sequence of</span>
-<span class="ansi-blue-fg">      `n` `(low, high)` integer pairs that give the padding to apply before and</span>
-<span class="ansi-blue-fg">      after each spatial dimension.</span>
-<span class="ansi-blue-fg">    lhs_dilation: `None`, or a sequence of `n` integers, giving the</span>
-<span class="ansi-blue-fg">      dilation factor to apply in each spatial dimension of `lhs`. LHS dilation</span>
-<span class="ansi-blue-fg">      is also known as transposed convolution.</span>
-<span class="ansi-blue-fg">    rhs_dilation: `None`, or a sequence of `n` integers, giving the</span>
-<span class="ansi-blue-fg">      dilation factor to apply in each spatial dimension of `rhs`. RHS dilation</span>
-<span class="ansi-blue-fg">      is also known as atrous convolution.</span>
-<span class="ansi-blue-fg">    dimension_numbers: either `None`, a ``ConvDimensionNumbers`` object, or</span>
-<span class="ansi-blue-fg">      a 3-tuple ``(lhs_spec, rhs_spec, out_spec)``, where each element is a</span>
-<span class="ansi-blue-fg">      string of length `n+2`.</span>
-<span class="ansi-blue-fg">    feature_group_count: integer, default 1. See XLA HLO docs.</span>
-<span class="ansi-blue-fg">    batch_group_count: integer, default 1. See XLA HLO docs.</span>
-<span class="ansi-blue-fg">    precision: Optional. Either ``None``, which means the default precision for</span>
-<span class="ansi-blue-fg">      the backend, a :class:`~jax.lax.Precision` enum value (``Precision.DEFAULT``,</span>
-<span class="ansi-blue-fg">      ``Precision.HIGH`` or ``Precision.HIGHEST``), a string (e.g. 'highest' or</span>
-<span class="ansi-blue-fg">      'fastest', see the ``jax.default_matmul_precision`` context manager), or a</span>
-<span class="ansi-blue-fg">      tuple of two :class:`~jax.lax.Precision` enums or strings indicating precision of</span>
-<span class="ansi-blue-fg">      ``lhs`` and ``rhs``.</span>
-<span class="ansi-blue-fg">    preferred_element_type: Optional. Either ``None``, which means the default</span>
-<span class="ansi-blue-fg">      accumulation type for the input types, or a datatype, indicating to</span>
-<span class="ansi-blue-fg">      accumulate results to and return a result with that datatype.</span>
-
-<span class="ansi-blue-fg">  Returns:</span>
-<span class="ansi-blue-fg">    An array containing the convolution result.</span>
-
-<span class="ansi-blue-fg">  In the string case of ``dimension_numbers``, each character identifies by</span>
-<span class="ansi-blue-fg">  position:</span>
-
-<span class="ansi-blue-fg">  - the batch dimensions in ``lhs``, ``rhs``, and the output with the character</span>
-<span class="ansi-blue-fg">    'N',</span>
-<span class="ansi-blue-fg">  - the feature dimensions in `lhs` and the output with the character 'C',</span>
-<span class="ansi-blue-fg">  - the input and output feature dimensions in rhs with the characters 'I'</span>
-<span class="ansi-blue-fg">    and 'O' respectively, and</span>
-<span class="ansi-blue-fg">  - spatial dimension correspondences between lhs, rhs, and the output using</span>
-<span class="ansi-blue-fg">    any distinct characters.</span>
-
-<span class="ansi-blue-fg">  For example, to indicate dimension numbers consistent with the ``conv``</span>
-<span class="ansi-blue-fg">  function with two spatial dimensions, one could use ``('NCHW', 'OIHW',</span>
-<span class="ansi-blue-fg">  'NCHW')``. As another example, to indicate dimension numbers consistent with</span>
-<span class="ansi-blue-fg">  the TensorFlow Conv2D operation, one could use ``('NHWC', 'HWIO', 'NHWC')``.</span>
-<span class="ansi-blue-fg">  When using the latter form of convolution dimension specification, window</span>
-<span class="ansi-blue-fg">  strides are associated with spatial dimension character labels according to</span>
-<span class="ansi-blue-fg">  the order in which the labels appear in the ``rhs_spec`` string, so that</span>
-<span class="ansi-blue-fg">  ``window_strides[0]`` is matched with the dimension corresponding to the first</span>
-<span class="ansi-blue-fg">  character appearing in rhs_spec that is not ``'I'`` or ``'O'``.</span>
-
-<span class="ansi-blue-fg">  If ``dimension_numbers`` is ``None``, the default is ``('NCHW', 'OIHW',</span>
-<span class="ansi-blue-fg">  'NCHW')`` (for a 2D convolution).</span>
-<span class="ansi-blue-fg">  """</span>
-  dnums <span class="ansi-blue-fg">=</span> conv_dimension_numbers<span class="ansi-blue-fg">(</span>lhs<span class="ansi-blue-fg">.</span>shape<span class="ansi-blue-fg">,</span> rhs<span class="ansi-blue-fg">.</span>shape<span class="ansi-blue-fg">,</span> dimension_numbers<span class="ansi-blue-fg">)</span>
-  <span class="ansi-green-fg">if</span> lhs_dilation <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
-    lhs_dilation <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">*</span> <span class="ansi-blue-fg">(</span>lhs<span class="ansi-blue-fg">.</span>ndim <span class="ansi-blue-fg">-</span> <span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">)</span>
-  <span class="ansi-green-fg">elif</span> isinstance<span class="ansi-blue-fg">(</span>padding<span class="ansi-blue-fg">,</span> str<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">and</span> <span class="ansi-green-fg">not</span> len<span class="ansi-blue-fg">(</span>lhs_dilation<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">==</span> lhs_dilation<span class="ansi-blue-fg">.</span>count<span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-    <span class="ansi-green-fg">raise</span> ValueError<span class="ansi-blue-fg">(</span>
-        <span class="ansi-blue-fg">"String padding is not implemented for transposed convolution "</span>
-        <span class="ansi-blue-fg">"using this op. Please either exactly specify the required padding or "</span>
-        <span class="ansi-blue-fg">"use conv_transpose."</span><span class="ansi-blue-fg">)</span>
-  <span class="ansi-green-fg">if</span> rhs_dilation <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
-    rhs_dilation <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">*</span> <span class="ansi-blue-fg">(</span>rhs<span class="ansi-blue-fg">.</span>ndim <span class="ansi-blue-fg">-</span> <span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">)</span>
-  <span class="ansi-green-fg">if</span> isinstance<span class="ansi-blue-fg">(</span>padding<span class="ansi-blue-fg">,</span> str<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-    lhs_perm<span class="ansi-blue-fg">,</span> rhs_perm<span class="ansi-blue-fg">,</span> _ <span class="ansi-blue-fg">=</span> dnums
-    rhs_shape <span class="ansi-blue-fg">=</span> np<span class="ansi-blue-fg">.</span>take<span class="ansi-blue-fg">(</span>rhs<span class="ansi-blue-fg">.</span>shape<span class="ansi-blue-fg">,</span> rhs_perm<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">:</span><span class="ansi-blue-fg">]</span>  <span class="ansi-red-fg"># type: ignore[index]</span>
-    effective_rhs_shape <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">(</span>k<span class="ansi-blue-fg">-</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">*</span> r <span class="ansi-blue-fg">+</span> <span class="ansi-cyan-fg">1</span> <span class="ansi-green-fg">for</span> k<span class="ansi-blue-fg">,</span> r <span class="ansi-green-fg">in</span> zip<span class="ansi-blue-fg">(</span>rhs_shape<span class="ansi-blue-fg">,</span> rhs_dilation<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">]</span>
-    padding <span class="ansi-blue-fg">=</span> lax<span class="ansi-blue-fg">.</span>padtype_to_pads<span class="ansi-blue-fg">(</span>
-        np<span class="ansi-blue-fg">.</span>take<span class="ansi-blue-fg">(</span>lhs<span class="ansi-blue-fg">.</span>shape<span class="ansi-blue-fg">,</span> lhs_perm<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">:</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> effective_rhs_shape<span class="ansi-blue-fg">,</span>  <span class="ansi-red-fg"># type: ignore[index]</span>
-        window_strides<span class="ansi-blue-fg">,</span> padding<span class="ansi-blue-fg">)</span>
-  <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
-    <span class="ansi-green-fg">try</span><span class="ansi-blue-fg">:</span>
-      padding <span class="ansi-blue-fg">=</span> tuple<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">(</span>operator<span class="ansi-blue-fg">.</span>index<span class="ansi-blue-fg">(</span>lo<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> operator<span class="ansi-blue-fg">.</span>index<span class="ansi-blue-fg">(</span>hi<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-                      <span class="ansi-green-fg">for</span> lo<span class="ansi-blue-fg">,</span> hi <span class="ansi-green-fg">in</span> padding<span class="ansi-blue-fg">)</span>
-    <span class="ansi-green-fg">except</span> <span class="ansi-blue-fg">(</span>ValueError<span class="ansi-blue-fg">,</span> TypeError<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">as</span> e<span class="ansi-blue-fg">:</span>
-      <span class="ansi-green-fg">raise</span> ValueError<span class="ansi-blue-fg">(</span>
-        <span class="ansi-blue-fg">"padding argument to conv_general_dilated should be a string or a "</span>
-        <span class="ansi-blue-fg">f"sequence of (low, high) pairs, got {padding}"</span><span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">from</span> e
-
-  preferred_element_type <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">(</span>
-      <span class="ansi-green-fg">None</span> <span class="ansi-green-fg">if</span> preferred_element_type <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span> <span class="ansi-green-fg">else</span>
-      dtypes<span class="ansi-blue-fg">.</span>canonicalize_dtype<span class="ansi-blue-fg">(</span>np<span class="ansi-blue-fg">.</span>dtype<span class="ansi-blue-fg">(</span>preferred_element_type<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-  <span class="ansi-green-fg">return</span> conv_general_dilated_p<span class="ansi-blue-fg">.</span>bind<span class="ansi-blue-fg">(</span>
-      lhs<span class="ansi-blue-fg">,</span> rhs<span class="ansi-blue-fg">,</span> window_strides<span class="ansi-blue-fg">=</span>tuple<span class="ansi-blue-fg">(</span>window_strides<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> padding<span class="ansi-blue-fg">=</span>tuple<span class="ansi-blue-fg">(</span>padding<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
-      lhs_dilation<span class="ansi-blue-fg">=</span>tuple<span class="ansi-blue-fg">(</span>lhs_dilation<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> rhs_dilation<span class="ansi-blue-fg">=</span>tuple<span class="ansi-blue-fg">(</span>rhs_dilation<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
-      dimension_numbers<span class="ansi-blue-fg">=</span>dnums<span class="ansi-blue-fg">,</span>
-      feature_group_count<span class="ansi-blue-fg">=</span>feature_group_count<span class="ansi-blue-fg">,</span>
-      batch_group_count<span class="ansi-blue-fg">=</span>batch_group_count<span class="ansi-blue-fg">,</span>
-      lhs_shape<span class="ansi-blue-fg">=</span>lhs<span class="ansi-blue-fg">.</span>shape<span class="ansi-blue-fg">,</span> rhs_shape<span class="ansi-blue-fg">=</span>rhs<span class="ansi-blue-fg">.</span>shape<span class="ansi-blue-fg">,</span>
-      precision<span class="ansi-blue-fg">=</span>lax<span class="ansi-blue-fg">.</span>canonicalize_precision<span class="ansi-blue-fg">(</span>precision<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
-      preferred_element_type<span class="ansi-blue-fg">=</span>preferred_element_type<span class="ansi-blue-fg">)</span>
-<span class="ansi-red-fg">File:</span>      ~/anaconda3/lib/python3.8/site-packages/jax/_src/lax/convolution.py
-<span class="ansi-red-fg">Type:</span>      function
-</pre>
 </div>
 
 </div>
@@ -1309,6 +1092,328 @@ array([[1.2988867, 1.2988867],
 
 <div class="output_text output_subarea output_execute_result">
 <pre>(10, 10, 2)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">reduce_window</span><span class="p">(</span>
+    <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">my_conv_features</span><span class="p">),</span>
+    <span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+    <span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">max</span><span class="p">,</span>
+    <span class="n">window_dimensions</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">window_strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>DeviceArray([[[[ 2.2203097 ,  0.7514108 ,  0.6305484 ,  1.5815421 ],
+               [ 1.2177465 ,  0.9271074 ,  0.7391334 ,  0.9822045 ],
+               [ 0.29114679,  1.8811291 ,  0.5059719 ,  0.63093317],
+               [ 0.20470184,  1.3739707 ,  0.3607968 ,  1.2883999 ],
+               [ 0.59057814,  1.5924685 ,  1.1464765 ,  1.4917585 ],
+               [ 0.16934961,  0.64135337,  1.8001381 ,  0.16465424],
+               [ 0.3894469 ,  0.6464122 ,  1.6553746 ,  1.2135262 ]],
+
+              [[ 2.3377476 ,  0.51156694,  1.0020787 ,  1.3904204 ],
+               [ 0.652942  ,  2.2939618 ,  1.4073436 ,  2.0440257 ],
+               [ 0.7191202 ,  0.9767988 ,  0.668246  , -0.3064434 ],
+               [ 1.3608527 ,  0.58269393,  0.35336065,  1.8263001 ],
+               [ 0.78622943,  1.713314  ,  1.7906963 , -0.02068998],
+               [ 0.76750404,  0.81492865,  0.57862407,  0.7561941 ],
+               [ 0.25453514,  1.0671004 ,  1.1293529 ,  0.5066892 ]],
+
+              [[ 0.6206944 ,  0.09209802,  1.6532173 ,  2.0552828 ],
+               [-0.19561526,  1.420513  ,  0.79193133, -0.01803365],
+               [ 0.60639215,  0.9410309 ,  0.85261476,  1.8768661 ],
+               [ 0.9959571 ,  1.0616597 ,  0.49569178,  1.6762668 ],
+               [ 0.5363734 ,  2.3275473 ,  0.860301  ,  2.1453125 ],
+               [ 0.4169625 ,  1.3498336 ,  1.1611527 ,  0.3422146 ],
+               [ 1.232143  ,  0.44593516,  0.99878985,  1.8476663 ]],
+
+              [[ 0.23818316,  1.2849499 ,  1.0474979 ,  1.9913363 ],
+               [ 1.0661296 ,  0.7400683 ,  1.3541304 ,  1.4596949 ],
+               [ 1.0534953 , -0.39137706,  0.8292153 ,  2.2344463 ],
+               [ 0.31341434,  0.3538208 ,  0.75360155,  1.5393205 ],
+               [ 1.1760103 ,  1.1503168 , -0.53614587,  0.34708816],
+               [ 1.2728152 ,  1.9220823 ,  0.34449115,  1.1186888 ],
+               [ 0.8673139 ,  3.0202303 ,  1.841145  ,  2.6212692 ]],
+
+              [[ 1.7137306 ,  2.156742  ,  0.3107248 ,  1.0019364 ],
+               [ 0.20898026,  1.6234058 , -0.03484035,  1.4543954 ],
+               [ 0.5935692 ,  0.7080792 ,  0.41520426,  2.0714197 ],
+               [ 0.85228026,  0.23219332,  1.6141244 ,  1.7967864 ],
+               [ 1.8558447 ,  0.87956864,  1.2859178 ,  0.80573297],
+               [ 0.91368526,  2.0551527 ,  0.9135846 ,  1.4219866 ],
+               [ 0.36532915, -0.17756358,  1.8608574 ,  1.3197037 ]],
+
+              [[ 1.5187278 ,  1.3532174 ,  1.6581348 ,  0.7052273 ],
+               [ 1.3042551 ,  0.93232286, -0.1341016 ,  1.9366615 ],
+               [ 2.2302673 ,  2.0610542 ,  1.5959028 ,  1.2271551 ],
+               [ 1.263926  ,  2.6450248 ,  0.51793927,  0.9632713 ],
+               [ 0.43770027,  0.76882285, -0.00502868,  0.5271177 ],
+               [ 0.68766963,  2.8823228 ,  1.4841839 ,  2.370077  ],
+               [ 0.83201903,  0.7319301 ,  1.7240815 ,  0.58267146]],
+
+              [[ 1.3661338 ,  3.016301  ,  1.0895298 ,  2.2638898 ],
+               [ 2.002431  ,  2.6454563 ,  1.3474373 ,  0.59892905],
+               [ 0.74488753,  1.4606575 , -0.23053403,  0.7333537 ],
+               [ 1.2495472 ,  1.5782238 ,  1.9069676 ,  0.8592951 ],
+               [ 0.88328177,  1.5059935 ,  1.7482314 ,  0.5331368 ],
+               [ 1.794787  ,  1.0195991 , -0.04904599,  1.2577432 ],
+               [ 0.68487185,  1.9517245 ,  0.39640298,  1.2647802 ]]]],            dtype=float32)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">outputs</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;tf.Tensor: shape=(1, 7, 7, 4), dtype=float32, numpy=
+array([[[[ 2.2203097 ,  0.75141084,  0.6305484 ,  1.581542  ],
+         [ 1.2177465 ,  0.92710733,  0.7391335 ,  0.98220456],
+         [ 0.29114673,  1.881129  ,  0.5059719 ,  0.6309332 ],
+         [ 0.20470184,  1.3739707 ,  0.36079678,  1.2883998 ],
+         [ 0.59057814,  1.5924685 ,  1.1464764 ,  1.4917585 ],
+         [ 0.16934964,  0.64135337,  1.8001381 ,  0.16465425],
+         [ 0.3894469 ,  0.6464122 ,  1.6553746 ,  1.2135262 ]],
+
+        [[ 2.3377476 ,  0.511567  ,  1.0020788 ,  1.3904203 ],
+         [ 0.652942  ,  2.2939618 ,  1.4073437 ,  2.0440257 ],
+         [ 0.7191202 ,  0.97679865,  0.6682459 , -0.30644342],
+         [ 1.3608527 ,  0.58269376,  0.35336065,  1.8263003 ],
+         [ 0.7862294 ,  1.7133139 ,  1.7906963 , -0.02068999],
+         [ 0.7675041 ,  0.81492865,  0.57862407,  0.7561942 ],
+         [ 0.25453514,  1.0671003 ,  1.1293529 ,  0.5066892 ]],
+
+        [[ 0.6206945 ,  0.09209803,  1.6532174 ,  2.0552828 ],
+         [-0.19561526,  1.420513  ,  0.79193133, -0.01803365],
+         [ 0.6063922 ,  0.941031  ,  0.8526148 ,  1.8768661 ],
+         [ 0.995957  ,  1.0616597 ,  0.49569172,  1.6762668 ],
+         [ 0.5363733 ,  2.327547  ,  0.860301  ,  2.1453125 ],
+         [ 0.41696253,  1.3498337 ,  1.1611527 ,  0.34221467],
+         [ 1.2321432 ,  0.44593522,  0.99878985,  1.8476661 ]],
+
+        [[ 0.23818313,  1.2849498 ,  1.0474979 ,  1.9913363 ],
+         [ 1.0661296 ,  0.74006826,  1.3541304 ,  1.4596947 ],
+         [ 1.0534953 , -0.3913771 ,  0.8292153 ,  2.2344463 ],
+         [ 0.31341434,  0.3538208 ,  0.7536015 ,  1.5393205 ],
+         [ 1.1760103 ,  1.1503167 , -0.53614587,  0.34708816],
+         [ 1.2728152 ,  1.9220823 ,  0.34449115,  1.118689  ],
+         [ 0.8673139 ,  3.0202303 ,  1.8411452 ,  2.6212695 ]],
+
+        [[ 1.7137306 ,  2.156742  ,  0.3107248 ,  1.0019363 ],
+         [ 0.20898022,  1.6234056 , -0.03484029,  1.4543954 ],
+         [ 0.5935692 ,  0.7080792 ,  0.4152043 ,  2.07142   ],
+         [ 0.8522802 ,  0.23219334,  1.6141244 ,  1.7967865 ],
+         [ 1.8558447 ,  0.87956864,  1.2859178 ,  0.80573297],
+         [ 0.9136852 ,  2.0551527 ,  0.9135846 ,  1.4219866 ],
+         [ 0.36532912, -0.17756365,  1.8608574 ,  1.3197038 ]],
+
+        [[ 1.5187277 ,  1.3532174 ,  1.6581347 ,  0.70522726],
+         [ 1.3042551 ,  0.9323228 , -0.13410155,  1.9366614 ],
+         [ 2.2302673 ,  2.0610542 ,  1.5959027 ,  1.2271551 ],
+         [ 1.2639259 ,  2.6450248 ,  0.51793927,  0.9632714 ],
+         [ 0.43770033,  0.7688228 , -0.00502868,  0.5271177 ],
+         [ 0.6876696 ,  2.8823228 ,  1.4841839 ,  2.370077  ],
+         [ 0.83201903,  0.7319301 ,  1.7240815 ,  0.58267146]],
+
+        [[ 1.3661338 ,  3.016301  ,  1.0895299 ,  2.2638898 ],
+         [ 2.002431  ,  2.6454566 ,  1.3474373 ,  0.5989289 ],
+         [ 0.74488753,  1.4606575 , -0.23053402,  0.73335373],
+         [ 1.2495472 ,  1.5782238 ,  1.9069676 ,  0.859295  ],
+         [ 0.8832818 ,  1.5059935 ,  1.7482313 ,  0.5331367 ],
+         [ 1.7947869 ,  1.0195991 , -0.04904603,  1.2577432 ],
+         [ 0.68487185,  1.9517245 ,  0.396403  ,  1.2647802 ]]]],
+      dtype=float32)&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">??</span>jax.lax.reduce_window
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea ">
+<pre><span class="ansi-red-fg">Signature:</span>
+jax<span class="ansi-blue-fg">.</span>lax<span class="ansi-blue-fg">.</span>reduce_window<span class="ansi-blue-fg">(</span>
+    operand<span class="ansi-blue-fg">,</span>
+    init_value<span class="ansi-blue-fg">,</span>
+    computation<span class="ansi-blue-fg">:</span> Callable<span class="ansi-blue-fg">,</span>
+    window_dimensions<span class="ansi-blue-fg">:</span> Sequence<span class="ansi-blue-fg">[</span>Union<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">,</span> Any<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
+    window_strides<span class="ansi-blue-fg">:</span> Sequence<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
+    padding<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>str<span class="ansi-blue-fg">,</span> Sequence<span class="ansi-blue-fg">[</span>Tuple<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">,</span> int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
+    base_dilation<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>Sequence<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> NoneType<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+    window_dilation<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>Sequence<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> NoneType<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> Any
+<span class="ansi-red-fg">Source:</span>   
+<span class="ansi-green-fg">def</span> reduce_window<span class="ansi-blue-fg">(</span>operand<span class="ansi-blue-fg">,</span> init_value<span class="ansi-blue-fg">,</span> computation<span class="ansi-blue-fg">:</span> Callable<span class="ansi-blue-fg">,</span>
+                  window_dimensions<span class="ansi-blue-fg">:</span> core<span class="ansi-blue-fg">.</span>Shape<span class="ansi-blue-fg">,</span> window_strides<span class="ansi-blue-fg">:</span> Sequence<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
+                  padding<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>str<span class="ansi-blue-fg">,</span> Sequence<span class="ansi-blue-fg">[</span>Tuple<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">,</span> int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
+                  base_dilation<span class="ansi-blue-fg">:</span> Optional<span class="ansi-blue-fg">[</span>Sequence<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+                  window_dilation<span class="ansi-blue-fg">:</span> Optional<span class="ansi-blue-fg">[</span>Sequence<span class="ansi-blue-fg">[</span>int<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> Array<span class="ansi-blue-fg">:</span>
+  <span class="ansi-blue-fg">"""Wraps XLA's `ReduceWindowWithGeneralPadding</span>
+<span class="ansi-blue-fg">  &lt;https://www.tensorflow.org/xla/operation_semantics#reducewindow&gt;`_</span>
+<span class="ansi-blue-fg">  operator.</span>
+<span class="ansi-blue-fg">  """</span>
+  flat_operands<span class="ansi-blue-fg">,</span> operand_tree <span class="ansi-blue-fg">=</span> tree_util<span class="ansi-blue-fg">.</span>tree_flatten<span class="ansi-blue-fg">(</span>operand<span class="ansi-blue-fg">)</span>
+  flat_init_values<span class="ansi-blue-fg">,</span> init_value_tree <span class="ansi-blue-fg">=</span> tree_util<span class="ansi-blue-fg">.</span>tree_flatten<span class="ansi-blue-fg">(</span>init_value<span class="ansi-blue-fg">)</span>
+  <span class="ansi-green-fg">if</span> operand_tree <span class="ansi-blue-fg">!=</span> init_value_tree<span class="ansi-blue-fg">:</span>
+    <span class="ansi-green-fg">raise</span> ValueError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'Operands must have the same tree structure as '</span>
+                     <span class="ansi-blue-fg">f'init_values: {operand_tree} vs. {init_value_tree}'</span><span class="ansi-blue-fg">)</span>
+  <span class="ansi-green-fg">if</span> len<span class="ansi-blue-fg">(</span>flat_operands<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">==</span> <span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">:</span>
+    <span class="ansi-green-fg">raise</span> ValueError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'reduce_window must have at least one operand.'</span><span class="ansi-blue-fg">)</span>
+  <span class="ansi-green-fg">if</span> len<span class="ansi-blue-fg">(</span>flat_operands<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">!=</span> len<span class="ansi-blue-fg">(</span>flat_init_values<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+    <span class="ansi-green-fg">raise</span> ValueError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'Must have same total number of operands as init_values: '</span>
+                     <span class="ansi-blue-fg">f' {len(flat_operands)} vs. {len(flat_init_values)}'</span><span class="ansi-blue-fg">)</span>
+  <span class="ansi-green-fg">if</span> isinstance<span class="ansi-blue-fg">(</span>padding<span class="ansi-blue-fg">,</span> str<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+    dilated_window_dims <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">(</span>
+        window_dimensions <span class="ansi-green-fg">if</span> window_dilation <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span> <span class="ansi-green-fg">else</span>
+        lax<span class="ansi-blue-fg">.</span>_dilate_shape<span class="ansi-blue-fg">(</span>window_dimensions<span class="ansi-blue-fg">,</span> window_dilation<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+    padding <span class="ansi-blue-fg">=</span> tuple<span class="ansi-blue-fg">(</span>lax<span class="ansi-blue-fg">.</span>padtype_to_pads<span class="ansi-blue-fg">(</span>
+        flat_operands<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">.</span>shape<span class="ansi-blue-fg">,</span> dilated_window_dims<span class="ansi-blue-fg">,</span> window_strides<span class="ansi-blue-fg">,</span> padding<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+  <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+    padding <span class="ansi-blue-fg">=</span> tuple<span class="ansi-blue-fg">(</span>padding<span class="ansi-blue-fg">)</span>
+  <span class="ansi-green-fg">if</span> base_dilation <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
+    base_dilation <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">*</span> len<span class="ansi-blue-fg">(</span>window_dimensions<span class="ansi-blue-fg">)</span>
+  <span class="ansi-green-fg">if</span> window_dilation <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
+    window_dilation <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">*</span> len<span class="ansi-blue-fg">(</span>window_dimensions<span class="ansi-blue-fg">)</span>
+  monoid_reducer <span class="ansi-blue-fg">=</span> _get_monoid_window_reducer<span class="ansi-blue-fg">(</span>computation<span class="ansi-blue-fg">,</span> flat_init_values<span class="ansi-blue-fg">)</span>
+  <span class="ansi-green-fg">if</span> monoid_reducer<span class="ansi-blue-fg">:</span>
+    <span class="ansi-green-fg">return</span> monoid_reducer<span class="ansi-blue-fg">(</span>operand<span class="ansi-blue-fg">,</span> window_dimensions<span class="ansi-blue-fg">,</span> window_strides<span class="ansi-blue-fg">,</span> padding<span class="ansi-blue-fg">,</span>
+                          base_dilation<span class="ansi-blue-fg">,</span> window_dilation<span class="ansi-blue-fg">)</span>
+  <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+    flat_init_avals <span class="ansi-blue-fg">=</span> map<span class="ansi-blue-fg">(</span>lax<span class="ansi-blue-fg">.</span>_abstractify<span class="ansi-blue-fg">,</span> flat_init_values<span class="ansi-blue-fg">)</span>
+    jaxpr<span class="ansi-blue-fg">,</span> consts<span class="ansi-blue-fg">,</span> out_tree <span class="ansi-blue-fg">=</span> lax<span class="ansi-blue-fg">.</span>_variadic_reduction_jaxpr<span class="ansi-blue-fg">(</span>
+        computation<span class="ansi-blue-fg">,</span> tuple<span class="ansi-blue-fg">(</span>flat_init_avals<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> init_value_tree<span class="ansi-blue-fg">)</span>
+    <span class="ansi-green-fg">if</span> operand_tree <span class="ansi-blue-fg">!=</span> out_tree<span class="ansi-blue-fg">:</span>
+      <span class="ansi-green-fg">raise</span> ValueError<span class="ansi-blue-fg">(</span>
+        <span class="ansi-blue-fg">'reduce_window output must have the same tree structure as the operands'</span>
+        <span class="ansi-blue-fg">f' {operand_tree} vs. {out_tree}'</span><span class="ansi-blue-fg">)</span>
+    out_flat <span class="ansi-blue-fg">=</span> reduce_window_p<span class="ansi-blue-fg">.</span>bind<span class="ansi-blue-fg">(</span>
+        <span class="ansi-blue-fg">*</span><span class="ansi-blue-fg">(</span>flat_operands <span class="ansi-blue-fg">+</span> flat_init_values<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> jaxpr<span class="ansi-blue-fg">=</span>jaxpr<span class="ansi-blue-fg">,</span> consts<span class="ansi-blue-fg">=</span>consts<span class="ansi-blue-fg">,</span>
+        window_dimensions<span class="ansi-blue-fg">=</span>tuple<span class="ansi-blue-fg">(</span>window_dimensions<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+        window_strides<span class="ansi-blue-fg">=</span>tuple<span class="ansi-blue-fg">(</span>window_strides<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> padding<span class="ansi-blue-fg">=</span>padding<span class="ansi-blue-fg">,</span>
+        base_dilation<span class="ansi-blue-fg">=</span>tuple<span class="ansi-blue-fg">(</span>base_dilation<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+        window_dilation<span class="ansi-blue-fg">=</span>tuple<span class="ansi-blue-fg">(</span>window_dilation<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+    <span class="ansi-green-fg">return</span> tree_util<span class="ansi-blue-fg">.</span>tree_unflatten<span class="ansi-blue-fg">(</span>out_tree<span class="ansi-blue-fg">,</span> out_flat<span class="ansi-blue-fg">)</span>
+<span class="ansi-red-fg">File:</span>      ~/anaconda3/lib/python3.8/site-packages/jax/_src/lax/windowed_reductions.py
+<span class="ansi-red-fg">Type:</span>      function
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">??</span>jax.lax.max
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea ">
+<pre><span class="ansi-red-fg">Signature:</span> jax<span class="ansi-blue-fg">.</span>lax<span class="ansi-blue-fg">.</span>max<span class="ansi-blue-fg">(</span>x<span class="ansi-blue-fg">:</span> Any<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">:</span> Any<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> Any
+<span class="ansi-red-fg">Source:</span>   
+<span class="ansi-green-fg">def</span> max<span class="ansi-blue-fg">(</span>x<span class="ansi-blue-fg">:</span> Array<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">:</span> Array<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> Array<span class="ansi-blue-fg">:</span>
+  <span class="ansi-blue-fg">r"""Elementwise maximum: :math:`\mathrm{max}(x, y)`</span>
+
+<span class="ansi-blue-fg">  For complex numbers, uses a lexicographic comparison on the</span>
+<span class="ansi-blue-fg">  `(real, imaginary)` pairs."""</span>
+  <span class="ansi-green-fg">return</span> max_p<span class="ansi-blue-fg">.</span>bind<span class="ansi-blue-fg">(</span>x<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">)</span>
+<span class="ansi-red-fg">File:</span>      ~/anaconda3/lib/python3.8/site-packages/jax/_src/lax/lax.py
+<span class="ansi-red-fg">Type:</span>      function
+</pre>
 </div>
 
 </div>
