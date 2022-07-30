@@ -170,7 +170,7 @@ window.onload = wrap_img;
 <h2 id="Introduction">
 <a class="anchor" href="#Introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction<a class="anchor-link" href="#Introduction"> </a>
 </h2>
-<p>The purpose of this post is to make sure I understand how convolutional and pooling layers work.  Once again, I'll use Keras to double check all my work.</p>
+<p>In this post, I'll be implementing convolutional and pooling layers, from scratch, using numpy.</p>
 
 </div>
 </div>
@@ -195,7 +195,6 @@ window.onload = wrap_img;
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 </pre></div>
 
     </div>
@@ -236,7 +235,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>For this experiment, I don't care what the model input is.  So I'll apply <code>model</code> to a 1-element batch consisting of a random 28-by-28 array with 3 channels.  As you can see, <code>outputs</code> is a 1-element batch consisting of a 7-by-7 array with 4 channels. Here's a little table comparing the shape of <code>inputs</code> and <code>outputs</code>.</p>
+<p>For this experiment, I don't care what the input to the model is.  So I'll just create a 1-element batch consisting of a random 28-by-28 array and apply <code>model</code> to it.</p>
 
 </div>
 </div>
@@ -250,8 +249,31 @@ window.onload = wrap_img;
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+</pre></div>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Feature Mapping:  </span><span class="si">{</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1"> -&gt; </span><span class="si">{</span><span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's check the shape of <code>inputs</code> and <code>outputs</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Feature Mapping:  </span><span class="si">{</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1"> -&gt; </span><span class="si">{</span><span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -278,6 +300,14 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>outputs</code> is a 1-element batch consisting of a 7-by-7 array with 4 channels.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <p>Getting the pooling layer output is easy; it's the same as <code>outputs</code>.  However, it's not immediately obvious how to get the intermediate convolution output. The recommended way to extract the outputs from all the layers in your model is to use the so-called <em>Functional</em> API.</p>
 
 </div>
@@ -290,9 +320,28 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">layer</span><span class="o">.</span><span class="n">output</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">]</span>
-<span class="n">layer_output_model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">)</span>
-<span class="n">keras_features</span> <span class="o">=</span> <span class="n">layer_output_model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_layer_outputs</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">layer</span><span class="o">.</span><span class="n">output</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">]</span>
+    <span class="n">layer_output_model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">)</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">layer_output_model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">features</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">keras_features</span> <span class="o">=</span> <span class="n">get_layer_outputs</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -348,8 +397,20 @@ window.onload = wrap_img;
 <h2 id="Convolutional-Layer">
 <a class="anchor" href="#Convolutional-Layer" aria-hidden="true"><span class="octicon octicon-link"></span></a>Convolutional Layer<a class="anchor-link" href="#Convolutional-Layer"> </a>
 </h2>
-<p>Convolution is essentially a rolling dot-product, and this is exactly how the implementation below works.  For now, <code>conv2d</code> is a function of a single, multi-channel image <code>x</code>, <code>kernel</code> is one of the output filters, and <code>strides</code> is a pair of integers defining the number of vertical and horizontal positions</p>
+<p>I like to think of convolution as a rolling dot-product, and this is exactly how the implementation below works.  For now, <code>conv2d</code> is a function of a single, multi-channel image <code>x</code>, <code>kernel</code> is one of the output filters, and <code>strides</code> is a pair of integers defining the number of vertical and horizontal positions</p>
 <p>I don't have a good technical reason for making the output array <code>y</code> one dimensional and reshaping at the end; it just looks cleaner than the alternatives.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p></p>
+<div class="flash">
+    <svg class="octicon octicon-info" viewbox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-.25A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 100-2 1 1 0 000 2z"></path></svg>
+    <strong>Note: </strong>this is a note test.
+</div>
 
 </div>
 </div>
