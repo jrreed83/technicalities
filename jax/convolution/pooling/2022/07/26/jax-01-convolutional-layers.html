@@ -95,7 +95,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      4 min read
+      10 min read
     
 </span></p>
 
@@ -147,11 +147,12 @@ window.onload = wrap_img;
   <div class="post-content e-content" itemprop="articleBody">
     <ul id="toc" class="section-nav">
 <li class="toc-entry toc-h2"><a href="#Introduction">Introduction </a></li>
+<li class="toc-entry toc-h2"><a href="#How-Convolutional-Layers-work">How Convolutional Layers work </a></li>
 <li class="toc-entry toc-h2"><a href="#Import-Libraries">Import Libraries </a></li>
-<li class="toc-entry toc-h2"><a href="#Convolutional-Layer">Convolutional Layer </a></li>
+<li class="toc-entry toc-h2"><a href="#Implementation-from-First-Principles">Implementation from First Principles </a></li>
 <li class="toc-entry toc-h2"><a href="#Compare-to-Keras">Compare to Keras </a>
 <ul>
-<li class="toc-entry toc-h3"><a href="#Convolution-in-JAX">Convolution in JAX </a></li>
+<li class="toc-entry toc-h3"><a href="#Convolutional-Layer-in-JAX">Convolutional Layer in JAX </a></li>
 </ul>
 </li>
 </ul><!--
@@ -171,6 +172,15 @@ window.onload = wrap_img;
 </h2>
 <p>In this post, I'll start by implementing a basic convolutional layer using numpy and validate it against Keras.  After this, I'll write a more efficient one using JAX.</p>
 
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="How-Convolutional-Layers-work">
+<a class="anchor" href="#How-Convolutional-Layers-work" aria-hidden="true"><span class="octicon octicon-link"></span></a>How Convolutional Layers work<a class="anchor-link" href="#How-Convolutional-Layers-work"> </a>
+</h2>
 </div>
 </div>
 </div>
@@ -206,132 +216,8 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Here's a small sequential model consisting of a convolutional layer and max-pooling layer.</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>For this experiment, I don't care what the input to the model is.  So I'll just create a 1-element batch consisting of a random 28-by-28 array and apply <code>model</code> to it.</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">outputs</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>2022-07-30 15:14:21.032488: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/lib:/usr/local/bin:/usr/local/lib:
-2022-07-30 15:14:21.032522: W tensorflow/stream_executor/cuda/cuda_driver.cc:269] failed call to cuInit: UNKNOWN ERROR (303)
-2022-07-30 15:14:21.032810: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (pop-os): /proc/driver/nvidia/version does not exist
-2022-07-30 15:14:21.041129: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F FMA
-To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Let's check the shape of <code>inputs</code> and <code>outputs</code>.</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Feature Mapping:  </span><span class="si">{</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1"> -&gt; </span><span class="si">{</span><span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Feature Mapping:  (1, 28, 28, 3) -&gt; (1, 14, 14, 4)
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>The <code>outputs</code> is a 1-element batch consisting of a 7-by-7 array with 4 channels.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Getting the pooling layer output is easy; it's the same as <code>outputs</code>.  However, it's not immediately obvious how to get the intermediate convolution output. The recommended way to extract the outputs from all the layers in your model is to use the so-called <em>Functional</em> API.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Convolutional-Layer">
-<a class="anchor" href="#Convolutional-Layer" aria-hidden="true"><span class="octicon octicon-link"></span></a>Convolutional Layer<a class="anchor-link" href="#Convolutional-Layer"> </a>
+<h2 id="Implementation-from-First-Principles">
+<a class="anchor" href="#Implementation-from-First-Principles" aria-hidden="true"><span class="octicon octicon-link"></span></a>Implementation from First Principles<a class="anchor-link" href="#Implementation-from-First-Principles"> </a>
 </h2>
 </div>
 </div>
@@ -351,24 +237,24 @@ To enable them in other operations, rebuild TensorFlow with the appropriate comp
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">filter_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">filter_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">strides</span><span class="p">):</span>
     
     <span class="n">xm</span><span class="p">,</span> <span class="n">xn</span><span class="p">,</span> <span class="n">_</span>  <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span> 
-    <span class="n">km</span><span class="p">,</span> <span class="n">kn</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">shape</span> 
     
-    <span class="n">num_output_channels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">biases</span><span class="p">)</span>
+    <span class="n">km</span><span class="p">,</span> <span class="n">kn</span><span class="p">,</span> <span class="n">ni</span><span class="p">,</span> <span class="n">no</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">shape</span> 
+    
     
     <span class="n">sm</span><span class="p">,</span> <span class="n">sn</span> <span class="o">=</span> <span class="n">strides</span>
-    <span class="n">ym</span><span class="p">,</span> <span class="n">yn</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">xm</span> <span class="o">-</span> <span class="n">km</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="n">sm</span><span class="p">),</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">xn</span> <span class="o">-</span> <span class="n">kn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="n">sn</span><span class="p">)</span>
-    
-    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ym</span><span class="p">,</span> <span class="n">yn</span><span class="p">,</span> <span class="n">num_output_channels</span><span class="p">))</span>
+    <span class="c1">#ym, yn = 1 + ((xm - km + 1)//sm), 1 + ((xn - kn + 1)//sn)</span>
+    <span class="n">ym</span><span class="p">,</span> <span class="n">yn</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">xm</span> <span class="o">-</span> <span class="n">km</span><span class="p">)</span><span class="o">//</span><span class="n">sm</span><span class="p">),</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">xn</span> <span class="o">-</span> <span class="n">kn</span><span class="p">)</span><span class="o">//</span><span class="n">sn</span><span class="p">)</span> 
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ym</span><span class="p">,</span> <span class="n">yn</span><span class="p">,</span> <span class="n">no</span><span class="p">))</span>
 
     <span class="k">for</span> <span class="n">iy</span><span class="p">,</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xm</span><span class="o">-</span><span class="n">km</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">sm</span><span class="p">)):</span>
         <span class="k">for</span> <span class="n">jy</span><span class="p">,</span> <span class="n">jx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xn</span><span class="o">-</span><span class="n">kn</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">sn</span><span class="p">)):</span>
             <span class="c1"># Apply each output filter and bias term to this chunk</span>
             <span class="n">chunk</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">km</span><span class="p">,</span><span class="n">jx</span><span class="p">:</span><span class="n">jx</span><span class="o">+</span><span class="n">kn</span><span class="p">,:]</span>
-            <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_output_channels</span><span class="p">):</span>
-                <span class="n">y</span><span class="p">[</span><span class="n">iy</span><span class="p">,</span><span class="n">jy</span><span class="p">,</span><span class="n">channel</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">filters</span><span class="p">[</span><span class="o">...</span><span class="p">,</span><span class="n">channel</span><span class="p">]</span> <span class="o">*</span> <span class="n">chunk</span><span class="p">)</span> <span class="o">+</span> <span class="n">biases</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">no</span><span class="p">):</span>
+                <span class="n">y</span><span class="p">[</span><span class="n">iy</span><span class="p">,</span><span class="n">jy</span><span class="p">,</span><span class="n">channel</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">filters</span><span class="p">[:,:,:,</span><span class="n">channel</span><span class="p">]</span> <span class="o">*</span> <span class="n">chunk</span><span class="p">)</span><span class="c1"># + biases[channel]</span>
             
     <span class="k">return</span> <span class="n">y</span>
 </pre></div>
@@ -395,8 +281,11 @@ To enable them in other operations, rebuild TensorFlow with the appropriate comp
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">filter_image_batch</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">filter_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span> <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">filter_image_batch</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">):</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">filter_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span> <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">outputs</span> <span class="o">+</span> <span class="n">biases</span>
+    <span class="k">return</span> <span class="n">outputs</span>
 </pre></div>
 
     </div>
@@ -409,207 +298,20 @@ To enable them in other operations, rebuild TensorFlow with the appropriate comp
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This function requires a little explanation.  First the list comprehension passed to the <code>np.array</code> function, i.e.</p>
-<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">filter_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span> <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">]</span>
+<p>First, the list comprehension passed to the <code>np.array</code> function, i.e.</p>
+<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">filter_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span> <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
 </pre></div>
-<p>applies <code>filter_image</code> to each image in the batch, resulting in a list of filtered images.  By passing this list to the <code>np.array</code> function, it's converted to an <code>ndarray</code> with a leading batch dimension.</p>
+<p>applies <code>filter_image</code> function definied above to each image in the batch, resulting in a list of filtered images.  By passing this list to the <code>np.array</code> function, it's converted to an <code>ndarray</code> with a leading batch dimension.</p>
 
 </div>
 </div>
 </div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">keras_layer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">)</span>
-<span class="c1">#keras_output = keras_layer(x)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%capture</span>
-<span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">keras_output</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">image</span><span class="p">)[</span><span class="mi">0</span><span class="p">,:,:,:]</span>
-<span class="n">filters</span><span class="p">,</span> <span class="n">biases</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
-<span class="n">strides</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-
-<span class="n">filter_image</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">image</span><span class="p">),</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%capture</span>
-<span class="n">keras_output</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Now I can make a little class that contains the filters, biases, and other necessary parameters for a convolutional layer.  The <code>__call__</code> method correlates each output filter with the input image and adds the bias.  Each filtered output is added to a list, and converted to a single-element batch.</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">keras_layer</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(2, 2, 3, 4)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">keras_layer</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">my_layer</span> <span class="o">=</span> <span class="n">MyConv2D</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">keras_layer</span><span class="p">)</span>
-<span class="n">my_output</span> <span class="o">=</span> <span class="n">my_layer</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">my_output</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(2, 14, 14, 4)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Compare-to-Keras">
 <a class="anchor" href="#Compare-to-Keras" aria-hidden="true"><span class="octicon octicon-link"></span></a>Compare to Keras<a class="anchor-link" href="#Compare-to-Keras"> </a>
 </h2>
-<p>To compare my convolutional layer to Keras', I need to get any convolutional-relevant parameters from the Keras model and use them to initialize my layer.</p>
-
 </div>
 </div>
 </div>
@@ -620,9 +322,164 @@ To enable them in other operations, rebuild TensorFlow with the appropriate comp
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">kernels</span><span class="p">,</span> <span class="n">biases</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
-<span class="n">strides</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strides</span>
-<span class="n">keras_conv_features</span> <span class="o">=</span> <span class="n">keras_features</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layer_keras</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">bias_initializer</span><span class="o">=</span><span class="s1">'he_uniform'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">input_batch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">output_batch_keras</span> <span class="o">=</span> <span class="n">layer_keras</span><span class="p">(</span><span class="n">input_batch</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">filters</span><span class="p">,</span> <span class="n">biases</span> <span class="o">=</span> <span class="n">layer_keras</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
+<span class="n">strides</span> <span class="o">=</span> <span class="n">layer_keras</span><span class="o">.</span><span class="n">strides</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">output_batch_numpy</span> <span class="o">=</span> <span class="n">filter_image_batch</span><span class="p">(</span><span class="n">input_batch</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">output_batch_keras</span> <span class="o">-</span> <span class="n">output_batch_numpy</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-6</span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Convolutional-Layer-in-JAX">
+<a class="anchor" href="#Convolutional-Layer-in-JAX" aria-hidden="true"><span class="octicon octicon-link"></span></a>Convolutional Layer in JAX<a class="anchor-link" href="#Convolutional-Layer-in-JAX"> </a>
+</h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">jax</span>
+<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">from</span> <span class="nn">fastcore.basics</span> <span class="kn">import</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Conv2D</span><span class="p">:</span> 
+    <span class="n">filters</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span> 
+    <span class="n">biases</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">input_channels</span><span class="p">:</span> <span class="nb">int</span> 
+    <span class="n">output_channels</span><span class="p">:</span> <span class="nb">int</span> 
+    <span class="n">filter_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">strides</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">padding</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">register_pytree_node_class</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -637,13 +494,25 @@ To enable them in other operations, rebuild TensorFlow with the appropriate comp
 <div class="output_subarea output_text output_error">
 <pre>
 <span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-green-fg">/tmp/ipykernel_280627/4206355748.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>kernels<span class="ansi-blue-fg">,</span> biases <span class="ansi-blue-fg">=</span> model<span class="ansi-blue-fg">.</span>layers<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">.</span>get_weights<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">      2</span> strides <span class="ansi-blue-fg">=</span> model<span class="ansi-blue-fg">.</span>layers<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">.</span>strides
-<span class="ansi-green-intense-fg ansi-bold">      3</span> keras_conv_features <span class="ansi-blue-fg">=</span> keras_features<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span>
+<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
+<span class="ansi-green-fg">/tmp/ipykernel_280627/2529143813.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>jax<span class="ansi-blue-fg">.</span>tree_util<span class="ansi-blue-fg">.</span>register_pytree_node_class<span class="ansi-blue-fg">(</span>Conv2D<span class="ansi-blue-fg">)</span>
 
-<span class="ansi-red-fg">NameError</span>: name 'model' is not defined</pre>
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/tree_util.py</span> in <span class="ansi-cyan-fg">register_pytree_node_class</span><span class="ansi-blue-fg">(cls)</span>
+<span class="ansi-green-intense-fg ansi-bold">    155</span>         <span class="ansi-green-fg">return</span> cls<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>children<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    156</span>   """
+<span class="ansi-green-fg">--&gt; 157</span><span class="ansi-red-fg">   </span>register_pytree_node<span class="ansi-blue-fg">(</span>cls<span class="ansi-blue-fg">,</span> op<span class="ansi-blue-fg">.</span>methodcaller<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'tree_flatten'</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> cls<span class="ansi-blue-fg">.</span>tree_unflatten<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    158</span>   <span class="ansi-green-fg">return</span> cls
+<span class="ansi-green-intense-fg ansi-bold">    159</span> 
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/tree_util.py</span> in <span class="ansi-cyan-fg">register_pytree_node</span><span class="ansi-blue-fg">(nodetype, flatten_func, unflatten_func)</span>
+<span class="ansi-green-intense-fg ansi-bold">    135</span>       <span class="ansi-red-fg">`</span><span class="ansi-red-fg">`</span>nodetype<span class="ansi-red-fg">`</span><span class="ansi-red-fg">`</span><span class="ansi-blue-fg">.</span>
+<span class="ansi-green-intense-fg ansi-bold">    136</span>   """
+<span class="ansi-green-fg">--&gt; 137</span><span class="ansi-red-fg">   </span>pytree<span class="ansi-blue-fg">.</span>register_node<span class="ansi-blue-fg">(</span>nodetype<span class="ansi-blue-fg">,</span> flatten_func<span class="ansi-blue-fg">,</span> unflatten_func<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    138</span>   _registry<span class="ansi-blue-fg">[</span>nodetype<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> _RegistryEntry<span class="ansi-blue-fg">(</span>flatten_func<span class="ansi-blue-fg">,</span> unflatten_func<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    139</span> 
+
+<span class="ansi-red-fg">ValueError</span>: Duplicate custom PyTreeDef type registration for &lt;class '__main__.Conv2D'&gt;.</pre>
 </div>
 </div>
 
@@ -660,8 +529,24 @@ To enable them in other operations, rebuild TensorFlow with the appropriate comp
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">my_layer</span> <span class="o">=</span> <span class="n">MyConv2D</span><span class="p">(</span><span class="n">kernels</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="n">strides</span><span class="p">)</span>
-<span class="n">my_conv_features</span> <span class="o">=</span> <span class="n">my_layer</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@patch</span>
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">input_channels</span><span class="p">,</span> <span class="n">output_channels</span><span class="p">,</span> <span class="n">filter_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">input_channels</span> <span class="o">=</span> <span class="n">input_channels</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_channels</span> <span class="o">=</span> <span class="n">output_channels</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">strides</span> <span class="o">=</span> <span class="n">strides</span> 
+    <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">padding</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">build</span> <span class="o">=</span> <span class="n">build</span> 
+    <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
+        
+    <span class="k">if</span> <span class="n">build</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">fkey</span><span class="p">,</span> <span class="n">bkey</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            
+        <span class="c1"># kaiming/he uniform...</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">input_channels</span> <span class="o">*</span> <span class="n">filter_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">filter_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">sqrtK</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">fkey</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">filter_shape</span><span class="p">,</span> <span class="n">input_channels</span><span class="p">,</span> <span class="n">output_channels</span><span class="p">),</span> <span class="n">minval</span><span class="o">=-</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="n">sqrtK</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">bkey</span><span class="p">,</span> <span class="p">(</span><span class="n">output_channels</span><span class="p">,),</span> <span class="n">minval</span><span class="o">=-</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="n">sqrtK</span><span class="p">)</span>   
 </pre></div>
 
     </div>
@@ -678,8 +563,21 @@ To enable them in other operations, rebuild TensorFlow with the appropriate comp
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">keras_conv_features</span><span class="p">,</span> <span class="n">my_conv_features</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">))</span>
-<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">jax_result</span><span class="p">,</span> <span class="n">my_conv_features</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@patch</span>
+<span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="n">filtered_outputs</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">conv_general_dilated</span><span class="p">(</span>
+        <span class="n">lhs</span><span class="o">=</span><span class="n">batch</span><span class="p">,</span>
+        <span class="n">rhs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span>
+        <span class="n">window_strides</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">strides</span><span class="p">,</span>
+        <span class="n">padding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">,</span>
+        <span class="n">dimension_numbers</span><span class="o">=</span><span class="p">(</span><span class="s1">'NHWC'</span><span class="p">,</span> <span class="s1">'HWIO'</span><span class="p">,</span> <span class="s1">'NHWC'</span><span class="p">)</span>
+    <span class="p">)</span>   
+    
+    <span class="c1"># This uses the broadcasting rules.</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">filtered_outputs</span> <span class="o">+</span> <span class="n">biases</span>
+        
+    <span class="c1"># Need to add biases...</span>
+    <span class="k">return</span> <span class="n">filtered_outputs</span> 
 </pre></div>
 
     </div>
@@ -689,15 +587,6 @@ To enable them in other operations, rebuild TensorFlow with the appropriate comp
 </div>
     
 
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Convolution-in-JAX">
-<a class="anchor" href="#Convolution-in-JAX" aria-hidden="true"><span class="octicon octicon-link"></span></a>Convolution in JAX<a class="anchor-link" href="#Convolution-in-JAX"> </a>
-</h3>
-</div>
-</div>
-</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -705,16 +594,693 @@ To enable them in other operations, rebuild TensorFlow with the appropriate comp
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jax_result</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">conv_general_dilated</span><span class="p">(</span>
-    <span class="n">lhs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
-    <span class="n">rhs</span><span class="o">=</span><span class="n">kernels</span><span class="p">,</span>
-    <span class="n">window_strides</span><span class="o">=</span><span class="n">strides</span><span class="p">,</span>
-    <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">,</span>
-    <span class="n">dimension_numbers</span><span class="o">=</span><span class="p">(</span><span class="s1">'NHWC'</span><span class="p">,</span> <span class="s1">'HWIO'</span><span class="p">,</span> <span class="s1">'NHWC'</span><span class="p">)</span>
-<span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@patch</span>
+<span class="k">def</span> <span class="nf">tree_flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Conv2D</span><span class="p">):</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">biases</span><span class="p">)</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">'input_channels'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_channels</span><span class="p">,</span>
+        <span class="s1">'output_channels'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_channels</span><span class="p">,</span>
+        <span class="s1">'filter_shape'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_shape</span><span class="p">,</span>
+        <span class="s1">'strides'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">strides</span><span class="p">,</span>
+        <span class="s1">'padding'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">,</span>
+        <span class="s1">'seed'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
+        <span class="s1">'build'</span><span class="p">:</span> <span class="kc">False</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">params</span><span class="p">,</span> <span class="n">metadata</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@patch</span><span class="p">(</span><span class="n">cls_method</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">tree_unflatten</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    
+    <span class="n">layer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">metadata</span><span class="p">)</span>
+    <span class="n">layer</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="n">layers</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">params</span>
+    
+    <span class="k">return</span> <span class="n">layer</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cc</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">tree_flatten</span><span class="p">(</span><span class="n">cc</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dd</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">tree_unflatten</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cc</span><span class="o">.</span><span class="vm">__dict__</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{'input_channels': 2,
+ 'output_channels': 3,
+ 'strides': (1, 1),
+ 'padding': 'valid',
+ 'build': True,
+ 'seed': 1234,
+ 'filters': DeviceArray([[[[ 2.0073094 ,  1.6691824 , -0.52152306],
+                [ 0.01462327,  0.3469043 ,  2.7000263 ]],
+ 
+               [[-2.5442414 ,  2.7617264 , -0.4976167 ],
+                [ 0.39192185, -0.4488464 , -1.8725433 ]]],
+ 
+ 
+              [[[ 0.5440059 ,  1.5025641 , -2.4879715 ],
+                [-1.8504584 , -0.22452806,  2.825495  ]],
+ 
+               [[-0.43859494, -1.9360245 , -1.3612974 ],
+                [-0.29709414, -1.0776254 ,  0.91766566]]]], dtype=float32),
+ 'biases': DeviceArray([-1.5805513,  1.9187174,  2.2878523], dtype=float32)}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dd</span> <span class="o">==</span> <span class="n">cc</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>True</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">register_pytree_node</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">methodcaller</span><span class="p">(</span><span class="s1">'tree_flatten'</span><span class="p">),</span> <span class="n">Conv2D</span><span class="o">.</span><span class="n">tree_unflatten</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
+<span class="ansi-green-fg">/tmp/ipykernel_280627/1408785419.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>jax<span class="ansi-blue-fg">.</span>tree_util<span class="ansi-blue-fg">.</span>register_pytree_node<span class="ansi-blue-fg">(</span>Conv2D<span class="ansi-blue-fg">,</span> op<span class="ansi-blue-fg">.</span>methodcaller<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'tree_flatten'</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> Conv2D<span class="ansi-blue-fg">.</span>tree_unflatten<span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/tree_util.py</span> in <span class="ansi-cyan-fg">register_pytree_node</span><span class="ansi-blue-fg">(nodetype, flatten_func, unflatten_func)</span>
+<span class="ansi-green-intense-fg ansi-bold">    135</span>       <span class="ansi-red-fg">`</span><span class="ansi-red-fg">`</span>nodetype<span class="ansi-red-fg">`</span><span class="ansi-red-fg">`</span><span class="ansi-blue-fg">.</span>
+<span class="ansi-green-intense-fg ansi-bold">    136</span>   """
+<span class="ansi-green-fg">--&gt; 137</span><span class="ansi-red-fg">   </span>pytree<span class="ansi-blue-fg">.</span>register_node<span class="ansi-blue-fg">(</span>nodetype<span class="ansi-blue-fg">,</span> flatten_func<span class="ansi-blue-fg">,</span> unflatten_func<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    138</span>   _registry<span class="ansi-blue-fg">[</span>nodetype<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> _RegistryEntry<span class="ansi-blue-fg">(</span>flatten_func<span class="ansi-blue-fg">,</span> unflatten_func<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    139</span> 
+
+<span class="ansi-red-fg">ValueError</span>: Duplicate custom PyTreeDef type registration for &lt;class '__main__.Conv2D'&gt;.</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">operator</span> <span class="k">as</span> <span class="nn">op</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span>op.methodcaller<span class="o">??</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea ">
+<pre><span class="ansi-red-fg">Init signature:</span> op<span class="ansi-blue-fg">.</span>methodcaller<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">/</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-red-fg">Docstring:</span>     
+methodcaller(name, ...) --&gt; methodcaller object
+
+Return a callable object that calls the given method on its operand.
+After f = methodcaller('name'), the call f(r) returns r.name().
+After g = methodcaller('name', 'date', foo=1), the call g(r) returns
+r.name('date', foo=1).
+<span class="ansi-red-fg">Source:</span>        
+<span class="ansi-green-fg">class</span> methodcaller<span class="ansi-blue-fg">:</span>
+    <span class="ansi-blue-fg">"""</span>
+<span class="ansi-blue-fg">    Return a callable object that calls the given method on its operand.</span>
+<span class="ansi-blue-fg">    After f = methodcaller('name'), the call f(r) returns r.name().</span>
+<span class="ansi-blue-fg">    After g = methodcaller('name', 'date', foo=1), the call g(r) returns</span>
+<span class="ansi-blue-fg">    r.name('date', foo=1).</span>
+<span class="ansi-blue-fg">    """</span>
+    __slots__ <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'_name'</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">'_args'</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">'_kwargs'</span><span class="ansi-blue-fg">)</span>
+
+    <span class="ansi-green-fg">def</span> __init__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> name<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">/</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+        self<span class="ansi-blue-fg">.</span>_name <span class="ansi-blue-fg">=</span> name
+        <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> isinstance<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>_name<span class="ansi-blue-fg">,</span> str<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+            <span class="ansi-green-fg">raise</span> TypeError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'method name must be a string'</span><span class="ansi-blue-fg">)</span>
+        self<span class="ansi-blue-fg">.</span>_args <span class="ansi-blue-fg">=</span> args
+        self<span class="ansi-blue-fg">.</span>_kwargs <span class="ansi-blue-fg">=</span> kwargs
+
+    <span class="ansi-green-fg">def</span> __call__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> obj<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+        <span class="ansi-green-fg">return</span> getattr<span class="ansi-blue-fg">(</span>obj<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>_name<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>self<span class="ansi-blue-fg">.</span>_args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>self<span class="ansi-blue-fg">.</span>_kwargs<span class="ansi-blue-fg">)</span>
+
+    <span class="ansi-green-fg">def</span> __repr__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+        args <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">[</span>repr<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>_name<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">]</span>
+        args<span class="ansi-blue-fg">.</span>extend<span class="ansi-blue-fg">(</span>map<span class="ansi-blue-fg">(</span>repr<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>_args<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+        args<span class="ansi-blue-fg">.</span>extend<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'%s=%r'</span> <span class="ansi-blue-fg">%</span> <span class="ansi-blue-fg">(</span>k<span class="ansi-blue-fg">,</span> v<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">for</span> k<span class="ansi-blue-fg">,</span> v <span class="ansi-green-fg">in</span> self<span class="ansi-blue-fg">.</span>_kwargs<span class="ansi-blue-fg">.</span>items<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+        <span class="ansi-green-fg">return</span> <span class="ansi-blue-fg">'%s.%s(%s)'</span> <span class="ansi-blue-fg">%</span> <span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>__class__<span class="ansi-blue-fg">.</span>__module__<span class="ansi-blue-fg">,</span>
+                              self<span class="ansi-blue-fg">.</span>__class__<span class="ansi-blue-fg">.</span>__name__<span class="ansi-blue-fg">,</span>
+                              <span class="ansi-blue-fg">', '</span><span class="ansi-blue-fg">.</span>join<span class="ansi-blue-fg">(</span>args<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+
+    <span class="ansi-green-fg">def</span> __reduce__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+        <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> self<span class="ansi-blue-fg">.</span>_kwargs<span class="ansi-blue-fg">:</span>
+            <span class="ansi-green-fg">return</span> self<span class="ansi-blue-fg">.</span>__class__<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>_name<span class="ansi-blue-fg">,</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">+</span> self<span class="ansi-blue-fg">.</span>_args
+        <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+            <span class="ansi-green-fg">from</span> functools <span class="ansi-green-fg">import</span> partial
+            <span class="ansi-green-fg">return</span> partial<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>__class__<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>_name<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>self<span class="ansi-blue-fg">.</span>_kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>_args
+<span class="ansi-red-fg">File:</span>           ~/anaconda3/lib/python3.8/operator.py
+<span class="ansi-red-fg">Type:</span>           type
+<span class="ansi-red-fg">Subclasses:</span>     
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">??</span>jax.tree_util.register_pytree_node_class
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea ">
+<pre><span class="ansi-red-fg">Signature:</span> jax<span class="ansi-blue-fg">.</span>tree_util<span class="ansi-blue-fg">.</span>register_pytree_node_class<span class="ansi-blue-fg">(</span>cls<span class="ansi-blue-fg">)</span>
+<span class="ansi-red-fg">Source:</span>   
+<span class="ansi-green-fg">def</span> register_pytree_node_class<span class="ansi-blue-fg">(</span>cls<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+  <span class="ansi-blue-fg">"""Extends the set of types that are considered internal nodes in pytrees.</span>
+
+<span class="ansi-blue-fg">  This function is a thin wrapper around ``register_pytree_node``, and provides</span>
+<span class="ansi-blue-fg">  a class-oriented interface::</span>
+
+<span class="ansi-blue-fg">    @register_pytree_node_class</span>
+<span class="ansi-blue-fg">    class Special:</span>
+<span class="ansi-blue-fg">      def __init__(self, x, y):</span>
+<span class="ansi-blue-fg">        self.x = x</span>
+<span class="ansi-blue-fg">        self.y = y</span>
+<span class="ansi-blue-fg">      def tree_flatten(self):</span>
+<span class="ansi-blue-fg">        return ((self.x, self.y), None)</span>
+<span class="ansi-blue-fg">      @classmethod</span>
+<span class="ansi-blue-fg">      def tree_unflatten(cls, aux_data, children):</span>
+<span class="ansi-blue-fg">        return cls(*children)</span>
+<span class="ansi-blue-fg">  """</span>
+  register_pytree_node<span class="ansi-blue-fg">(</span>cls<span class="ansi-blue-fg">,</span> op<span class="ansi-blue-fg">.</span>methodcaller<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'tree_flatten'</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> cls<span class="ansi-blue-fg">.</span>tree_unflatten<span class="ansi-blue-fg">)</span>
+  <span class="ansi-green-fg">return</span> cls
+<span class="ansi-red-fg">File:</span>      ~/anaconda3/lib/python3.8/site-packages/jax/_src/tree_util.py
+<span class="ansi-red-fg">Type:</span>      function
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layer</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layer</span><span class="o">.</span><span class="n">tree_flatten</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>((DeviceArray([[[[ 3.4430575 , -0.5913736 ,  1.7550349 ,  2.4153824 ],
+                 [ 2.8320181 , -0.85370946, -1.1039739 , -0.12423529],
+                 [ 2.7139978 , -0.70104486, -3.4376502 ,  2.6779363 ]],
+  
+                [[-2.0729692 ,  0.3460869 ,  1.6827095 , -1.5708281 ],
+                 [ 3.45853   , -0.8395171 , -1.9809046 ,  2.2974694 ],
+                 [ 0.7820349 ,  1.3051779 , -0.6155949 , -1.9725654 ]]],
+  
+  
+               [[[ 0.04273734,  0.6269528 ,  0.33181936, -0.38829234],
+                 [-0.02845082, -0.33282036, -3.160122  ,  1.999361  ],
+                 [-0.4157628 ,  1.7358813 ,  2.6174173 ,  3.3147407 ]],
+  
+                [[-2.8882236 ,  0.46306247, -2.8370042 ,  3.4490387 ],
+                 [ 2.8144124 , -0.44645762, -1.2920336 ,  2.0018265 ],
+                 [ 3.3088658 ,  2.9831839 , -0.35555673,  1.3202416 ]]]],            dtype=float32),
+  DeviceArray([-1.9357721 ,  0.32821512,  2.8020353 , -3.1447244 ], dtype=float32)),
+ (3, 4, (1, 1), 'valid'))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">b</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">,:,:,</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>DeviceArray([[2., 2., 2., 2.],
+             [2., 2., 2., 2.],
+             [2., 2., 2., 2.],
+             [2., 2., 2., 2.]], dtype=float32)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">??</span>tf.keras.layers.Conv2D
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea ">
+<pre><span class="ansi-red-fg">Init signature:</span> tf<span class="ansi-blue-fg">.</span>keras<span class="ansi-blue-fg">.</span>layers<span class="ansi-blue-fg">.</span>Conv2D<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-red-fg">Source:</span>        
+<span class="ansi-green-fg">class</span> Conv2D<span class="ansi-blue-fg">(</span>Conv<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+  <span class="ansi-blue-fg">"""2D convolution layer (e.g. spatial convolution over images).</span>
+
+<span class="ansi-blue-fg">  This layer creates a convolution kernel that is convolved</span>
+<span class="ansi-blue-fg">  with the layer input to produce a tensor of</span>
+<span class="ansi-blue-fg">  outputs. If `use_bias` is True,</span>
+<span class="ansi-blue-fg">  a bias vector is created and added to the outputs. Finally, if</span>
+<span class="ansi-blue-fg">  `activation` is not `None`, it is applied to the outputs as well.</span>
+
+<span class="ansi-blue-fg">  When using this layer as the first layer in a model,</span>
+<span class="ansi-blue-fg">  provide the keyword argument `input_shape`</span>
+<span class="ansi-blue-fg">  (tuple of integers or `None`, does not include the sample axis),</span>
+<span class="ansi-blue-fg">  e.g. `input_shape=(128, 128, 3)` for 128x128 RGB pictures</span>
+<span class="ansi-blue-fg">  in `data_format="channels_last"`. You can use `None` when</span>
+<span class="ansi-blue-fg">  a dimension has variable size.</span>
+
+<span class="ansi-blue-fg">  Examples:</span>
+
+<span class="ansi-blue-fg">  &gt;&gt;&gt; # The inputs are 28x28 RGB images with `channels_last` and the batch</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; # size is 4.</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; input_shape = (4, 28, 28, 3)</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; x = tf.random.normal(input_shape)</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; y = tf.keras.layers.Conv2D(</span>
+<span class="ansi-blue-fg">  ... 2, 3, activation='relu', input_shape=input_shape[1:])(x)</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; print(y.shape)</span>
+<span class="ansi-blue-fg">  (4, 26, 26, 2)</span>
+
+<span class="ansi-blue-fg">  &gt;&gt;&gt; # With `dilation_rate` as 2.</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; input_shape = (4, 28, 28, 3)</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; x = tf.random.normal(input_shape)</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; y = tf.keras.layers.Conv2D(</span>
+<span class="ansi-blue-fg">  ... 2, 3, activation='relu', dilation_rate=2, input_shape=input_shape[1:])(x)</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; print(y.shape)</span>
+<span class="ansi-blue-fg">  (4, 24, 24, 2)</span>
+
+<span class="ansi-blue-fg">  &gt;&gt;&gt; # With `padding` as "same".</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; input_shape = (4, 28, 28, 3)</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; x = tf.random.normal(input_shape)</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; y = tf.keras.layers.Conv2D(</span>
+<span class="ansi-blue-fg">  ... 2, 3, activation='relu', padding="same", input_shape=input_shape[1:])(x)</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; print(y.shape)</span>
+<span class="ansi-blue-fg">  (4, 28, 28, 2)</span>
+
+<span class="ansi-blue-fg">  &gt;&gt;&gt; # With extended batch shape [4, 7]:</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; input_shape = (4, 7, 28, 28, 3)</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; x = tf.random.normal(input_shape)</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; y = tf.keras.layers.Conv2D(</span>
+<span class="ansi-blue-fg">  ... 2, 3, activation='relu', input_shape=input_shape[2:])(x)</span>
+<span class="ansi-blue-fg">  &gt;&gt;&gt; print(y.shape)</span>
+<span class="ansi-blue-fg">  (4, 7, 26, 26, 2)</span>
+
+
+<span class="ansi-blue-fg">  Args:</span>
+<span class="ansi-blue-fg">    filters: Integer, the dimensionality of the output space (i.e. the number of</span>
+<span class="ansi-blue-fg">      output filters in the convolution).</span>
+<span class="ansi-blue-fg">    kernel_size: An integer or tuple/list of 2 integers, specifying the height</span>
+<span class="ansi-blue-fg">      and width of the 2D convolution window. Can be a single integer to specify</span>
+<span class="ansi-blue-fg">      the same value for all spatial dimensions.</span>
+<span class="ansi-blue-fg">    strides: An integer or tuple/list of 2 integers, specifying the strides of</span>
+<span class="ansi-blue-fg">      the convolution along the height and width. Can be a single integer to</span>
+<span class="ansi-blue-fg">      specify the same value for all spatial dimensions. Specifying any stride</span>
+<span class="ansi-blue-fg">      value != 1 is incompatible with specifying any `dilation_rate` value != 1.</span>
+<span class="ansi-blue-fg">    padding: one of `"valid"` or `"same"` (case-insensitive).</span>
+<span class="ansi-blue-fg">      `"valid"` means no padding. `"same"` results in padding with zeros evenly</span>
+<span class="ansi-blue-fg">      to the left/right or up/down of the input. When `padding="same"` and</span>
+<span class="ansi-blue-fg">      `strides=1`, the output has the same size as the input.</span>
+<span class="ansi-blue-fg">    data_format: A string, one of `channels_last` (default) or `channels_first`.</span>
+<span class="ansi-blue-fg">      The ordering of the dimensions in the inputs. `channels_last` corresponds</span>
+<span class="ansi-blue-fg">      to inputs with shape `(batch_size, height, width, channels)` while</span>
+<span class="ansi-blue-fg">      `channels_first` corresponds to inputs with shape `(batch_size, channels,</span>
+<span class="ansi-blue-fg">      height, width)`. It defaults to the `image_data_format` value found in</span>
+<span class="ansi-blue-fg">      your Keras config file at `~/.keras/keras.json`. If you never set it, then</span>
+<span class="ansi-blue-fg">      it will be `channels_last`.</span>
+<span class="ansi-blue-fg">    dilation_rate: an integer or tuple/list of 2 integers, specifying the</span>
+<span class="ansi-blue-fg">      dilation rate to use for dilated convolution. Can be a single integer to</span>
+<span class="ansi-blue-fg">      specify the same value for all spatial dimensions. Currently, specifying</span>
+<span class="ansi-blue-fg">      any `dilation_rate` value != 1 is incompatible with specifying any stride</span>
+<span class="ansi-blue-fg">      value != 1.</span>
+<span class="ansi-blue-fg">    groups: A positive integer specifying the number of groups in which the</span>
+<span class="ansi-blue-fg">      input is split along the channel axis. Each group is convolved separately</span>
+<span class="ansi-blue-fg">      with `filters / groups` filters. The output is the concatenation of all</span>
+<span class="ansi-blue-fg">      the `groups` results along the channel axis. Input channels and `filters`</span>
+<span class="ansi-blue-fg">      must both be divisible by `groups`.</span>
+<span class="ansi-blue-fg">    activation: Activation function to use. If you don't specify anything, no</span>
+<span class="ansi-blue-fg">      activation is applied (see `keras.activations`).</span>
+<span class="ansi-blue-fg">    use_bias: Boolean, whether the layer uses a bias vector.</span>
+<span class="ansi-blue-fg">    kernel_initializer: Initializer for the `kernel` weights matrix (see</span>
+<span class="ansi-blue-fg">      `keras.initializers`). Defaults to 'glorot_uniform'.</span>
+<span class="ansi-blue-fg">    bias_initializer: Initializer for the bias vector (see</span>
+<span class="ansi-blue-fg">      `keras.initializers`). Defaults to 'zeros'.</span>
+<span class="ansi-blue-fg">    kernel_regularizer: Regularizer function applied to the `kernel` weights</span>
+<span class="ansi-blue-fg">      matrix (see `keras.regularizers`).</span>
+<span class="ansi-blue-fg">    bias_regularizer: Regularizer function applied to the bias vector (see</span>
+<span class="ansi-blue-fg">      `keras.regularizers`).</span>
+<span class="ansi-blue-fg">    activity_regularizer: Regularizer function applied to the output of the</span>
+<span class="ansi-blue-fg">      layer (its "activation") (see `keras.regularizers`).</span>
+<span class="ansi-blue-fg">    kernel_constraint: Constraint function applied to the kernel matrix (see</span>
+<span class="ansi-blue-fg">      `keras.constraints`).</span>
+<span class="ansi-blue-fg">    bias_constraint: Constraint function applied to the bias vector (see</span>
+<span class="ansi-blue-fg">      `keras.constraints`).</span>
+
+<span class="ansi-blue-fg">  Input shape:</span>
+<span class="ansi-blue-fg">    4+D tensor with shape: `batch_shape + (channels, rows, cols)` if</span>
+<span class="ansi-blue-fg">      `data_format='channels_first'`</span>
+<span class="ansi-blue-fg">    or 4+D tensor with shape: `batch_shape + (rows, cols, channels)` if</span>
+<span class="ansi-blue-fg">      `data_format='channels_last'`.</span>
+
+<span class="ansi-blue-fg">  Output shape:</span>
+<span class="ansi-blue-fg">    4+D tensor with shape: `batch_shape + (filters, new_rows, new_cols)` if</span>
+<span class="ansi-blue-fg">    `data_format='channels_first'` or 4+D tensor with shape: `batch_shape +</span>
+<span class="ansi-blue-fg">      (new_rows, new_cols, filters)` if `data_format='channels_last'`.  `rows`</span>
+<span class="ansi-blue-fg">      and `cols` values might have changed due to padding.</span>
+
+<span class="ansi-blue-fg">  Returns:</span>
+<span class="ansi-blue-fg">    A tensor of rank 4+ representing</span>
+<span class="ansi-blue-fg">    `activation(conv2d(inputs, kernel) + bias)`.</span>
+
+<span class="ansi-blue-fg">  Raises:</span>
+<span class="ansi-blue-fg">    ValueError: if `padding` is `"causal"`.</span>
+<span class="ansi-blue-fg">    ValueError: when both `strides &gt; 1` and `dilation_rate &gt; 1`.</span>
+<span class="ansi-blue-fg">  """</span>
+
+  <span class="ansi-green-fg">def</span> __init__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span>
+               filters<span class="ansi-blue-fg">,</span>
+               kernel_size<span class="ansi-blue-fg">,</span>
+               strides<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+               padding<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">'valid'</span><span class="ansi-blue-fg">,</span>
+               data_format<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+               dilation_rate<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+               groups<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span>
+               activation<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+               use_bias<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">,</span>
+               kernel_initializer<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">'glorot_uniform'</span><span class="ansi-blue-fg">,</span>
+               bias_initializer<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">'zeros'</span><span class="ansi-blue-fg">,</span>
+               kernel_regularizer<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+               bias_regularizer<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+               activity_regularizer<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+               kernel_constraint<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+               bias_constraint<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+               <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+    super<span class="ansi-blue-fg">(</span>Conv2D<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>__init__<span class="ansi-blue-fg">(</span>
+        rank<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">,</span>
+        filters<span class="ansi-blue-fg">=</span>filters<span class="ansi-blue-fg">,</span>
+        kernel_size<span class="ansi-blue-fg">=</span>kernel_size<span class="ansi-blue-fg">,</span>
+        strides<span class="ansi-blue-fg">=</span>strides<span class="ansi-blue-fg">,</span>
+        padding<span class="ansi-blue-fg">=</span>padding<span class="ansi-blue-fg">,</span>
+        data_format<span class="ansi-blue-fg">=</span>data_format<span class="ansi-blue-fg">,</span>
+        dilation_rate<span class="ansi-blue-fg">=</span>dilation_rate<span class="ansi-blue-fg">,</span>
+        groups<span class="ansi-blue-fg">=</span>groups<span class="ansi-blue-fg">,</span>
+        activation<span class="ansi-blue-fg">=</span>activations<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>activation<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+        use_bias<span class="ansi-blue-fg">=</span>use_bias<span class="ansi-blue-fg">,</span>
+        kernel_initializer<span class="ansi-blue-fg">=</span>initializers<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>kernel_initializer<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+        bias_initializer<span class="ansi-blue-fg">=</span>initializers<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>bias_initializer<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+        kernel_regularizer<span class="ansi-blue-fg">=</span>regularizers<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>kernel_regularizer<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+        bias_regularizer<span class="ansi-blue-fg">=</span>regularizers<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>bias_regularizer<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+        activity_regularizer<span class="ansi-blue-fg">=</span>regularizers<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>activity_regularizer<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+        kernel_constraint<span class="ansi-blue-fg">=</span>constraints<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>kernel_constraint<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+        bias_constraint<span class="ansi-blue-fg">=</span>constraints<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>bias_constraint<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+        <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-red-fg">File:</span>           ~/anaconda3/lib/python3.8/site-packages/keras/layers/convolutional.py
+<span class="ansi-red-fg">Type:</span>           type
+<span class="ansi-red-fg">Subclasses:</span>     Conv2DTranspose, Conv2D
+</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
