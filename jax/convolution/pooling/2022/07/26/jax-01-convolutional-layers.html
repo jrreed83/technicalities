@@ -95,7 +95,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      10 min read
+      9 min read
     
 </span></p>
 
@@ -436,7 +436,7 @@ window.onload = wrap_img;
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">jax</span>
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
-<span class="kn">from</span> <span class="nn">fastcore.basics</span> <span class="kn">import</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">fastcore.basics</span> <span class="kn">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">store_attr</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 </pre></div>
 
@@ -479,70 +479,21 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">register_pytree_node_class</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
-<span class="ansi-green-fg">/tmp/ipykernel_280627/2529143813.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>jax<span class="ansi-blue-fg">.</span>tree_util<span class="ansi-blue-fg">.</span>register_pytree_node_class<span class="ansi-blue-fg">(</span>Conv2D<span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/tree_util.py</span> in <span class="ansi-cyan-fg">register_pytree_node_class</span><span class="ansi-blue-fg">(cls)</span>
-<span class="ansi-green-intense-fg ansi-bold">    155</span>         <span class="ansi-green-fg">return</span> cls<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>children<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    156</span>   """
-<span class="ansi-green-fg">--&gt; 157</span><span class="ansi-red-fg">   </span>register_pytree_node<span class="ansi-blue-fg">(</span>cls<span class="ansi-blue-fg">,</span> op<span class="ansi-blue-fg">.</span>methodcaller<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'tree_flatten'</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> cls<span class="ansi-blue-fg">.</span>tree_unflatten<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    158</span>   <span class="ansi-green-fg">return</span> cls
-<span class="ansi-green-intense-fg ansi-bold">    159</span> 
-
-<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/tree_util.py</span> in <span class="ansi-cyan-fg">register_pytree_node</span><span class="ansi-blue-fg">(nodetype, flatten_func, unflatten_func)</span>
-<span class="ansi-green-intense-fg ansi-bold">    135</span>       <span class="ansi-red-fg">`</span><span class="ansi-red-fg">`</span>nodetype<span class="ansi-red-fg">`</span><span class="ansi-red-fg">`</span><span class="ansi-blue-fg">.</span>
-<span class="ansi-green-intense-fg ansi-bold">    136</span>   """
-<span class="ansi-green-fg">--&gt; 137</span><span class="ansi-red-fg">   </span>pytree<span class="ansi-blue-fg">.</span>register_node<span class="ansi-blue-fg">(</span>nodetype<span class="ansi-blue-fg">,</span> flatten_func<span class="ansi-blue-fg">,</span> unflatten_func<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    138</span>   _registry<span class="ansi-blue-fg">[</span>nodetype<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> _RegistryEntry<span class="ansi-blue-fg">(</span>flatten_func<span class="ansi-blue-fg">,</span> unflatten_func<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    139</span> 
-
-<span class="ansi-red-fg">ValueError</span>: Duplicate custom PyTreeDef type registration for &lt;class '__main__.Conv2D'&gt;.</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@patch</span>
-<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">input_channels</span><span class="p">,</span> <span class="n">output_channels</span><span class="p">,</span> <span class="n">filter_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">):</span>
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">input_channels</span><span class="p">,</span> <span class="n">output_channels</span><span class="p">,</span> <span class="n">filter_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    
     <span class="bp">self</span><span class="o">.</span><span class="n">input_channels</span> <span class="o">=</span> <span class="n">input_channels</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_channels</span> <span class="o">=</span> <span class="n">output_channels</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">filter_shape</span> <span class="o">=</span> <span class="n">filter_shape</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">strides</span> <span class="o">=</span> <span class="n">strides</span> 
     <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">padding</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">build</span> <span class="o">=</span> <span class="n">build</span> 
     <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
         
     <span class="k">if</span> <span class="n">build</span><span class="p">:</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
         <span class="n">fkey</span><span class="p">,</span> <span class="n">bkey</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
             
-        <span class="c1"># kaiming/he uniform...</span>
+        <span class="c1"># kaiming/he uniform, using Pytorch documentation</span>
         <span class="n">K</span> <span class="o">=</span> <span class="n">input_channels</span> <span class="o">*</span> <span class="n">filter_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">filter_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">sqrtK</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">fkey</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">filter_shape</span><span class="p">,</span> <span class="n">input_channels</span><span class="p">,</span> <span class="n">output_channels</span><span class="p">),</span> <span class="n">minval</span><span class="o">=-</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="n">sqrtK</span><span class="p">)</span>
@@ -597,15 +548,7 @@ window.onload = wrap_img;
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@patch</span>
 <span class="k">def</span> <span class="nf">tree_flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Conv2D</span><span class="p">):</span>
     <span class="n">params</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">biases</span><span class="p">)</span>
-    <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">'input_channels'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_channels</span><span class="p">,</span>
-        <span class="s1">'output_channels'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_channels</span><span class="p">,</span>
-        <span class="s1">'filter_shape'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_shape</span><span class="p">,</span>
-        <span class="s1">'strides'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">strides</span><span class="p">,</span>
-        <span class="s1">'padding'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">,</span>
-        <span class="s1">'seed'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
-        <span class="s1">'build'</span><span class="p">:</span> <span class="kc">False</span>
-    <span class="p">}</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'biases'</span><span class="p">,</span> <span class="s1">'filters'</span><span class="p">}}</span>
     <span class="k">return</span> <span class="n">params</span><span class="p">,</span> <span class="n">metadata</span>
 </pre></div>
 
@@ -626,13 +569,101 @@ window.onload = wrap_img;
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@patch</span><span class="p">(</span><span class="n">cls_method</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">tree_unflatten</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
     
-    <span class="n">layer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">metadata</span><span class="p">)</span>
-    <span class="n">layer</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="n">layers</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">params</span>
+    <span class="n">layer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">metadata</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">layer</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="n">params</span>
     
     <span class="k">return</span> <span class="n">layer</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Finally, register the <code>Conv2D</code> class as a pytree.  The <code>register_pytree_node_class</code> checks that the class name you plug in has a <code>tree_flatten</code> method and a <code>tree_unflatten</code> class method.  If you don't, JAX will raise an exception.  You'll get a different exception if you try to register the same class twice.  I haven't figured out how to remove a class from the pytree registry yet.  When working in Jupyter notebooks, my work around is to re-run the cell that has the class definition.  My guess is that this error doesn't show up when working in a text-editor or IDE.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">register_pytree_node_class</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>__main__.Conv2D</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In my opinion, JAX has pretty good error messages and you'll know whether you made a mistake.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cc</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'biases'</span><span class="p">,</span> <span class="s1">'filters'</span><span class="p">}}</span>
+<span class="n">metadata</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{'input_channels': 2,
+ 'output_channels': 3,
+ 'filter_shape': (2, 2),
+ 'strides': (1, 1),
+ 'padding': 'valid',
+ 'seed': 1234}</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -714,9 +745,9 @@ window.onload = wrap_img;
 <div class="output_text output_subarea output_execute_result">
 <pre>{'input_channels': 2,
  'output_channels': 3,
+ 'filter_shape': (2, 2),
  'strides': (1, 1),
  'padding': 'valid',
- 'build': True,
  'seed': 1234,
  'filters': DeviceArray([[[[ 2.0073094 ,  1.6691824 , -0.52152306],
                 [ 0.01462327,  0.3469043 ,  2.7000263 ]],
@@ -748,7 +779,7 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dd</span> <span class="o">==</span> <span class="n">cc</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dd</span><span class="o">.</span><span class="vm">__dict__</span>
 </pre></div>
 
     </div>
@@ -763,201 +794,25 @@ window.onload = wrap_img;
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>True</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">register_pytree_node</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">methodcaller</span><span class="p">(</span><span class="s1">'tree_flatten'</span><span class="p">),</span> <span class="n">Conv2D</span><span class="o">.</span><span class="n">tree_unflatten</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
-<span class="ansi-green-fg">/tmp/ipykernel_280627/1408785419.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>jax<span class="ansi-blue-fg">.</span>tree_util<span class="ansi-blue-fg">.</span>register_pytree_node<span class="ansi-blue-fg">(</span>Conv2D<span class="ansi-blue-fg">,</span> op<span class="ansi-blue-fg">.</span>methodcaller<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'tree_flatten'</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> Conv2D<span class="ansi-blue-fg">.</span>tree_unflatten<span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/tree_util.py</span> in <span class="ansi-cyan-fg">register_pytree_node</span><span class="ansi-blue-fg">(nodetype, flatten_func, unflatten_func)</span>
-<span class="ansi-green-intense-fg ansi-bold">    135</span>       <span class="ansi-red-fg">`</span><span class="ansi-red-fg">`</span>nodetype<span class="ansi-red-fg">`</span><span class="ansi-red-fg">`</span><span class="ansi-blue-fg">.</span>
-<span class="ansi-green-intense-fg ansi-bold">    136</span>   """
-<span class="ansi-green-fg">--&gt; 137</span><span class="ansi-red-fg">   </span>pytree<span class="ansi-blue-fg">.</span>register_node<span class="ansi-blue-fg">(</span>nodetype<span class="ansi-blue-fg">,</span> flatten_func<span class="ansi-blue-fg">,</span> unflatten_func<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    138</span>   _registry<span class="ansi-blue-fg">[</span>nodetype<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> _RegistryEntry<span class="ansi-blue-fg">(</span>flatten_func<span class="ansi-blue-fg">,</span> unflatten_func<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    139</span> 
-
-<span class="ansi-red-fg">ValueError</span>: Duplicate custom PyTreeDef type registration for &lt;class '__main__.Conv2D'&gt;.</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">operator</span> <span class="k">as</span> <span class="nn">op</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span>op.methodcaller<span class="o">??</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea ">
-<pre><span class="ansi-red-fg">Init signature:</span> op<span class="ansi-blue-fg">.</span>methodcaller<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">/</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
-<span class="ansi-red-fg">Docstring:</span>     
-methodcaller(name, ...) --&gt; methodcaller object
-
-Return a callable object that calls the given method on its operand.
-After f = methodcaller('name'), the call f(r) returns r.name().
-After g = methodcaller('name', 'date', foo=1), the call g(r) returns
-r.name('date', foo=1).
-<span class="ansi-red-fg">Source:</span>        
-<span class="ansi-green-fg">class</span> methodcaller<span class="ansi-blue-fg">:</span>
-    <span class="ansi-blue-fg">"""</span>
-<span class="ansi-blue-fg">    Return a callable object that calls the given method on its operand.</span>
-<span class="ansi-blue-fg">    After f = methodcaller('name'), the call f(r) returns r.name().</span>
-<span class="ansi-blue-fg">    After g = methodcaller('name', 'date', foo=1), the call g(r) returns</span>
-<span class="ansi-blue-fg">    r.name('date', foo=1).</span>
-<span class="ansi-blue-fg">    """</span>
-    __slots__ <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'_name'</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">'_args'</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">'_kwargs'</span><span class="ansi-blue-fg">)</span>
-
-    <span class="ansi-green-fg">def</span> __init__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> name<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">/</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-        self<span class="ansi-blue-fg">.</span>_name <span class="ansi-blue-fg">=</span> name
-        <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> isinstance<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>_name<span class="ansi-blue-fg">,</span> str<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-            <span class="ansi-green-fg">raise</span> TypeError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'method name must be a string'</span><span class="ansi-blue-fg">)</span>
-        self<span class="ansi-blue-fg">.</span>_args <span class="ansi-blue-fg">=</span> args
-        self<span class="ansi-blue-fg">.</span>_kwargs <span class="ansi-blue-fg">=</span> kwargs
-
-    <span class="ansi-green-fg">def</span> __call__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> obj<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-        <span class="ansi-green-fg">return</span> getattr<span class="ansi-blue-fg">(</span>obj<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>_name<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>self<span class="ansi-blue-fg">.</span>_args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>self<span class="ansi-blue-fg">.</span>_kwargs<span class="ansi-blue-fg">)</span>
-
-    <span class="ansi-green-fg">def</span> __repr__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-        args <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">[</span>repr<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>_name<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">]</span>
-        args<span class="ansi-blue-fg">.</span>extend<span class="ansi-blue-fg">(</span>map<span class="ansi-blue-fg">(</span>repr<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>_args<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-        args<span class="ansi-blue-fg">.</span>extend<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'%s=%r'</span> <span class="ansi-blue-fg">%</span> <span class="ansi-blue-fg">(</span>k<span class="ansi-blue-fg">,</span> v<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">for</span> k<span class="ansi-blue-fg">,</span> v <span class="ansi-green-fg">in</span> self<span class="ansi-blue-fg">.</span>_kwargs<span class="ansi-blue-fg">.</span>items<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-        <span class="ansi-green-fg">return</span> <span class="ansi-blue-fg">'%s.%s(%s)'</span> <span class="ansi-blue-fg">%</span> <span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>__class__<span class="ansi-blue-fg">.</span>__module__<span class="ansi-blue-fg">,</span>
-                              self<span class="ansi-blue-fg">.</span>__class__<span class="ansi-blue-fg">.</span>__name__<span class="ansi-blue-fg">,</span>
-                              <span class="ansi-blue-fg">', '</span><span class="ansi-blue-fg">.</span>join<span class="ansi-blue-fg">(</span>args<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-
-    <span class="ansi-green-fg">def</span> __reduce__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-        <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> self<span class="ansi-blue-fg">.</span>_kwargs<span class="ansi-blue-fg">:</span>
-            <span class="ansi-green-fg">return</span> self<span class="ansi-blue-fg">.</span>__class__<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>_name<span class="ansi-blue-fg">,</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">+</span> self<span class="ansi-blue-fg">.</span>_args
-        <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
-            <span class="ansi-green-fg">from</span> functools <span class="ansi-green-fg">import</span> partial
-            <span class="ansi-green-fg">return</span> partial<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>__class__<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>_name<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>self<span class="ansi-blue-fg">.</span>_kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>_args
-<span class="ansi-red-fg">File:</span>           ~/anaconda3/lib/python3.8/operator.py
-<span class="ansi-red-fg">Type:</span>           type
-<span class="ansi-red-fg">Subclasses:</span>     
-</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">??</span>jax.tree_util.register_pytree_node_class
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea ">
-<pre><span class="ansi-red-fg">Signature:</span> jax<span class="ansi-blue-fg">.</span>tree_util<span class="ansi-blue-fg">.</span>register_pytree_node_class<span class="ansi-blue-fg">(</span>cls<span class="ansi-blue-fg">)</span>
-<span class="ansi-red-fg">Source:</span>   
-<span class="ansi-green-fg">def</span> register_pytree_node_class<span class="ansi-blue-fg">(</span>cls<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-  <span class="ansi-blue-fg">"""Extends the set of types that are considered internal nodes in pytrees.</span>
-
-<span class="ansi-blue-fg">  This function is a thin wrapper around ``register_pytree_node``, and provides</span>
-<span class="ansi-blue-fg">  a class-oriented interface::</span>
-
-<span class="ansi-blue-fg">    @register_pytree_node_class</span>
-<span class="ansi-blue-fg">    class Special:</span>
-<span class="ansi-blue-fg">      def __init__(self, x, y):</span>
-<span class="ansi-blue-fg">        self.x = x</span>
-<span class="ansi-blue-fg">        self.y = y</span>
-<span class="ansi-blue-fg">      def tree_flatten(self):</span>
-<span class="ansi-blue-fg">        return ((self.x, self.y), None)</span>
-<span class="ansi-blue-fg">      @classmethod</span>
-<span class="ansi-blue-fg">      def tree_unflatten(cls, aux_data, children):</span>
-<span class="ansi-blue-fg">        return cls(*children)</span>
-<span class="ansi-blue-fg">  """</span>
-  register_pytree_node<span class="ansi-blue-fg">(</span>cls<span class="ansi-blue-fg">,</span> op<span class="ansi-blue-fg">.</span>methodcaller<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'tree_flatten'</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> cls<span class="ansi-blue-fg">.</span>tree_unflatten<span class="ansi-blue-fg">)</span>
-  <span class="ansi-green-fg">return</span> cls
-<span class="ansi-red-fg">File:</span>      ~/anaconda3/lib/python3.8/site-packages/jax/_src/tree_util.py
-<span class="ansi-red-fg">Type:</span>      function
-</pre>
+<pre>{'input_channels': 2,
+ 'output_channels': 3,
+ 'filter_shape': (2, 2),
+ 'strides': (1, 1),
+ 'padding': 'valid',
+ 'seed': 1234,
+ 'filters': DeviceArray([[[[ 2.0073094 ,  1.6691824 , -0.52152306],
+                [ 0.01462327,  0.3469043 ,  2.7000263 ]],
+ 
+               [[-2.5442414 ,  2.7617264 , -0.4976167 ],
+                [ 0.39192185, -0.4488464 , -1.8725433 ]]],
+ 
+ 
+              [[[ 0.5440059 ,  1.5025641 , -2.4879715 ],
+                [-1.8504584 , -0.22452806,  2.825495  ]],
+ 
+               [[-0.43859494, -1.9360245 , -1.3612974 ],
+                [-0.29709414, -1.0776254 ,  0.91766566]]]], dtype=float32),
+ 'biases': DeviceArray([-1.5805513,  1.9187174,  2.2878523], dtype=float32)}</pre>
 </div>
 
 </div>
