@@ -276,7 +276,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Once we have an algorithm to filter a single image, it's very simple to filter a batch of images.  Here's the code:</p>
+<p>Once we have an algorithm to filter a single image, it can easily be extended to a batch of images.</p>
 
 </div>
 </div>
@@ -323,6 +323,14 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To compare the numpy version to Keras, I'm going to create a <code>Conv2D</code> layer:</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -340,6 +348,14 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>initialize a random batch of fakey images:</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -357,6 +373,14 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>and filter the batch with the layer:</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -374,6 +398,14 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Next, the filters, biases and strides are extracted from the layer.  Note that <code>strides</code> doesn't really need to be accessed from the layer, it's in the <code>Conv2D</code> constructor after all.  The way I did it here is just less error-prone.</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -432,7 +464,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <h3 id="Convolutional-Layer-in-JAX">
 <a class="anchor" href="#Convolutional-Layer-in-JAX" aria-hidden="true"><span class="octicon octicon-link"></span></a>Convolutional Layer in JAX<a class="anchor-link" href="#Convolutional-Layer-in-JAX"> </a>
 </h3>
-<p>Here's what we need to</p>
+<p>In addition to the standard set of imports, I decided to import a function from fast.ai's fastcore library, called <code>patch</code>.</p>
 
 </div>
 </div>
@@ -446,7 +478,6 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">jax</span>
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
-
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">fastcore.basics</span> <span class="kn">import</span> <span class="n">patch</span>
 </pre></div>
@@ -578,7 +609,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The <code>dimension_numbers</code> field is a three element tuple that defines the shape layout of the input batch, the filters, and the output batch respectively.  We've adopted the default Keras layout, which means that for an input batch of images, the batch dimension first, the image height second, the image width third, and the number of input channels fourth.  The dimension number for this is represented as <code>'NHWC'</code>.  By default, the filters are arranged in a similar way although there is no batch dimension: the filter height comes first, the filter width second, the input channel count third, and the output channel count last.  As you can see, the description number for this is <code>'HWIO'</code>.</p>
+<p>The <code>dimension_numbers</code> field is a three element tuple that defines the shape layout of the input batch, the filters, and the output batch respectively.  We've adopted the default Keras layout, which means that for an input batch of images, the batch dimension is listed first, the image height second, the image width third, and the number of input channels fourth.  The dimension number for this is represented as <code>'NHWC'</code>.  By default, the filters are arranged in a similar way although there is no batch dimension: the filter height comes first, the filter width second, the input channel count third, and the output channel count last.  As you can see, the description number for this is <code>'HWIO'</code>.</p>
 <p>Because <code>conv_general_dilatated</code> does not work with the biases, they must be added to the convolution outputs.  Like numpy, JAX has broadcasting rules that make this mixed-rank addition work as expected.</p>
 
 </div>
@@ -640,7 +671,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Finally, <code>Conv2D</code> can be added to the pytree registry.</p>
+<p>Finally, <code>Conv2D</code> can be added the pytree registry with the following line of code:</p>
 
 </div>
 </div>
