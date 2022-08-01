@@ -95,7 +95,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      5 min read
+      10 min read
     
 </span></p>
 
@@ -155,7 +155,7 @@ window.onload = wrap_img;
 <li class="toc-entry toc-h3"><a href="#Convolutional-Layer-in-JAX">Convolutional Layer in JAX </a>
 <ul>
 <li class="toc-entry toc-h4"><a href="#Constructor">Constructor </a></li>
-<li class="toc-entry toc-h4"><a href="#The-__call__-Method">The __call__ Method </a></li>
+<li class="toc-entry toc-h4"><a href="#__call__-Method">__call__ Method </a></li>
 <li class="toc-entry toc-h4"><a href="#Adding-to-pytree-Registry">Adding to pytree Registry </a></li>
 </ul>
 </li>
@@ -424,6 +424,14 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now all the inputs can be passed to the <code>filter_image_batch</code> implemented earlier.</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -441,6 +449,14 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To check that the Keras output is close to the numpy output, ...</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -452,6 +468,70 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </pre></div>
 
     </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">filter_image_batch</span><span class="p">(</span><span class="n">input_batch</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>22.1 ms ± 918 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">layer_keras</span><span class="p">(</span><span class="n">input_batch</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>263 µs ± 1.94 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -547,8 +627,8 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
         <span class="c1"># kaiming/he uniform, using Pytorch documentation</span>
         <span class="n">K</span> <span class="o">=</span> <span class="n">input_channels</span> <span class="o">*</span> <span class="n">filter_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">filter_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">sqrtK</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">fkey</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">filter_shape</span><span class="p">,</span> <span class="n">input_channels</span><span class="p">,</span> <span class="n">output_channels</span><span class="p">),</span> <span class="n">minval</span><span class="o">=-</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="n">sqrtK</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">bkey</span><span class="p">,</span> <span class="p">(</span><span class="n">output_channels</span><span class="p">,),</span> <span class="n">minval</span><span class="o">=-</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="n">sqrtK</span><span class="p">)</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">fkey</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">filter_shape</span><span class="p">,</span> <span class="n">input_channels</span><span class="p">,</span> <span class="n">output_channels</span><span class="p">),</span> <span class="n">minval</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">bkey</span><span class="p">,</span> <span class="p">(</span><span class="n">output_channels</span><span class="p">,),</span> <span class="n">minval</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span><span class="p">)</span>   
 </pre></div>
 
     </div>
@@ -561,8 +641,8 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="The-__call__-Method">
-<a class="anchor" href="#The-__call__-Method" aria-hidden="true"><span class="octicon octicon-link"></span></a>The <code>__call__</code> Method<a class="anchor-link" href="#The-__call__-Method"> </a>
+<h4 id="__call__-Method">
+<a class="anchor" href="#__call__-Method" aria-hidden="true"><span class="octicon octicon-link"></span></a><code>__call__</code> Method<a class="anchor-link" href="#__call__-Method"> </a>
 </h4>
 </div>
 </div>
@@ -657,7 +737,6 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
     <span class="c1"># This assumes that each key-value pair in the metadata dict corresponds to a constructor argument.</span>
     <span class="n">layer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">metadata</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">layer</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="n">params</span>
-    
     <span class="k">return</span> <span class="n">layer</span>
 </pre></div>
 
@@ -690,6 +769,39 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
+<span class="ansi-green-fg">/tmp/ipykernel_280627/2767397717.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>_ <span class="ansi-blue-fg">=</span> jax<span class="ansi-blue-fg">.</span>tree_util<span class="ansi-blue-fg">.</span>register_pytree_node_class<span class="ansi-blue-fg">(</span>Conv2D<span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/tree_util.py</span> in <span class="ansi-cyan-fg">register_pytree_node_class</span><span class="ansi-blue-fg">(cls)</span>
+<span class="ansi-green-intense-fg ansi-bold">    155</span>         <span class="ansi-green-fg">return</span> cls<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>children<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    156</span>   """
+<span class="ansi-green-fg">--&gt; 157</span><span class="ansi-red-fg">   </span>register_pytree_node<span class="ansi-blue-fg">(</span>cls<span class="ansi-blue-fg">,</span> op<span class="ansi-blue-fg">.</span>methodcaller<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'tree_flatten'</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> cls<span class="ansi-blue-fg">.</span>tree_unflatten<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    158</span>   <span class="ansi-green-fg">return</span> cls
+<span class="ansi-green-intense-fg ansi-bold">    159</span> 
+
+<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/tree_util.py</span> in <span class="ansi-cyan-fg">register_pytree_node</span><span class="ansi-blue-fg">(nodetype, flatten_func, unflatten_func)</span>
+<span class="ansi-green-intense-fg ansi-bold">    135</span>       <span class="ansi-red-fg">`</span><span class="ansi-red-fg">`</span>nodetype<span class="ansi-red-fg">`</span><span class="ansi-red-fg">`</span><span class="ansi-blue-fg">.</span>
+<span class="ansi-green-intense-fg ansi-bold">    136</span>   """
+<span class="ansi-green-fg">--&gt; 137</span><span class="ansi-red-fg">   </span>pytree<span class="ansi-blue-fg">.</span>register_node<span class="ansi-blue-fg">(</span>nodetype<span class="ansi-blue-fg">,</span> flatten_func<span class="ansi-blue-fg">,</span> unflatten_func<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    138</span>   _registry<span class="ansi-blue-fg">[</span>nodetype<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> _RegistryEntry<span class="ansi-blue-fg">(</span>flatten_func<span class="ansi-blue-fg">,</span> unflatten_func<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    139</span> 
+
+<span class="ansi-red-fg">ValueError</span>: Duplicate custom PyTreeDef type registration for &lt;class '__main__.Conv2D'&gt;.</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     
 
@@ -712,6 +824,72 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </pre></div>
 
     </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layer_jax</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span> <span class="n">filter_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">output_batch_jax</span> <span class="o">=</span> <span class="n">layer_jax</span><span class="p">(</span><span class="n">input_batch</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">layer_jax</span><span class="p">(</span><span class="n">input_batch</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>342 µs ± 6.64 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -767,6 +945,174 @@ build
 &lt;class 'str'&gt;
 </pre>
 </div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">output_batch_jax</span> <span class="o">-</span> <span class="n">output_batch_numpy</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-6</span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AssertionError</span>                            Traceback (most recent call last)
+<span class="ansi-green-fg">/tmp/ipykernel_280627/1784344590.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span><span class="ansi-green-fg">assert</span> np<span class="ansi-blue-fg">.</span>max<span class="ansi-blue-fg">(</span>np<span class="ansi-blue-fg">.</span>abs<span class="ansi-blue-fg">(</span>output_batch_jax <span class="ansi-blue-fg">-</span> output_batch_numpy<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">&lt;</span> <span class="ansi-cyan-fg">1e-6</span>
+
+<span class="ansi-red-fg">AssertionError</span>: </pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">output_batch_jax</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>DeviceArray([[[[-11.083669  ,   4.775755  , -24.25849   ,  43.676807  ],
+               [-11.66498   ,  -5.105278  , -10.812545  ,  -0.31929612],
+               [-28.05108   , -42.591743  ,  -6.815984  ,  33.295753  ],
+               ...,
+               [-42.53928   ,  31.141907  ,  -8.303273  ,  39.463577  ],
+               [ -8.746554  ,   2.0129733 , -43.941357  ,   1.5363026 ],
+               [-19.216574  ,  37.44691   ,  31.808496  ,  20.451942  ]],
+
+              [[ -9.205572  , -45.786278  , -50.616837  , -16.974272  ],
+               [ 17.229511  , -26.343597  ,   5.0074816 ,  -7.099638  ],
+               [  0.87011063, -12.815502  ,   3.844615  ,  -4.751573  ],
+               ...,
+               [ 14.0724    ,  25.80702   ,  -5.9859753 ,  13.676397  ],
+               [ 23.464653  ,   5.357843  ,  57.990147  , -49.157284  ],
+               [ -0.56029886,  58.08924   ,  47.03026   ,  43.461327  ]],
+
+              [[ 10.687968  , -68.15111   ,  14.731062  , -70.252686  ],
+               [ -3.2556362 , -14.126901  ,  40.33797   ,  32.57667   ],
+               [ 28.008543  ,   7.923616  , -56.835464  ,  72.629875  ],
+               ...,
+               [-24.70549   ,  -2.2446651 , -49.443085  ,  11.166897  ],
+               [ 43.361843  ,  48.260303  ,  -8.766034  ,  44.93127   ],
+               [ -8.883721  ,   5.043674  , -55.75122   ,   8.553969  ]],
+
+              ...,
+
+              [[-24.138351  , -28.53478   ,  20.780308  ,  -2.8226695 ],
+               [ 14.932166  ,  -0.1662485 ,  36.467224  , -15.363529  ],
+               [-20.417349  ,   4.844939  ,  -3.2712522 , -10.839663  ],
+               ...,
+               [  7.122612  ,  55.605755  , -21.576202  ,  48.777374  ],
+               [ 24.797491  ,  13.120012  ,  43.276054  ,  13.922338  ],
+               [-28.601795  , -41.629387  ,  11.961592  ,  24.733212  ]],
+
+              [[-33.376423  ,  16.572319  , -15.2587385 ,  24.47241   ],
+               [-10.426443  ,  40.438965  , -24.56239   ,  40.105568  ],
+               [ 22.990108  ,  11.59423   , -22.44225   ,  40.228836  ],
+               ...,
+               [ 44.51582   ,  26.944061  , -49.554768  ,  42.858364  ],
+               [-14.913045  , -10.712637  ,  44.893547  , -10.938057  ],
+               [  2.8662171 ,  -4.763646  ,   8.478805  ,   4.740792  ]],
+
+              [[-18.019217  ,  25.211092  , -32.759567  ,  45.647297  ],
+               [-22.660938  ,  42.114716  , -40.29248   ,  37.186737  ],
+               [ 21.972387  ,  26.551567  ,   5.4321976 , -28.935955  ],
+               ...,
+               [  6.4915905 ,  -7.694663  ,  -2.5652103 ,  -2.6685712 ],
+               [  7.8653    ,  37.012535  , -15.28538   ,  51.00502   ],
+               [ -1.8756502 ,  -5.5364857 , -18.94037   , -11.817674  ]]],
+
+
+             [[[  7.825595  , -28.387007  , -12.272964  , -14.509658  ],
+               [-14.697572  ,  19.122595  , -16.92616   , -11.379279  ],
+               [ 14.721519  ,  37.64433   , -42.140694  ,  33.63917   ],
+               ...,
+               [ 19.24019   ,   4.8882976 ,  -8.2915    ,   2.5894575 ],
+               [ 10.660831  ,  -2.968543  ,  13.802649  , -13.85127   ],
+               [-43.917816  ,  -7.4173126 , -17.490961  ,  25.582273  ]],
+
+              [[-48.40506   ,  -7.6704607 ,   2.7701807 ,  35.433117  ],
+               [-23.07843   , -15.627991  ,   6.9599876 ,  16.765972  ],
+               [-66.05257   , -32.405407  , -43.60701   , -20.370369  ],
+               ...,
+               [ 15.023751  ,  20.872639  ,  39.17089   ,  -0.93383116],
+               [ 20.965029  ,  51.98516   ,  18.752693  , -20.337029  ],
+               [-34.24803   ,  10.602796  , -16.894012  ,  25.54511   ]],
+
+              [[-25.07912   , -33.15504   , -24.472708  , -19.911821  ],
+               [-27.394207  , -47.315628  ,  36.731365  ,   1.5093007 ],
+               [ 19.880018  ,   8.054712  ,  13.825106  , -17.971357  ],
+               ...,
+               [-68.51784   ,   7.4745984 , -27.336163  ,   5.245964  ],
+               [-14.69651   ,  63.308315  ,  32.35365   ,   7.2392726 ],
+               [ 14.741719  ,  -8.8930435 ,  -1.0568004 , -13.883427  ]],
+
+              ...,
+
+              [[  9.096909  , -13.375384  ,  19.761396  , -42.492832  ],
+               [ 27.5028    , -45.650673  ,  22.65543   , -29.828629  ],
+               [-32.75183   , -34.81209   ,  -7.26936   ,   4.000201  ],
+               ...,
+               [ 64.266426  , -14.800778  ,   9.110334  ,  13.536157  ],
+               [-18.473907  ,  -8.724469  ,  -7.0706315 ,  20.15387   ],
+               [-45.811886  ,  -7.940964  , -43.430634  ,   6.2330194 ]],
+
+              [[-44.567844  ,  58.658577  ,  -5.3067994 ,  -7.175235  ],
+               [ 67.39048   , -10.1929865 ,  17.557854  , -22.752129  ],
+               [ 20.72938   , -17.057125  ,   1.8019339 ,   3.3075144 ],
+               ...,
+               [-25.656939  , -17.686455  ,  -4.0801578 , -30.233994  ],
+               [  7.699855  ,  51.065517  , -23.640423  ,  36.68081   ],
+               [ 50.52898   ,  19.388239  , -21.658588  ,  -8.66455   ]],
+
+              [[-75.72086   , -28.449821  ,  22.726597  , -19.13648   ],
+               [ 46.535416  , -62.49044   ,  20.171436  , -11.051995  ],
+               [ 16.738304  , -39.550873  , -31.251911  ,  33.172794  ],
+               ...,
+               [-18.597277  ,  30.615023  ,  -1.4851321 ,  16.325964  ],
+               [-48.16994   , -11.485183  ,   7.042991  ,  -8.540686  ],
+               [ 12.547801  ,   1.3462148 ,  32.566505  ,   3.8300085 ]]]],            dtype=float32)</pre>
+</div>
+
 </div>
 
 </div>
