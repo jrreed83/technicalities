@@ -299,10 +299,10 @@ window.onload = wrap_img;
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>First, a list comprehension applies the <code>filter_image</code> function defined above, to each image in the batch.  Next, the list returned by the 
-list comprehension, is converted to a rank 4 array with the <code>np.array</code> function.  The line preceding the <code>return</code> statement seems like it shouldn't work</p>
+list comprehension, is converted to a rank 4 array with the <code>np.array</code> function.  The line preceding the <code>return</code> statement,</p>
 <div class="highlight"><pre><span></span><span class="n">outputs</span> <span class="o">=</span> <span class="n">outputs</span> <span class="o">+</span> <span class="n">biases</span>
 </pre></div>
-<p>possibly work?  The dimensions don't work out: <code>outputs</code> is a rank 4 array whereas <code>biases</code> is a rank 1 array.  Fortunately,</p>
+<p>seems like it shouldn't work, because the ranks don't match.  Fortunately,  numpy's broadcasting rules come to the rescue and does what we want.</p>
 
 </div>
 </div>
