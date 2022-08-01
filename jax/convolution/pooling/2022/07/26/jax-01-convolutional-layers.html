@@ -298,10 +298,11 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>First, the list comprehension passed to the <code>np.array</code> function, i.e.</p>
-<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">filter_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span> <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
+<p>First, a list comprehension applies the <code>filter_image</code> function defined above, to each image in the batch.  Next, the list returned by the 
+list comprehension, is converted to a rank 4 array with the <code>np.array</code> function.  The line preceding the <code>return</code> statement seems like it shouldn't work</p>
+<div class="highlight"><pre><span></span><span class="n">outputs</span> <span class="o">=</span> <span class="n">outputs</span> <span class="o">+</span> <span class="n">biases</span>
 </pre></div>
-<p>applies <code>filter_image</code> function definied above to each image in the batch, resulting in a list of filtered images.  By passing this list to the <code>np.array</code> function, it's converted to an <code>ndarray</code> with a leading batch dimension.</p>
+<p>possibly work?  The dimensions don't work out: <code>outputs</code> is a rank 4 array whereas <code>biases</code> is a rank 1 array.  Fortunately,</p>
 
 </div>
 </div>
@@ -516,7 +517,7 @@ window.onload = wrap_img;
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@patch</span>
 <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-    <span class="n">filtered_outputs</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">conv_general_dilated</span><span class="p">(</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">conv_general_dilated</span><span class="p">(</span>
         <span class="n">lhs</span><span class="o">=</span><span class="n">batch</span><span class="p">,</span>
         <span class="n">rhs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span>
         <span class="n">window_strides</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">strides</span><span class="p">,</span>
@@ -525,10 +526,10 @@ window.onload = wrap_img;
     <span class="p">)</span>   
     
     <span class="c1"># This uses the broadcasting rules.</span>
-    <span class="n">outputs</span> <span class="o">=</span> <span class="n">filtered_outputs</span> <span class="o">+</span> <span class="n">biases</span>
+    <span class="n">outputs</span> <span class="o">+=</span>  <span class="n">biases</span>
         
     <span class="c1"># Need to add biases...</span>
-    <span class="k">return</span> <span class="n">filtered_outputs</span> 
+    <span class="k">return</span> <span class="n">outputs</span> 
 </pre></div>
 
     </div>
@@ -597,6 +598,23 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">??</span>jax.tree_util.register_pytree_node_class
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">jax</span><span class="o">.</span><span class="n">tree_util</span><span class="o">.</span><span class="n">register_pytree_node_class</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">)</span>
 </pre></div>
 
@@ -613,53 +631,6 @@ window.onload = wrap_img;
 
 <div class="output_text output_subarea output_execute_result">
 <pre>__main__.Conv2D</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>In my opinion, JAX has pretty good error messages and you'll know whether you made a mistake.</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cc</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'biases'</span><span class="p">,</span> <span class="s1">'filters'</span><span class="p">}}</span>
-<span class="n">metadata</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{'input_channels': 2,
- 'output_channels': 3,
- 'filter_shape': (2, 2),
- 'strides': (1, 1),
- 'padding': 'valid',
- 'seed': 1234}</pre>
 </div>
 
 </div>
