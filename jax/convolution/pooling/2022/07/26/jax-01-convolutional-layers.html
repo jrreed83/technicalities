@@ -95,7 +95,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      9 min read
+      10 min read
     
 </span></p>
 
@@ -508,6 +508,14 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>__call__</code> method uses a JAX function called <code>conv_general_dilated</code>.  Except for the <code>dimension_numbers</code> argument, it's pretty easy to figure out what it's doing.  Like the Keras <code>Conv2D</code> layer, it has additional input arguments that give you further control over the convolution.  I'm not including these additional arguments here because I'm trying to keep things as simple as possible.</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -539,6 +547,15 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>dimension_numbers</code> field is a three element tuple that defines the shape layout of the input batch, the filters, and the output batch respectively.  We've adopted the default Keras layout, which means that for an input batch of images, the batch dimension first, the image height second, the image width third, and the number of input channels fourth.  The dimension number for this is represented as <code>'NHWC'</code>.  By default, the filters are arranged in a similar way although there is no batch dimension: the filter height comes first, the filter width second, the input channel count third, and the output channel count last.  As you can see, the description number for this is <code>'HWIO'</code>.</p>
+<p>Because <code>conv_general_dilatated</code> does not work with the biases, they must be added to the convolution outputs.  Like numpy, JAX has broadcasting rules that make this mixed-rank addition work as expected.</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
