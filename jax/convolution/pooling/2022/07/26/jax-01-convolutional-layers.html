@@ -95,7 +95,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      6 min read
+      7 min read
     
 </span></p>
 
@@ -232,7 +232,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This function filters a single image with every output filter and adds the bias term, resulting in a rank 3 array.  The first two levels of the nested loop extract a rank 3 chunk from <code>image</code>, while the third level of the nested loop performs the filtering and biasing.  After a chunk is processed and the results placed in the output array <code>y</code>, the filter shape and stride is used to calculate the next chunk position.</p>
+<p>This function filters a single image with every output filter, resulting in a rank 3 array.  The first two levels of the nested loop extract a rank 3 chunk from <code>image</code>, while the third level of the nested loop applies each output filter to the chunk.  After a chunk is processed and the results placed in the output array <code>y</code>, the filter shape and stride step to the next chunk position.</p>
 
 </div>
 </div>
@@ -261,7 +261,7 @@ window.onload = wrap_img;
             <span class="c1"># Apply each output filter and bias term to this chunk</span>
             <span class="n">chunk</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">km</span><span class="p">,</span><span class="n">jx</span><span class="p">:</span><span class="n">jx</span><span class="o">+</span><span class="n">kn</span><span class="p">,:]</span>
             <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">no</span><span class="p">):</span>
-                <span class="n">y</span><span class="p">[</span><span class="n">iy</span><span class="p">,</span><span class="n">jy</span><span class="p">,</span><span class="n">channel</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">filters</span><span class="p">[:,:,:,</span><span class="n">channel</span><span class="p">]</span> <span class="o">*</span> <span class="n">chunk</span><span class="p">)</span><span class="c1"># + biases[channel]</span>
+                <span class="n">y</span><span class="p">[</span><span class="n">iy</span><span class="p">,</span><span class="n">jy</span><span class="p">,</span><span class="n">channel</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">filters</span><span class="p">[:,:,:,</span><span class="n">channel</span><span class="p">]</span> <span class="o">*</span> <span class="n">chunk</span><span class="p">)</span>
             
     <span class="k">return</span> <span class="n">y</span>
 </pre></div>
@@ -338,7 +338,13 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layer_keras</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">bias_initializer</span><span class="o">=</span><span class="s1">'he_uniform'</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layer_keras</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span>
+    <span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> 
+    <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> 
+    <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> 
+    <span class="n">bias_initializer</span><span class="o">=</span><span class="s1">'he_uniform'</span><span class="p">,</span> 
+    <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span>
+<span class="p">)</span>
 </pre></div>
 
     </div>
@@ -588,8 +594,9 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>In addition to the standard set of imports, I'm also importing <code>patch</code> from <a href="https://fastcore.fast.ai/">fastcore</a>.  It's selling point is that it contains</p>
 <blockquote>
-<p>Python goodies to make your coding faster, easier, and more maintainable.In addition to the standard set of imports</p>
+<p>Python goodies to make your coding faster, easier, and more maintainable.</p>
 </blockquote>
+<p>The nice thing about <code>patch</code>, is that it allows you to write methods outside of class definitions.  This is particularly useful if you're interested in incrementally developing, and explaining, class functionality in notebooks.  Without <code>patch</code>, you'd have to either have an entire class implementation in a single cell, or ab</p>
 
 </div>
 </div>
@@ -636,7 +643,15 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@patch</span>
-<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">input_channels</span><span class="p">,</span> <span class="n">output_channels</span><span class="p">,</span> <span class="n">filter_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">:</span> <span class="n">Conv2D</span><span class="p">,</span> 
+    <span class="n">input_channels</span><span class="p">,</span> 
+    <span class="n">output_channels</span><span class="p">,</span> 
+    <span class="n">filter_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> 
+    <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> 
+    <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">,</span> 
+    <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> 
+    <span class="n">build</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     
     <span class="bp">self</span><span class="o">.</span><span class="n">input_channels</span> <span class="o">=</span> <span class="n">input_channels</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">output_channels</span> <span class="o">=</span> <span class="n">output_channels</span>
@@ -652,8 +667,17 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
         <span class="c1"># kaiming/he uniform, using Pytorch documentation</span>
         <span class="n">K</span> <span class="o">=</span> <span class="n">input_channels</span> <span class="o">*</span> <span class="n">filter_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">filter_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">sqrtK</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">fkey</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">filter_shape</span><span class="p">,</span> <span class="n">input_channels</span><span class="p">,</span> <span class="n">output_channels</span><span class="p">),</span> <span class="n">minval</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">bkey</span><span class="p">,</span> <span class="p">(</span><span class="n">output_channels</span><span class="p">,),</span> <span class="n">minval</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span><span class="p">)</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+            <span class="n">fkey</span><span class="p">,</span> 
+            <span class="p">(</span><span class="o">*</span><span class="n">filter_shape</span><span class="p">,</span> <span class="n">input_channels</span><span class="p">,</span> <span class="n">output_channels</span><span class="p">),</span> 
+            <span class="n">minval</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span>
+        <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+            <span class="n">bkey</span><span class="p">,</span> 
+            <span class="p">(</span><span class="n">output_channels</span><span class="p">,),</span> 
+            <span class="n">minval</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span>
+        <span class="p">)</span>   
 </pre></div>
 
     </div>
@@ -727,6 +751,8 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <h4 id="Adding-to-pytree-Registry">
 <a class="anchor" href="#Adding-to-pytree-Registry" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding to pytree Registry<a class="anchor-link" href="#Adding-to-pytree-Registry"> </a>
 </h4>
+<p>Like the <code>Linear</code> and <code>Function</code> layers defined in my last post, <code>tree_flatten</code> and <code>tree_unflatten</code> methods must be defined.</p>
+
 </div>
 </div>
 </div>
@@ -776,7 +802,8 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Finally, <code>Conv2D</code> can be added the pytree registry with the following line of code:</p>
+<p>You'll notice that I'm trying to be a little more generic here.  Rather than use a tuple to store the layer's metadata, I'm using a dictionary that contains every data attribute, except the biases and filters.  Because these attributes correspond to arguments to the constructor, <code>metadata</code> is passed to <code>Conv2D</code>'s constructor in <code>tree_unflatten</code>.</p>
+<p>Now that JAX knows how to flatten and unflatten a <code>Conv2D</code> layer, it can formally be can be added to the pytree registry:</p>
 
 </div>
 </div>
@@ -801,7 +828,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>You'll get an exception complaining about duplicate registration if you run this cell twice.  Until I figure out how to remove from the pytree registry (if it's even possible), my work around is to re-run the cells (in this order) containing the class declaration, the methods, and finally the class registration.</p>
+<p>Last time, <code>register_pytree_node_class</code> was used as a class decorator.  We can get away with using it as a function because that's all decorators are: special types of functions.  The reason the decorator approarch could not be used here is that the cell with the class definition didn't include the <code>tree_flatten</code> and <code>tree_unflatten</code> methods.  If you add the decorator and run the cell, JAX will complain and point out that these methods are not defined.</p>
 
 </div>
 </div>
