@@ -95,7 +95,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      7 min read
+      8 min read
     
 </span></p>
 
@@ -161,6 +161,7 @@ window.onload = wrap_img;
 </li>
 </ul>
 </li>
+<li class="toc-entry toc-h2"><a href="#Compare-JAX-and-Keras">Compare JAX and Keras </a></li>
 <li class="toc-entry toc-h2"><a href="#Conclusion">Conclusion </a></li>
 </ul><!--
 #################################################
@@ -509,7 +510,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>21 ms ± 109 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+<pre>23 ms ± 888 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 </pre>
 </div>
 </div>
@@ -541,7 +542,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>261 µs ± 276 ns per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+<pre>264 µs ± 683 ns per loop (mean ± std. dev. of 7 runs, 1000 loops each)
 </pre>
 </div>
 </div>
@@ -596,7 +597,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <blockquote>
 <p>Python goodies to make your coding faster, easier, and more maintainable.</p>
 </blockquote>
-<p>The nice thing about <code>patch</code>, is that it allows you to write methods outside of class definitions.  This is particularly useful if you're interested in incrementally developing, and explaining, class functionality in notebooks.  Without <code>patch</code>, you'd have to either have an entire class implementation in a single cell, or ab</p>
+<p>The nice thing about <code>patch</code>, is that it allows you to write methods outside of class definitions.  This is particularly useful if you're interested in incrementally developing, and explaining, class functionality in notebooks.  Without <code>patch</code>, you'd have to either have an entire class implementation in a single cell, or abandon classes altogether and use functions.</p>
 
 </div>
 </div>
@@ -632,6 +633,8 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <h4 id="Constructor">
 <a class="anchor" href="#Constructor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Constructor<a class="anchor-link" href="#Constructor"> </a>
 </h4>
+<p>The constructor is pretty self explanatory.  Like the layers implemented in the previous post, the <code>build</code> parameter determines whether or not the filters and biases get initialized.  For now, the filters and biases follow a kaiming-uniform distribution.  This is the default initializer in Pytorch, so I figured it would be effective.  Can't say I know why at this point, but Keras has a different default initialization approach.</p>
+
 </div>
 </div>
 </div>
@@ -665,18 +668,18 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
         <span class="n">fkey</span><span class="p">,</span> <span class="n">bkey</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
             
         <span class="c1"># kaiming/he uniform, using Pytorch documentation</span>
-        <span class="n">K</span> <span class="o">=</span> <span class="n">input_channels</span> <span class="o">*</span> <span class="n">filter_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">filter_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">input_channels</span> <span class="o">*</span> <span class="n">filter_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">filter_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">sqrtK</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
             <span class="n">fkey</span><span class="p">,</span> 
             <span class="p">(</span><span class="o">*</span><span class="n">filter_shape</span><span class="p">,</span> <span class="n">input_channels</span><span class="p">,</span> <span class="n">output_channels</span><span class="p">),</span> 
-            <span class="n">minval</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span>
+            <span class="n">minval</span><span class="o">=-</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="n">sqrtK</span>
         <span class="p">)</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
             <span class="n">bkey</span><span class="p">,</span> 
             <span class="p">(</span><span class="n">output_channels</span><span class="p">,),</span> 
-            <span class="n">minval</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="mi">1</span><span class="o">/</span><span class="n">sqrtK</span>
+            <span class="n">minval</span><span class="o">=-</span><span class="n">sqrtK</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=+</span><span class="n">sqrtK</span>
         <span class="p">)</span>   
 </pre></div>
 
@@ -740,7 +743,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>The <code>dimension_numbers</code> field is a three element tuple describing the shape of the input batch, the filters, and the output batch respectively.  We've adopted the default Keras layout, which means that for an input batch of images, the batch dimension is listed first, the image height second, the image width third, and the number of input channels fourth.  The dimension number for this is represented as <code>'NHWC'</code>.</p>
 <p>By default, the filters are arranged in a similar way although there is no batch dimension: the filter height comes first, the filter width second, the input channel count third, and the output channel count last.  The description number for this is <code>'HWIO'</code>.</p>
-<p>Because <code>conv_general_dilatated</code> does not work with the biases, they must be added in separately.  Like numpy, JAX has broadcasting rules that make this mixed-rank addition work as expected.</p>
+<p>Because <code>conv_general_dilatated</code> does not work with the biases, they must be added in separately.  Like numpy, JAX has broadcasting rules that make this mixed-rank addition work properly.</p>
 
 </div>
 </div>
@@ -850,6 +853,115 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Compare-JAX-and-Keras">
+<a class="anchor" href="#Compare-JAX-and-Keras" aria-hidden="true"><span class="octicon octicon-link"></span></a>Compare JAX and Keras<a class="anchor-link" href="#Compare-JAX-and-Keras"> </a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To compare the JAX and Keras convolutional layer implementations, the JAX <code>Conv2D</code> layer is initialized with data from the Keras layer, and applied to the same input batch that was used previously.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layer_jax</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span>
+    <span class="n">input_channels</span><span class="o">=</span><span class="n">layer_keras</span><span class="o">.</span><span class="n">input_spec</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+    <span class="n">output_channels</span><span class="o">=</span><span class="n">layer_keras</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span>
+    <span class="n">filter_shape</span><span class="o">=</span><span class="n">layer_keras</span><span class="o">.</span><span class="n">kernel_size</span><span class="p">,</span>
+    <span class="n">strides</span><span class="o">=</span><span class="n">layer_keras</span><span class="o">.</span><span class="n">strides</span><span class="p">,</span>
+    <span class="n">padding</span><span class="o">=</span><span class="n">layer_keras</span><span class="o">.</span><span class="n">padding</span>
+<span class="p">)</span>
+
+<span class="n">layer_jax</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="n">layer_jax</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="n">layer_keras</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
+
+<span class="n">output_batch_jax</span> <span class="o">=</span> <span class="n">layer_jax</span><span class="p">(</span><span class="n">input_batch</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Because the following assertion passes, we can be reassured that both layers are calculating the same result.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">output_batch_keras</span> <span class="o">-</span> <span class="n">output_batch_jax</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-6</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>What about the calculation time?</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">layer_keras</span><span class="p">(</span><span class="n">input_batch</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>272 µs ± 8.95 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -871,7 +983,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>348 µs ± 5.34 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+<pre>362 µs ± 5.55 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
 </pre>
 </div>
 </div>
@@ -882,6 +994,71 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Not too bad, the JAX version only about 100 microseconds slower than Keras.  Fortunately, the JAX version can go even faster after applying the <code>jax.jit</code> transformation.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layer_jax_jitted</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">layer_jax</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<span class="n">layer_jax_jitted</span><span class="p">(</span><span class="n">input_batch</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>223 µs ± 1.73 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now it's faster than Keras.  I realize you can't trust micro-benchmarks, but it's good to know that with respect to performance, JAX and Keras seem to be in the same ballpark.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
