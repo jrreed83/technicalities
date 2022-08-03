@@ -178,7 +178,7 @@ window.onload = wrap_img;
 <h2 id="Introduction">
 <a class="anchor" href="#Introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction<a class="anchor-link" href="#Introduction"> </a>
 </h2>
-<p>In this post, I'll start by implementing a basic convolutional layer using numpy and validate it against Keras.  After this, I'll write a more efficient one using JAX.</p>
+<p>In this post, I'll start by implementing a basic two-dimensional convolutional layer using numpy and validate it against Keras.  After this, I'll write a more efficient one using JAX.  Generalizing the work to other dimensions should be pretty straight forward.</p>
 
 </div>
 </div>
@@ -190,8 +190,11 @@ window.onload = wrap_img;
 <a class="anchor" href="#How-Convolutional-Layers-work" aria-hidden="true"><span class="octicon octicon-link"></span></a>How Convolutional Layers work<a class="anchor-link" href="#How-Convolutional-Layers-work"> </a>
 </h2>
 <p>A two dimensional convolutional layer consists of several randomly initialized filters, biases, and a rule for moving the filter across the input array.  Typically, the input array is rank 4, meaning that the shape has 4 components.  One of these components represents the number of individual images in the input,  two of them tell you the size of each of the images, and the fourth tells you the number of <em>input channels</em>.  Interpret the number of channels as the number of components describing a pixel.  For instance, a pixel in a gray-scale image is a number between 0 and 255 and therefore has one channel.  However, an RGB color image has 3 channels because it has a red component, green component, and blue component.</p>
-<p>The number of filters and biases in the layer tell you the number of channels each image will have after application.  When definining a layer, you generally specify how many output channels, or filters, you want.  In Keras, it's the number of filters; in Pytorch it's the number of output channels.  Either way, the layer eventually generates one rank 3 filter and 1 scalar bias per output channel.  The</p>
-
+<p>The number of filters and biases in the layer tell you the number of channels each image will have after application.  When definining a layer, you generally specify how many output channels, or output filters, you want.  In Keras, it's the number of filters; in Pytorch it's the number of output channels.  Either way, for each output channel, the layer generates 1 rank 3 filter and 1 scalar bias.</p>
+<p>I generally think about convolution as a kind of windowed dot-product.</p>
+$$
+    \text{output-image} = \text{filter} * \text{input-image} + \text{bias}
+$$
 </div>
 </div>
 </div>
