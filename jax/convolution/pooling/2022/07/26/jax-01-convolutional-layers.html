@@ -4,9 +4,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Convolutional Layers | Technicalities</title>
+<title>Two Dimensional Convolutional Layers | Technicalities</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Convolutional Layers" />
+<meta property="og:title" content="Two Dimensional Convolutional Layers" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="A repository of code and other technical stuff." />
 <meta property="og:description" content="A repository of code and other technical stuff." />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2022-07-26T00:00:00-05:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Convolutional Layers" />
+<meta property="twitter:title" content="Two Dimensional Convolutional Layers" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-07-26T00:00:00-05:00","datePublished":"2022-07-26T00:00:00-05:00","description":"A repository of code and other technical stuff.","headline":"Convolutional Layers","mainEntityOfPage":{"@type":"WebPage","@id":"https://jrreed83.github.io/technicalities/jax/convolution/pooling/2022/07/26/jax-01-convolutional-layers.html"},"url":"https://jrreed83.github.io/technicalities/jax/convolution/pooling/2022/07/26/jax-01-convolutional-layers.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-07-26T00:00:00-05:00","datePublished":"2022-07-26T00:00:00-05:00","description":"A repository of code and other technical stuff.","headline":"Two Dimensional Convolutional Layers","mainEntityOfPage":{"@type":"WebPage","@id":"https://jrreed83.github.io/technicalities/jax/convolution/pooling/2022/07/26/jax-01-convolutional-layers.html"},"url":"https://jrreed83.github.io/technicalities/jax/convolution/pooling/2022/07/26/jax-01-convolutional-layers.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/technicalities/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jrreed83.github.io/technicalities/feed.xml" title="Technicalities" /><link rel="shortcut icon" type="image/x-icon" href="/technicalities/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
@@ -89,13 +89,13 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Convolutional Layers</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-07-26T00:00:00-05:00" itemprop="datePublished">
+    <h1 class="post-title p-name" itemprop="name headline">Two Dimensional Convolutional Layers</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-07-26T00:00:00-05:00" itemprop="datePublished">
         Jul 26, 2022
       </time>
        • <span class="read-time" title="Estimated read time">
     
     
-      8 min read
+      10 min read
     
 </span></p>
 
@@ -189,6 +189,9 @@ window.onload = wrap_img;
 <h2 id="How-Convolutional-Layers-work">
 <a class="anchor" href="#How-Convolutional-Layers-work" aria-hidden="true"><span class="octicon octicon-link"></span></a>How Convolutional Layers work<a class="anchor-link" href="#How-Convolutional-Layers-work"> </a>
 </h2>
+<p>A two dimensional convolutional layer consists of several randomly initialized filters, biases, and a rule for moving the filter across the input array.  Typically, the input array is rank 4, meaning that the shape has 4 components.  One of these components represents the number of individual images in the input,  two of them tell you the size of each of the images, and the fourth tells you the number of <em>input channels</em>.  Interpret the number of channels as the number of components describing a pixel.  For instance, a pixel in a gray-scale image is a number between 0 and 255 and therefore has one channel.  However, an RGB color image has 3 channels because it has a red component, green component, and blue component.</p>
+<p>The number of filters and biases in the layer tell you the number of channels each image will have after application.  When definining a layer, you generally specify how many output channels, or filters, you want.  In Keras, it's the number of filters; in Pytorch it's the number of output channels.  Either way, the layer eventually generates one rank 3 filter and 1 scalar bias per output channel.  The</p>
+
 </div>
 </div>
 </div>
@@ -1065,6 +1068,14 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <h2 id="Conclusion">
 <a class="anchor" href="#Conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion<a class="anchor-link" href="#Conclusion"> </a>
 </h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In the post, I implemented the mechanics of a 2D convolutional layer in numpy, from first principles.  After this was proven to be very inefficient compare to Keras, I built a simple layer in JAX and showed that it performed as well as the Keras version on a sample input batch.</p>
+
 </div>
 </div>
 </div>
