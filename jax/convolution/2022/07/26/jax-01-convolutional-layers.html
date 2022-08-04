@@ -10,15 +10,15 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="A repository of code and other technical stuff." />
 <meta property="og:description" content="A repository of code and other technical stuff." />
-<link rel="canonical" href="https://jrreed83.github.io/technicalities/jax/convolution/pooling/2022/07/26/jax-01-convolutional-layers.html" />
-<meta property="og:url" content="https://jrreed83.github.io/technicalities/jax/convolution/pooling/2022/07/26/jax-01-convolutional-layers.html" />
+<link rel="canonical" href="https://jrreed83.github.io/technicalities/jax/convolution/2022/07/26/jax-01-convolutional-layers.html" />
+<meta property="og:url" content="https://jrreed83.github.io/technicalities/jax/convolution/2022/07/26/jax-01-convolutional-layers.html" />
 <meta property="og:site_name" content="Technicalities" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2022-07-26T00:00:00-05:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Two Dimensional Convolutional Layers" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-07-26T00:00:00-05:00","datePublished":"2022-07-26T00:00:00-05:00","description":"A repository of code and other technical stuff.","headline":"Two Dimensional Convolutional Layers","mainEntityOfPage":{"@type":"WebPage","@id":"https://jrreed83.github.io/technicalities/jax/convolution/pooling/2022/07/26/jax-01-convolutional-layers.html"},"url":"https://jrreed83.github.io/technicalities/jax/convolution/pooling/2022/07/26/jax-01-convolutional-layers.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-07-26T00:00:00-05:00","datePublished":"2022-07-26T00:00:00-05:00","description":"A repository of code and other technical stuff.","headline":"Two Dimensional Convolutional Layers","mainEntityOfPage":{"@type":"WebPage","@id":"https://jrreed83.github.io/technicalities/jax/convolution/2022/07/26/jax-01-convolutional-layers.html"},"url":"https://jrreed83.github.io/technicalities/jax/convolution/2022/07/26/jax-01-convolutional-layers.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/technicalities/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jrreed83.github.io/technicalities/feed.xml" title="Technicalities" /><link rel="shortcut icon" type="image/x-icon" href="/technicalities/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
@@ -106,9 +106,6 @@ window.onload = wrap_img;
         &nbsp;
       
         <a class="category-tags-link" href="/technicalities/categories/#convolution">convolution</a>
-        &nbsp;
-      
-        <a class="category-tags-link" href="/technicalities/categories/#pooling">pooling</a>
         
       
       </p>
@@ -189,12 +186,9 @@ window.onload = wrap_img;
 <h2 id="How-Convolutional-Layers-work">
 <a class="anchor" href="#How-Convolutional-Layers-work" aria-hidden="true"><span class="octicon octicon-link"></span></a>How Convolutional Layers work<a class="anchor-link" href="#How-Convolutional-Layers-work"> </a>
 </h2>
-<p>A two dimensional convolutional layer consists of several randomly initialized filters, biases, and a rule for moving the filter across the input array.  Typically, the input array is rank 4, meaning that the shape has 4 components.  One of these components represents the number of individual images in the input,  two of them tell you the size of each of the images, and the fourth tells you the number of <em>input channels</em>.  Interpret the number of channels as the number of components describing a pixel.  For instance, a pixel in a gray-scale image is a number between 0 and 255 and therefore has one channel.  However, an RGB color image has 3 channels because it has a red component, green component, and blue component.</p>
-<p>The number of filters and biases in the layer tell you the number of channels each image will have after application.  When definining a layer, you generally specify how many output channels, or output filters, you want.  In Keras, it's the number of filters; in Pytorch it's the number of output channels.  Either way, for each output channel, the layer generates 1 rank 3 filter and 1 scalar bias.</p>
-<p>I generally think about convolution as a kind of windowed dot-product.</p>
-$$
-    \text{output-image} = \text{filter} * \text{input-image} + \text{bias}
-$$
+<p>A two dimensional convolutional layer consists of several randomly initialized filters, biases, and a rule for moving the filters across a set of images.  Typically, the input array is rank 4, meaning that the shape has 4 components.  One of these components represents the number of individual images in the input,  two of them tell you the size of each of the images, and the fourth tells you the number of <em>input channels</em>.  The number of channels in an image is the number of components you need to completely describe a pixel.  For instance, a pixel in a gray-scale image is a number between 0 and 255 and therefore has one channel.  An RGB color image, on the otherhand, has 3 channels because it has a red component, green component, and blue component.</p>
+<p>When definining a layer, it's up to you to say how many output channels you want.  For each output channel, you'll generate one rank 3 filter and one scalar bias.  Convolving an input image with one of these output filters, and adding the bias term, results in a flat (i.e single channel) 2D array.  Performing this process for each of the filters and bias terms gives you a stack of arrays with thickness matching the number of output channels.</p>
+
 </div>
 </div>
 </div>
@@ -259,7 +253,6 @@ $$
     
     
     <span class="n">sm</span><span class="p">,</span> <span class="n">sn</span> <span class="o">=</span> <span class="n">strides</span>
-    <span class="c1">#ym, yn = 1 + ((xm - km + 1)//sm), 1 + ((xn - kn + 1)//sn)</span>
     <span class="n">ym</span><span class="p">,</span> <span class="n">yn</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">xm</span> <span class="o">-</span> <span class="n">km</span><span class="p">)</span><span class="o">//</span><span class="n">sm</span><span class="p">),</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">xn</span> <span class="o">-</span> <span class="n">kn</span><span class="p">)</span><span class="o">//</span><span class="n">sn</span><span class="p">)</span> 
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ym</span><span class="p">,</span> <span class="n">yn</span><span class="p">,</span> <span class="n">no</span><span class="p">))</span>
 
@@ -316,7 +309,7 @@ $$
 list comprehension, is converted to a rank 4 array with the <code>np.array</code> function.  The line preceding the <code>return</code> statement,</p>
 <div class="highlight"><pre><span></span><span class="n">outputs</span> <span class="o">=</span> <span class="n">outputs</span> <span class="o">+</span> <span class="n">biases</span>
 </pre></div>
-<p>seems like it shouldn't work, because the ranks don't match.  Fortunately,  numpy's broadcasting rules come to the rescue and does what we want.</p>
+<p>seems like it shouldn't work, because the ranks don't match.  Fortunately,  numpy's broadcasting rules come to the rescue and the addition works as expected.</p>
 
 </div>
 </div>
@@ -516,7 +509,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>23 ms ± 888 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+<pre>21.8 ms ± 771 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 </pre>
 </div>
 </div>
@@ -548,7 +541,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>264 µs ± 683 ns per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+<pre>265 µs ± 939 ns per loop (mean ± std. dev. of 7 runs, 1000 loops each)
 </pre>
 </div>
 </div>
@@ -957,7 +950,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>272 µs ± 8.95 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+<pre>270 µs ± 8.3 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
 </pre>
 </div>
 </div>
@@ -989,7 +982,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>362 µs ± 5.55 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+<pre>360 µs ± 8.89 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
 </pre>
 </div>
 </div>
@@ -1046,7 +1039,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>223 µs ± 1.73 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+<pre>224 µs ± 1.78 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
 </pre>
 </div>
 </div>
@@ -1086,7 +1079,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 
 
 
-  </div><a class="u-url" href="/technicalities/jax/convolution/pooling/2022/07/26/jax-01-convolutional-layers.html" hidden></a>
+  </div><a class="u-url" href="/technicalities/jax/convolution/2022/07/26/jax-01-convolutional-layers.html" hidden></a>
 </article>
 
       </div>
