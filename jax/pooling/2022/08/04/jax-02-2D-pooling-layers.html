@@ -95,7 +95,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      4 min read
+      2 min read
     
 </span></p>
 
@@ -175,8 +175,6 @@ window.onload = wrap_img;
 <h2 id="Introduction">
 <a class="anchor" href="#Introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction<a class="anchor-link" href="#Introduction"> </a>
 </h2>
-<p>In the style of my last post on 2D convolutional layers,</p>
-
 </div>
 </div>
 </div>
@@ -227,23 +225,6 @@ window.onload = wrap_img;
 </div>
 </div>
 </div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numba</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -557,14 +538,6 @@ window.onload = wrap_img;
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>To implement <code>__call__</code> we use the JAX builtin function <code>conv_general_dilated</code>.  Except for the <code>dimension_numbers</code> argument, it's pretty easy to figure out what it's doing (but I'm still not clear on how it works - maybe save that for another post).  Like the Keras <code>Conv2D</code> layer, it has additional input arguments that give you further control over the convolution.  I'm not including these additional arguments here because I'm trying to keep things as simple as possible.</p>
-
-</div>
-</div>
-</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -713,15 +686,11 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layer_jax</span> <span class="o">=</span> <span class="n">Conv2D</span><span class="p">(</span>
-    <span class="n">input_channels</span><span class="o">=</span><span class="n">layer_keras</span><span class="o">.</span><span class="n">input_spec</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-    <span class="n">output_channels</span><span class="o">=</span><span class="n">layer_keras</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span>
-    <span class="n">filter_shape</span><span class="o">=</span><span class="n">layer_keras</span><span class="o">.</span><span class="n">kernel_size</span><span class="p">,</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layer_jax</span> <span class="o">=</span> <span class="n">MaxPool2D</span><span class="p">(</span>
+    <span class="n">pool_shape</span><span class="o">=</span><span class="n">layer_keras</span><span class="o">.</span><span class="n">pool_size</span><span class="p">,</span>
     <span class="n">strides</span><span class="o">=</span><span class="n">layer_keras</span><span class="o">.</span><span class="n">strides</span><span class="p">,</span>
     <span class="n">padding</span><span class="o">=</span><span class="n">layer_keras</span><span class="o">.</span><span class="n">padding</span>
 <span class="p">)</span>
-
-<span class="n">layer_jax</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="n">layer_jax</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="n">layer_keras</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
 
 <span class="n">output_batch_jax</span> <span class="o">=</span> <span class="n">layer_jax</span><span class="p">(</span><span class="n">input_batch</span><span class="p">)</span>
 </pre></div>
@@ -773,7 +742,7 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it -n 100
 <span class="n">layer_keras</span><span class="p">(</span><span class="n">input_batch</span><span class="p">)</span>
 </pre></div>
 
@@ -787,7 +756,7 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>270 µs ± 8.3 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+<pre>659 µs ± 41.9 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 </pre>
 </div>
 </div>
@@ -805,7 +774,7 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it -n 100
 <span class="n">layer_jax</span><span class="p">(</span><span class="n">input_batch</span><span class="p">)</span>
 </pre></div>
 
@@ -819,7 +788,7 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>360 µs ± 8.89 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+<pre>250 µs ± 23.2 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 </pre>
 </div>
 </div>
@@ -830,85 +799,12 @@ window.onload = wrap_img;
 </div>
     
 
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Not too bad, the JAX version only about 100 microseconds slower than Keras.  Fortunately, the JAX version can go even faster after applying the <code>jax.jit</code> transformation.</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layer_jax_jitted</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">layer_jax</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
-<span class="n">layer_jax_jitted</span><span class="p">(</span><span class="n">input_batch</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>224 µs ± 1.78 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Now it's faster than Keras.  I realize you can't trust micro-benchmarks, but it's good to know that with respect to performance, JAX and Keras seem to be in the same ballpark.</p>
-
-</div>
-</div>
-</div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Conclusion">
 <a class="anchor" href="#Conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion<a class="anchor-link" href="#Conclusion"> </a>
 </h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>In the post, I implemented the mechanics of a 2D convolutional layer in numpy, from first principles.  After this was proven to be very inefficient compare to Keras, I built a simple layer in JAX and showed that it performed as well as the Keras version on a sample input batch.</p>
-
 </div>
 </div>
 </div>
