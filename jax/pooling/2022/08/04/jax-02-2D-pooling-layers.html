@@ -634,39 +634,6 @@ window.onload = wrap_img;
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
-<span class="ansi-green-fg">/tmp/ipykernel_333426/2773652856.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>_ <span class="ansi-blue-fg">=</span> jax<span class="ansi-blue-fg">.</span>tree_util<span class="ansi-blue-fg">.</span>register_pytree_node_class<span class="ansi-blue-fg">(</span>MaxPool2D<span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/tree_util.py</span> in <span class="ansi-cyan-fg">register_pytree_node_class</span><span class="ansi-blue-fg">(cls)</span>
-<span class="ansi-green-intense-fg ansi-bold">    155</span>         <span class="ansi-green-fg">return</span> cls<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>children<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    156</span>   """
-<span class="ansi-green-fg">--&gt; 157</span><span class="ansi-red-fg">   </span>register_pytree_node<span class="ansi-blue-fg">(</span>cls<span class="ansi-blue-fg">,</span> op<span class="ansi-blue-fg">.</span>methodcaller<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">'tree_flatten'</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> cls<span class="ansi-blue-fg">.</span>tree_unflatten<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    158</span>   <span class="ansi-green-fg">return</span> cls
-<span class="ansi-green-intense-fg ansi-bold">    159</span> 
-
-<span class="ansi-green-fg">~/anaconda3/lib/python3.8/site-packages/jax/_src/tree_util.py</span> in <span class="ansi-cyan-fg">register_pytree_node</span><span class="ansi-blue-fg">(nodetype, flatten_func, unflatten_func)</span>
-<span class="ansi-green-intense-fg ansi-bold">    135</span>       <span class="ansi-red-fg">`</span><span class="ansi-red-fg">`</span>nodetype<span class="ansi-red-fg">`</span><span class="ansi-red-fg">`</span><span class="ansi-blue-fg">.</span>
-<span class="ansi-green-intense-fg ansi-bold">    136</span>   """
-<span class="ansi-green-fg">--&gt; 137</span><span class="ansi-red-fg">   </span>pytree<span class="ansi-blue-fg">.</span>register_node<span class="ansi-blue-fg">(</span>nodetype<span class="ansi-blue-fg">,</span> flatten_func<span class="ansi-blue-fg">,</span> unflatten_func<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    138</span>   _registry<span class="ansi-blue-fg">[</span>nodetype<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> _RegistryEntry<span class="ansi-blue-fg">(</span>flatten_func<span class="ansi-blue-fg">,</span> unflatten_func<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    139</span> 
-
-<span class="ansi-red-fg">ValueError</span>: Duplicate custom PyTreeDef type registration for &lt;class '__main__.MaxPool2D'&gt;.</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
     
 
@@ -756,7 +723,7 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>659 µs ± 41.9 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+<pre>669 µs ± 40 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 </pre>
 </div>
 </div>
@@ -788,7 +755,7 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>250 µs ± 23.2 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+<pre>249 µs ± 21.4 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 </pre>
 </div>
 </div>
