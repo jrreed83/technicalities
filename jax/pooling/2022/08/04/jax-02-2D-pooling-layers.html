@@ -4,21 +4,21 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Two Dimensional Convolutional Layers | Technicalities</title>
+<title>Two Dimensional Pooling Layers | Technicalities</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Two Dimensional Convolutional Layers" />
+<meta property="og:title" content="Two Dimensional Pooling Layers" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="A repository of code and other technical stuff." />
 <meta property="og:description" content="A repository of code and other technical stuff." />
-<link rel="canonical" href="https://jrreed83.github.io/technicalities/jax/convolution/2022/08/03/jax-01-2D-convolutional-layers.html" />
-<meta property="og:url" content="https://jrreed83.github.io/technicalities/jax/convolution/2022/08/03/jax-01-2D-convolutional-layers.html" />
+<link rel="canonical" href="https://jrreed83.github.io/technicalities/jax/pooling/2022/08/04/jax-02-2D-pooling-layers.html" />
+<meta property="og:url" content="https://jrreed83.github.io/technicalities/jax/pooling/2022/08/04/jax-02-2D-pooling-layers.html" />
 <meta property="og:site_name" content="Technicalities" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2022-08-03T00:00:00-05:00" />
+<meta property="article:published_time" content="2022-08-04T00:00:00-05:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Two Dimensional Convolutional Layers" />
+<meta property="twitter:title" content="Two Dimensional Pooling Layers" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-08-03T00:00:00-05:00","datePublished":"2022-08-03T00:00:00-05:00","description":"A repository of code and other technical stuff.","headline":"Two Dimensional Convolutional Layers","mainEntityOfPage":{"@type":"WebPage","@id":"https://jrreed83.github.io/technicalities/jax/convolution/2022/08/03/jax-01-2D-convolutional-layers.html"},"url":"https://jrreed83.github.io/technicalities/jax/convolution/2022/08/03/jax-01-2D-convolutional-layers.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-08-04T00:00:00-05:00","datePublished":"2022-08-04T00:00:00-05:00","description":"A repository of code and other technical stuff.","headline":"Two Dimensional Pooling Layers","mainEntityOfPage":{"@type":"WebPage","@id":"https://jrreed83.github.io/technicalities/jax/pooling/2022/08/04/jax-02-2D-pooling-layers.html"},"url":"https://jrreed83.github.io/technicalities/jax/pooling/2022/08/04/jax-02-2D-pooling-layers.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/technicalities/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jrreed83.github.io/technicalities/feed.xml" title="Technicalities" /><link rel="shortcut icon" type="image/x-icon" href="/technicalities/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
@@ -89,13 +89,13 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Two Dimensional Convolutional Layers</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-08-03T00:00:00-05:00" itemprop="datePublished">
-        Aug 3, 2022
+    <h1 class="post-title p-name" itemprop="name headline">Two Dimensional Pooling Layers</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-08-04T00:00:00-05:00" itemprop="datePublished">
+        Aug 4, 2022
       </time>
        • <span class="read-time" title="Estimated read time">
     
     
-      10 min read
+      6 min read
     
 </span></p>
 
@@ -105,7 +105,7 @@ window.onload = wrap_img;
         <a class="category-tags-link" href="/technicalities/categories/#jax">jax</a>
         &nbsp;
       
-        <a class="category-tags-link" href="/technicalities/categories/#convolution">convolution</a>
+        <a class="category-tags-link" href="/technicalities/categories/#pooling">pooling</a>
         
       
       </p>
@@ -116,24 +116,24 @@ window.onload = wrap_img;
         <div class="pb-5 d-flex flex-justify-center">
           <div class="px-2">
 
-    <a href="https://github.com/jrreed83/technicalities/tree/master/_notebooks/2022-08-03-jax-01-2D-convolutional-layers.ipynb" role="button" target="_blank">
+    <a href="https://github.com/jrreed83/technicalities/tree/master/_notebooks/2022-08-04-jax-02-2D-pooling-layers.ipynb" role="button" target="_blank">
 <img class="notebook-badge-image" src="/technicalities/assets/badges/github.svg" alt="View On GitHub">
     </a>
 </div>
 
           <div class="px-2">
-    <a href="https://mybinder.org/v2/gh/jrreed83/technicalities/master?filepath=_notebooks%2F2022-08-03-jax-01-2D-convolutional-layers.ipynb" target="_blank">
+    <a href="https://mybinder.org/v2/gh/jrreed83/technicalities/master?filepath=_notebooks%2F2022-08-04-jax-02-2D-pooling-layers.ipynb" target="_blank">
         <img class="notebook-badge-image" src="/technicalities/assets/badges/binder.svg" alt="Open In Binder"/>
     </a>
 </div>
 
           <div class="px-2">
-    <a href="https://colab.research.google.com/github/jrreed83/technicalities/blob/master/_notebooks/2022-08-03-jax-01-2D-convolutional-layers.ipynb" target="_blank">
+    <a href="https://colab.research.google.com/github/jrreed83/technicalities/blob/master/_notebooks/2022-08-04-jax-02-2D-pooling-layers.ipynb" target="_blank">
         <img class="notebook-badge-image" src="/technicalities/assets/badges/colab.svg" alt="Open In Colab"/>
     </a>
 </div>
           <div class="px-2">
-  <a href="https://deepnote.com/launch?url=https%3A%2F%2Fgithub.com%2Fjrreed83%2Ftechnicalities%2Fblob%2Fmaster%2F_notebooks%2F2022-08-03-jax-01-2D-convolutional-layers.ipynb" target="_blank">
+  <a href="https://deepnote.com/launch?url=https%3A%2F%2Fgithub.com%2Fjrreed83%2Ftechnicalities%2Fblob%2Fmaster%2F_notebooks%2F2022-08-04-jax-02-2D-pooling-layers.ipynb" target="_blank">
       <img class="notebook-badge-image" src="/technicalities/assets/badges/deepnote.svg" alt="Launch in Deepnote"/>
   </a>
 </div>
@@ -144,12 +144,12 @@ window.onload = wrap_img;
   <div class="post-content e-content" itemprop="articleBody">
     <ul id="toc" class="section-nav">
 <li class="toc-entry toc-h2"><a href="#Introduction">Introduction </a></li>
-<li class="toc-entry toc-h2"><a href="#How-Convolutional-Layers-work">How Convolutional Layers work </a></li>
+<li class="toc-entry toc-h2"><a href="#Purpose-of-Pooling-Layers">Purpose of Pooling Layers </a></li>
 <li class="toc-entry toc-h2"><a href="#Import-Libraries">Import Libraries </a></li>
 <li class="toc-entry toc-h2"><a href="#Implementation-from-First-Principles">Implementation from First Principles </a></li>
 <li class="toc-entry toc-h2"><a href="#Compare-to-Keras">Compare to Keras </a>
 <ul>
-<li class="toc-entry toc-h3"><a href="#Convolutional-Layer-in-JAX">Convolutional Layer in JAX </a>
+<li class="toc-entry toc-h3"><a href="#Pooling-Layer-in-JAX">Pooling Layer in JAX </a>
 <ul>
 <li class="toc-entry toc-h4"><a href="#Constructor">Constructor </a></li>
 <li class="toc-entry toc-h4"><a href="#__call__-Method">__call__ Method </a></li>
@@ -164,7 +164,7 @@ window.onload = wrap_img;
 #################################################
 ### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
 #################################################
-# file to edit: _notebooks/2022-08-03-jax-01-2D-convolutional-layers.ipynb
+# file to edit: _notebooks/2022-08-04-jax-02-2D-pooling-layers.ipynb
 -->
 
 <div class="container" id="notebook-container">
@@ -175,7 +175,7 @@ window.onload = wrap_img;
 <h2 id="Introduction">
 <a class="anchor" href="#Introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction<a class="anchor-link" href="#Introduction"> </a>
 </h2>
-<p>In this post, I'll start by implementing a basic two-dimensional convolutional layer using numpy and validate it against Keras.  After this, I'll write a more efficient one using JAX.  Generalizing the work to other dimensions should be pretty straight forward.</p>
+<p>In the style of my last post on 2D convolutional layers,</p>
 
 </div>
 </div>
@@ -183,12 +183,9 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="How-Convolutional-Layers-work">
-<a class="anchor" href="#How-Convolutional-Layers-work" aria-hidden="true"><span class="octicon octicon-link"></span></a>How Convolutional Layers work<a class="anchor-link" href="#How-Convolutional-Layers-work"> </a>
+<h2 id="Purpose-of-Pooling-Layers">
+<a class="anchor" href="#Purpose-of-Pooling-Layers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Purpose of Pooling Layers<a class="anchor-link" href="#Purpose-of-Pooling-Layers"> </a>
 </h2>
-<p>A two dimensional convolutional layer consists of several randomly initialized filters, biases, and a rule for moving the filters across a set of images.  Typically, the input array is rank 4, meaning that the shape has 4 components.  One of these components represents the number of individual images in the input,  two of them tell you the size of each of the images, and the fourth tells you the number of <em>input channels</em>.  The number of channels in an image is the number of components you need to completely describe a pixel.  For instance, a pixel in a gray-scale image is a number between 0 and 255 and therefore has one channel.  An RGB color image, on the otherhand, has 3 channels because it has a red component, green component, and blue component.</p>
-<p>When definining a layer, it's up to you to say how many output channels you want.  For each output channel, you'll generate one rank 3 filter and one scalar bias.  Convolving an input image with one of these output filters, and adding the bias term, results in a flat (i.e single channel) 2D array.  Performing this process for each of the filters and bias terms gives you a stack of arrays with thickness matching the number of output channels.</p>
-
 </div>
 </div>
 </div>
@@ -230,14 +227,6 @@ window.onload = wrap_img;
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>This function filters a single image with every output filter, resulting in a rank 3 array.  The first two levels of the nested loop extract a rank 3 chunk from <code>image</code>, while the third level of the nested loop applies each output filter to the chunk.  After a chunk is processed and the results placed in the output array <code>y</code>, the filter shape and stride step to the next chunk position.</p>
-
-</div>
-</div>
-</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -245,8 +234,7 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">filter_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">strides</span><span class="p">):</span>
-    
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">downsample_image_in_batch</span><span class="p">(</span><span class="n">input_batch</span><span class="p">,</span> <span class="n">pool_size</span><span class="p">,</span> <span class="n">strides</span><span class="p">,</span> <span class="n">pool_fn</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">):</span>
     <span class="n">xm</span><span class="p">,</span> <span class="n">xn</span><span class="p">,</span> <span class="n">_</span>  <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span> 
     
     <span class="n">km</span><span class="p">,</span> <span class="n">kn</span><span class="p">,</span> <span class="n">ni</span><span class="p">,</span> <span class="n">no</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">shape</span> 
@@ -263,7 +251,7 @@ window.onload = wrap_img;
             <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">no</span><span class="p">):</span>
                 <span class="n">y</span><span class="p">[</span><span class="n">iy</span><span class="p">,</span><span class="n">jy</span><span class="p">,</span><span class="n">channel</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">filters</span><span class="p">[:,:,:,</span><span class="n">channel</span><span class="p">]</span> <span class="o">*</span> <span class="n">chunk</span><span class="p">)</span>
             
-    <span class="k">return</span> <span class="n">y</span>
+    <span class="k">return</span> <span class="n">y</span>    
 </pre></div>
 
     </div>
@@ -273,47 +261,6 @@ window.onload = wrap_img;
 </div>
     
 
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Once we have an algorithm to filter a single image, it can easily be extended to a batch of images.</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">filter_image_batch</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">):</span>
-    <span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">filter_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span> <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
-    <span class="n">outputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
-    <span class="n">outputs</span> <span class="o">=</span> <span class="n">outputs</span> <span class="o">+</span> <span class="n">biases</span>
-    <span class="k">return</span> <span class="n">outputs</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>First, a list comprehension applies the <code>filter_image</code> function defined above, to each image in the batch.  Next, the list returned by the 
-list comprehension, is converted to a rank 4 array with the <code>np.array</code> function.  The line preceding the <code>return</code> statement,</p>
-<div class="highlight"><pre><span></span><span class="n">outputs</span> <span class="o">=</span> <span class="n">outputs</span> <span class="o">+</span> <span class="n">biases</span>
-</pre></div>
-<p>seems like it shouldn't work, because the ranks don't match.  Fortunately,  numpy's broadcasting rules come to the rescue and the addition works as expected.</p>
-
-</div>
-</div>
-</div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -338,11 +285,9 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layer_keras</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span>
-    <span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> 
-    <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> 
-    <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> 
-    <span class="n">bias_initializer</span><span class="o">=</span><span class="s1">'he_uniform'</span><span class="p">,</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layer_keras</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPool2D</span><span class="p">(</span> 
+    <span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> 
+    <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
     <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span>
 <span class="p">)</span>
 </pre></div>
@@ -555,21 +500,8 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>I can't say that these timing results are a surprise.  Remember how my numpy version of convolution has a three-level nested loop?  Well, this leads to very poor performance.  Unfortunately, to write fast python programs, a lot of its syntax and functionality (like loops) must be avoided in favor of calling wrappers for optimized C code.  This is precisely what Keras does.  Later on, we'll see that the JAX version is competitive with Keras.
-</p>
-<div class="flash">
-    <svg class="octicon octicon-info" viewbox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-.25A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 100-2 1 1 0 000 2z"></path></svg>
-    <strong>Note: </strong>We’d probably be able to get a speed boost in the numpy version if we used the broadcasting rules to apply each of the outout filters across a batch chunk, rather than just an image chunk.
-</div>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Convolutional-Layer-in-JAX">
-<a class="anchor" href="#Convolutional-Layer-in-JAX" aria-hidden="true"><span class="octicon octicon-link"></span></a>Convolutional Layer in JAX<a class="anchor-link" href="#Convolutional-Layer-in-JAX"> </a>
+<h3 id="Pooling-Layer-in-JAX">
+<a class="anchor" href="#Pooling-Layer-in-JAX" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pooling Layer in JAX<a class="anchor-link" href="#Pooling-Layer-in-JAX"> </a>
 </h3>
 </div>
 </div>
@@ -594,18 +526,6 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </div>
     
 
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>In addition to the standard set of imports, I'm also importing <code>patch</code> from <a href="https://fastcore.fast.ai/">fastcore</a>.  It's selling point is that it contains</p>
-<blockquote>
-<p>Python goodies to make your coding faster, easier, and more maintainable.</p>
-</blockquote>
-<p>The nice thing about <code>patch</code>, is that it allows you to write methods outside of class definitions.  This is particularly useful if you're interested in incrementally developing, and explaining, class functionality in notebooks.  Without <code>patch</code>, you'd have to either have an entire class implementation in a single cell, or abandon classes altogether and use functions.</p>
-
-</div>
-</div>
-</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -613,15 +533,9 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Conv2D</span><span class="p">:</span> 
-    <span class="n">filters</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span> 
-    <span class="n">biases</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span>
-    <span class="n">input_channels</span><span class="p">:</span> <span class="nb">int</span> 
-    <span class="n">output_channels</span><span class="p">:</span> <span class="nb">int</span> 
-    <span class="n">filter_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">MaxPool2D</span><span class="p">:</span> 
+    <span class="n">pool_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span>
     <span class="n">strides</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span>
-    <span class="n">padding</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span>
 </pre></div>
 
     </div>
@@ -1084,7 +998,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 
 
 
-  </div><a class="u-url" href="/technicalities/jax/convolution/2022/08/03/jax-01-2D-convolutional-layers.html" hidden></a>
+  </div><a class="u-url" href="/technicalities/jax/pooling/2022/08/04/jax-02-2D-pooling-layers.html" hidden></a>
 </article>
 
       </div>
