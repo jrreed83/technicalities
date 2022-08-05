@@ -95,7 +95,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      10 min read
+      11 min read
     
 </span></p>
 
@@ -305,6 +305,52 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p>Turns out we can go further with the broadcasting rules and vectorize everything, no list comprehension needed:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">filter_images</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">):</span>
+    
+    <span class="n">batch_size</span><span class="p">,</span> <span class="n">xm</span><span class="p">,</span> <span class="n">xn</span><span class="p">,</span> <span class="n">_</span>  <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">shape</span> 
+    
+    <span class="n">km</span><span class="p">,</span> <span class="n">kn</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">num_filters</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">shape</span> 
+    
+    
+    <span class="n">sm</span><span class="p">,</span> <span class="n">sn</span> <span class="o">=</span> <span class="n">strides</span>
+    <span class="n">ym</span><span class="p">,</span> <span class="n">yn</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">xm</span> <span class="o">-</span> <span class="n">km</span><span class="p">)</span><span class="o">//</span><span class="n">sm</span><span class="p">),</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">xn</span> <span class="o">-</span> <span class="n">kn</span><span class="p">)</span><span class="o">//</span><span class="n">sn</span><span class="p">)</span> 
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">ym</span><span class="p">,</span> <span class="n">yn</span><span class="p">,</span> <span class="n">num_filters</span><span class="p">))</span>
+
+    <span class="c1"># convolution step</span>
+    <span class="k">for</span> <span class="n">iy</span><span class="p">,</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xm</span><span class="o">-</span><span class="n">km</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">sm</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">jy</span><span class="p">,</span> <span class="n">jx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xn</span><span class="o">-</span><span class="n">kn</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">sn</span><span class="p">)):</span>
+            <span class="c1"># Apply each output filter and bias term to this chunk</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">images</span><span class="p">[:,</span><span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">km</span><span class="p">,</span><span class="n">jx</span><span class="p">:</span><span class="n">jx</span><span class="o">+</span><span class="n">kn</span><span class="p">,:]</span>
+            <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_filters</span><span class="p">):</span>
+                <span class="n">y</span><span class="p">[:,</span><span class="n">iy</span><span class="p">,</span><span class="n">jy</span><span class="p">,</span><span class="n">channel</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">filters</span><span class="p">[:,:,:,</span><span class="n">channel</span><span class="p">]</span> <span class="o">*</span> <span class="n">chunk</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+                
+    <span class="c1"># add bias</span>
+    <span class="n">y</span> <span class="o">+=</span> <span class="n">biases</span>        
+    <span class="k">return</span> <span class="n">y</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <p>First, a list comprehension applies the <code>filter_image</code> function defined above, to each image in the batch.  Next, the list returned by the 
 list comprehension, is converted to a rank 4 array with the <code>np.array</code> function.  The line preceding the <code>return</code> statement,</p>
 <div class="highlight"><pre><span></span><span class="n">outputs</span> <span class="o">=</span> <span class="n">outputs</span> <span class="o">+</span> <span class="n">biases</span>
@@ -455,6 +501,23 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </div>
     
 
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">output_batch_numpy_</span> <span class="o">=</span> <span class="n">filter_images</span><span class="p">(</span><span class="n">input_batch</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -480,6 +543,23 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 </div>
     
 
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">output_batch_keras</span> <span class="o">-</span> <span class="n">output_batch_numpy_</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-6</span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -495,7 +575,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it -n 10
 <span class="n">filter_image_batch</span><span class="p">(</span><span class="n">input_batch</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span>
 </pre></div>
 
@@ -509,7 +589,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>21.8 ms ± 771 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+<pre>23.9 ms ± 302 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 </pre>
 </div>
 </div>
@@ -527,7 +607,7 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it -n 10
 <span class="n">layer_keras</span><span class="p">(</span><span class="n">input_batch</span><span class="p">)</span>
 </pre></div>
 
@@ -541,7 +621,39 @@ list comprehension, is converted to a rank 4 array with the <code>np.array</code
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>265 µs ± 939 ns per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+<pre>355 µs ± 44.2 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it -n 10
+<span class="n">filter_images</span><span class="p">(</span><span class="n">input_batch</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>14.1 ms ± 1.01 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 </pre>
 </div>
 </div>
