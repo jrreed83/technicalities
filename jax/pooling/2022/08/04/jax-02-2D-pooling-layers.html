@@ -152,7 +152,7 @@ window.onload = wrap_img;
 <ul>
 <li class="toc-entry toc-h4"><a href="#Constructor">Constructor </a></li>
 <li class="toc-entry toc-h4"><a href="#__call__-Method">__call__ Method </a></li>
-<li class="toc-entry toc-h4"><a href="#Adding-to-pytree-Registry">Adding to pytree Registry </a></li>
+<li class="toc-entry toc-h4"><a href="#Registration">Registration </a></li>
 </ul>
 </li>
 </ul>
@@ -244,10 +244,10 @@ window.onload = wrap_img;
     <span class="n">ym</span><span class="p">,</span> <span class="n">yn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">ym</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">yn</span><span class="p">))</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">ym</span><span class="p">,</span> <span class="n">yn</span><span class="p">,</span> <span class="n">num_channels</span><span class="p">))</span>
 
-    <span class="k">for</span> <span class="n">iy</span><span class="p">,</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xm</span><span class="o">-</span><span class="n">pm</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">sm</span><span class="p">)):</span>
-        <span class="k">for</span> <span class="n">jy</span><span class="p">,</span> <span class="n">jx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xn</span><span class="o">-</span><span class="n">pn</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">sn</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">h</span><span class="p">,</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xm</span><span class="o">-</span><span class="n">pm</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">sm</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">jx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xn</span><span class="o">-</span><span class="n">pn</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">sn</span><span class="p">)):</span>
             <span class="n">chunk</span> <span class="o">=</span> <span class="n">input_batch</span><span class="p">[:,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">pm</span><span class="p">,</span> <span class="n">jx</span><span class="p">:</span><span class="n">jx</span><span class="o">+</span><span class="n">pn</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="n">y</span><span class="p">[:,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">jy</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pool_fn</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+            <span class="n">y</span><span class="p">[:,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pool_fn</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">y</span>    
 </pre></div>
 
@@ -261,11 +261,12 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This looks a lot like the convolution functions implemented in the last post.  It extracts a chunk from the 4D array based on the pooling specification, and then executed <code>pool_fn</code> on each channel and for every batch. The lines</p>
-<div class="highlight"><pre><span></span><span class="n">y</span><span class="p">[:,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">jy</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pool_fn</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<p>This looks a lot like the convolution functions implemented in the last post.  It extracts a chunk from the 4D array array and executes <code>pool_fn</code> for every batch and channel independently. The line</p>
+<div class="highlight"><pre><span></span><span class="n">y</span><span class="p">[:,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pool_fn</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
-<p>deserves a little explanation.  Although I didn't explictly mention it earlier, <code>pool_fn</code> is a vectorized function that's able to delegate it's work to some optimized low-level code.  If we didn't have vectorized functions, we'd have to use nested loops which we already know are very slow in Python.  The <code>axis=(1,2)</code> is saying that we want to perform the <code>pool_fn</code> only with respect to the height and width of an image for each batch and each channel.  For pooling, we don't care about the relative values between images in a batch, nor between different channels.</p>
-<p>Here's a snippet of code that does what the code above does: only very slowly:</p>
+<p>takes advantage of numpy's vectorization capabilities.  What this says is that the <code>pool_fn</code> is evaluated with respect to the height and width axes As far as the calculation goes, the batch and channel dimensions are ignored, and only serve as place holders for the result.  This means
+that for each <code>chunk</code>, the value <code>pool_fn(chunk, axis=(1,2))</code> is a 2D array where the number of rows is equal to the number of items in the batch and the number of columns is equal to the number of channels.</p>
+<p>Here's a snippet of code that does the same thing, just very slowly</p>
 
 </div>
 </div>
@@ -301,7 +302,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Just to make sure, let's compare them.  We'll define a random chunk, check that the vectorized and non-vectorized chunk-pooling give the same answer, and see how long each one takes to execute.</p>
+<p>Just to make sure, let's compare the two versions. We'll define a random chunk, check that the vectorized and non-vectorized chunk-pooling give the same answer, and see how long each one takes to execute.</p>
 
 </div>
 </div>
@@ -333,8 +334,8 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>476 µs ± 13.1 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
-18.5 ms ± 486 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+<pre>474 µs ± 5.76 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+19.7 ms ± 393 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 </pre>
 </div>
 </div>
@@ -345,23 +346,14 @@ window.onload = wrap_img;
 </div>
     
 
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
+<div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jitted_filter_images_v2</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">filter_images_v2</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>No surprise that <code>slow_max_pool</code> is significantly slower than the vectorized version.</p>
 
 </div>
-    
-
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -506,7 +498,7 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>3.97 ms ± 216 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+<pre>4.03 ms ± 17.5 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 </pre>
 </div>
 </div>
@@ -538,7 +530,7 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>666 µs ± 52.7 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+<pre>695 µs ± 41.6 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 </pre>
 </div>
 </div>
@@ -653,14 +645,12 @@ window.onload = wrap_img;
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@patch</span>
 <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">MaxPool2D</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
     
-    <span class="n">pool_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">strides</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">strides</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">)</span> 
     <span class="n">outputs</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">reduce_window</span><span class="p">(</span>
         <span class="n">batch</span><span class="p">,</span>
         <span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
         <span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">max</span><span class="p">,</span>
-        <span class="n">window_dimensions</span><span class="o">=</span><span class="n">pool_shape</span><span class="p">,</span>
-        <span class="n">window_strides</span><span class="o">=</span><span class="n">strides</span><span class="p">,</span>
+        <span class="n">window_dimensions</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">),</span>
+        <span class="n">window_strides</span><span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">strides</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">)</span> <span class="p">,</span>
         <span class="n">padding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">padding</span>
     <span class="p">)</span>
 
@@ -677,8 +667,8 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Adding-to-pytree-Registry">
-<a class="anchor" href="#Adding-to-pytree-Registry" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding to pytree Registry<a class="anchor-link" href="#Adding-to-pytree-Registry"> </a>
+<h4 id="Registration">
+<a class="anchor" href="#Registration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Registration<a class="anchor-link" href="#Registration"> </a>
 </h4>
 </div>
 </div>
@@ -789,7 +779,7 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">output_batch_keras</span> <span class="o">-</span> <span class="n">output_batch_jax</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-6</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">output_batch_keras</span><span class="p">,</span> <span class="n">output_batch_jax</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -828,7 +818,7 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>669 µs ± 40 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+<pre>687 µs ± 68.5 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 </pre>
 </div>
 </div>
@@ -860,7 +850,7 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>249 µs ± 21.4 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+<pre>249 µs ± 24.8 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 </pre>
 </div>
 </div>
